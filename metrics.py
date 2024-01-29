@@ -36,10 +36,15 @@ def norm1(A):
 
 def norm2(A):
     # Fix this one so that it first checks if real eigenvalues, or maybe take the norm of complex value
-    # Could find some theorems here that prove that matrix with probabilities always positive...
+    # Could find some theorems here that prove something about the matrix when it is no possible to do this...
+    # Maybe just take abs of the complex eigenvalue, could work...
     ATA = A.T * A
-    eig = ATA.eigenvals()
+    eig = ATA.eigenvals() # Add the absolute value here!!!
     return float(max(list(eig.keys())))**.5
+
+
+def dual_norm(A):
+    pass
 
 
 def distance(A, B, normtype):

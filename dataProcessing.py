@@ -1,23 +1,18 @@
-import nltk
 from sb_corpus_reader import SBCorpusReader
-talbanken = SBCorpusReader('Classified_word_lists/talbanken.xml')
+import nltk
+import json
+import requests 
+import pandas as pd
+ 
+talbanken = SBCorpusReader('talbanken.xml')
 talbanken.sents()
 talbanken_words = (talbanken.tagged_words())
 
-def classify_data():
-    # Input training data and dict of what word class a word is
-    # Returns a dict of the input data with matched word classes.
-    pass
-# Here have help functions for this one, this should be the main one that returns what we want
+
+  
 
 
-def word_class_dict():
-    # Reutus dict of wordclasses
-    pass
 
-
-import nltk
-import ssl
 """
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -34,20 +29,61 @@ def convert_to_dict(words):
         dict[words[i][0]] = words[i][1]
     return dict
 
+
+
 def classify_data(text, lib):
     # Input training data and dict of what word class a word is
     # Returns a dict of the input data with matched word classes.
     classlist = []
     sentences = text.lower().split('. ')
     for sentence in sentences:
+        sentence = sentence[:-1]
         words = sentence.split(' ')
         for word in words:
-            print(word)
-            classlist.append(lib[word])
+            try:
+                classlist.append(lib[word])
+            except:
+                classlist.append('NA')
         classlist.append('.')
 
     return classlist
 
-dictionary_talbanken = convert_to_dict(talbanken_words)
-text = "du en. och"
-print(classify_data(text, dictionary_talbanken))
+
+def save_dict():
+    dictionary_talbanken = convert_to_dict(talbanken_words)
+    json_object = json.dumps(dictionary_talbanken, indent=4)
+    with open("classdict.json", "w") as outfile:
+        outfile.write(json_object)
+
+def open_dict(file):
+    with open(file, 'r') as openfile:
+        # Reading from json file
+        
+        return json.load(openfile)
+    
+def read_traning_csv():
+    abstracts = []
+    df = pd.read_csv("export.csv", usecols=['Abstract'])
+    for i in range(len(df)):
+        if str(df.iloc[i][0]) != "nan":
+            abstracts.append(str(df.iloc[i][0]))
+    return abstracts
+
+
+def scrape_and_save():
+    abstracts = []
+    raw = open_dict('abstractsmalltraining.json')
+    for paper in raw:
+        abstracts.append(paper['abstract'])
+    return abstracts
+
+
+def test():
+    dictionary_talbanken = open_dict('classdict.json')
+    text = read_traning_csv()[0]
+    print(classify_data(text, dictionary_talbanken))
+
+
+test()
+
+
