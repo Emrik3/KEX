@@ -1,17 +1,12 @@
 from sb_corpus_reader import SBCorpusReader
 import nltk
 import json
-import requests 
+import requests
 import pandas as pd
- 
+
 talbanken = SBCorpusReader('talbanken.xml')
 talbanken.sents()
 talbanken_words = (talbanken.tagged_words())
-
-
-  
-
-
 
 """
 try:
@@ -23,12 +18,13 @@ else:
 
 nltk.download()
 """
+
+
 def convert_to_dict(words):
     dict = {}
     for i in range(0, len(words), 2):
         dict[words[i][0]] = words[i][1]
     return dict
-
 
 
 def classify_data(text, lib):
@@ -55,12 +51,14 @@ def save_dict():
     with open("classdict.json", "w") as outfile:
         outfile.write(json_object)
 
+
 def open_dict(file):
     with open(file, 'r') as openfile:
         # Reading from json file
-        
+
         return json.load(openfile)
-    
+
+
 def read_traning_csv():
     abstracts = []
     df = pd.read_csv("export.csv", usecols=['Abstract'])
@@ -84,6 +82,18 @@ def test():
     print(classify_data(text, dictionary_talbanken))
 
 
-test()
+#test()
 
+def unique_word_classes():
+    large_list = []
+    unique_codes = set()
+    dictionary_talbanken = open_dict('classdict.json')
+    text = read_traning_csv()
+    for elem in text:
+        large_list.append(classify_data(elem, dictionary_talbanken))
+    for sublist in large_list:
+        for word_class in sublist:
+            unique_codes.add(word_class)
+    print(unique_codes)
 
+unique_word_classes()
