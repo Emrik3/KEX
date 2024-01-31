@@ -35,7 +35,20 @@ class_to_index = {
     'HA': 17,
     'PAD': 18,
     'PL': 19,
-    '.': 20}
+    '.': 20,
+    'UO' : 21,
+    'HD' : 22,
+    'SN' : 23,
+    'PS' : 24,
+    'IN' : 25
+    }
+
+
+def open_dict(file):
+    with open(file, 'r') as openfile:
+        # Reading from json file
+
+        return json.load(openfile)
 
 def create_transition_matrix(class_to_index):
     # Creating an empty matrix
@@ -60,12 +73,14 @@ def iterate_transition_matrix(word_classes, transition_matrix):
         n = sum(row)
         if n > 0:
             row[:] = [f / sum(row) for f in row]
-
     return transition_matrix
 
-dimensioned_matrix = create_transition_matrix(class_to_index)
-transition_matrix = iterate_transition_matrix(word_classes, dimensioned_matrix)
-print(transition_matrix)
-with open("transition_matrix.json", "w") as outfile:
-    json.dump(transition_matrix, outfile)
+def create_and_calculate():
+    word_classes = open_dict('word_classes.json')
+    dimensioned_matrix = create_transition_matrix(class_to_index)
+    transition_matrix = iterate_transition_matrix(word_classes, dimensioned_matrix)
+    print(transition_matrix)
+    with open("transition_matrix.json", "w") as outfile:
+        json.dump(transition_matrix, outfile)
 
+create_and_calculate()
