@@ -1,15 +1,8 @@
 from sb_corpus_reader import SBCorpusReader
 import nltk
 import json
-import requests 
+import requests
 import pandas as pd
- 
-
-
-
-  
-
-
 
 """
 try:
@@ -21,12 +14,13 @@ else:
 
 nltk.download()
 """
+
+
 def convert_to_dict(words):
     dict = {}
     for i in range(0, len(words), 2):
         dict[words[i][0]] = words[i][1]
     return dict
-
 
 
 def classify_data(text, lib):
@@ -35,11 +29,14 @@ def classify_data(text, lib):
     classlist = []
     # Ta bort <p> här också...
     sentences = text.lower().split('. ')
+    sentences[0] = sentences[0][3:]
+    sentences[-1] = sentences[-1][:-5]
     for sentence in sentences:
-        sentence = sentence[:-1]
         words = sentence.split(' ')
         for word in words:
             try:
+                print(word)
+                print(lib[word])
                 classlist.append(lib[word])
             except:
                 classlist.append('NA')
@@ -53,11 +50,13 @@ def save_dict(to_save):
     with open("classdict.json", "w") as outfile:
         outfile.write(json_object)
 
+
 def open_dict(file):
     with open(file, 'r') as openfile:
         # Reading from json file
         return json.load(openfile)
-    
+
+
 def read_traning_csv():
     abstracts = []
     df = pd.read_csv("export.csv", usecols=['Abstract'])
@@ -83,12 +82,11 @@ def test():
     for i in classified:
         if i == 'NA':
             k += 1
-    print(text)
-    print(classified)
-    print("Number of words that could not me classified: " + str(k) + " out of " + str(len(classified)))
-    # Detta är ganska bra, man behöver ta bort () och liknande, sen är ord som inte identifieras nog nästan alltid substantiv. 
-
-
+    #print(text)
+    #print(classified)
+    #print("Number of words that could not me classified: " + str(k) + " out of " + str(len(classified)))
+    # Detta är ganska bra, man behöver ta bort () och liknande, sen är ord som inte identifieras nog nästan alltid substantiv.
+#test()
 def joindicts():
     talbanken = SBCorpusReader('talbanken.xml')
     talbanken.sents()
@@ -101,4 +99,49 @@ def joindicts():
     dict1.update(dict2)
     return dict1
 
-test()
+
+def test_big_list():
+    k = 0 # Counting amount of unclassified words
+    classified_list = []  # [text, text, text..] (with text in word class form)
+    word_class_list = [] # [all texts] (with text in word class form)
+    dictionary_talbanken = open_dict('classdict.json')
+    text_all = read_traning_csv()
+
+    for text in text_all:
+        classified = classify_data(text, dictionary_talbanken)
+        eng =0 # Counter to check if text non-swedish
+        for i in range(len(classified)):
+            if classified[i] == 'NA':
+                k += 1
+                if i ==1 or i ==2:
+                    eng += 1
+                if eng ==2:
+                    break
+        if eng != 2:
+            classified_list.append(classified)
+    for sublist in classified_list:
+        for word_class in sublist:
+            word_class_list.append(word_class)
+    print(word_class_list)
+    print("Number of words that could not me classified: " + str(k) + " out of " + str(len(word_class_list)))
+    print("in percent " + str(100*k/len(word_class_list)))
+    with open("word_classes.json", "w") as outfile:
+        json.dump(word_class_list, outfile)
+
+test_big_list()
+
+
+
+def unique_word_classes():
+    large_list = []
+    unique_codes = set()
+    dictionary_talbanken = open_dict('classdict.json')
+    text = read_traning_csv()
+    for elem in text:
+        large_list.append(classify_data(elem, dictionary_talbanken))
+    for sublist in large_list:
+        for word_class in sublist:
+            unique_codes.add((word_class))
+
+    print(unique_codes)
+
