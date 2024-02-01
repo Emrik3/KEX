@@ -1,17 +1,7 @@
-#To do: 1.Wait for better word_classes list to be better
-#2. implement iteration over many lists/ doing this but with a long list
-
 import json
 
-# Ordered word classes from 1 abstract (placeholder)
-word_classes = ['NA', 'NA', 'NA', 'VB', 'PN', 'JJ', 'NN', 'NA', 'KN', 'AB', 'VB', 'RG', 'JJ', 'NA', 'PP', 'JJ', 'NN',
-                'PP', 'JJ', 'NA', '.', 'PN', 'NA', 'NA', 'VB', 'NA', 'NA', 'KN', 'AB', 'NA', 'PP', 'JJ', 'NA', '.',
-                'NN', 'PP', 'NA', 'VB', 'IE', 'AB', 'NA', 'KN', 'JJ', 'NN', 'VB', 'PN', 'PP', 'IE', 'VB', 'JJ', 'NA',
-                '.', 'PN', 'VB', 'AB', 'IE', 'AB', 'NA', 'NN', 'PP', 'NA', 'NA', 'PP', 'NA', 'KN', 'NA', 'PP', 'IE',
-                'NA', 'NA', 'AB', 'VB', 'JJ', 'NA', '.', 'NN', 'NA', 'NN', 'KN', 'VB', 'VB', 'NN', 'PP', 'NA', 'KN',
-                'NA', 'NN', 'KN', 'NA', 'NN', 'PP', 'NA', '.', 'NA', 'VB', 'VB', 'IE', 'VB', 'JJ', 'KN', 'AB', 'IE',
-                'NA', '.', 'NN', 'PP', 'NN', 'KN', 'NN', 'PP', 'NA', 'VB', 'AB', 'AB', 'PL', 'PP', 'NN', '.', 'DT',
-                'NA', 'AB', 'PP', 'RO', 'NN', 'NA', 'KN', 'NA', 'NA', '.']
+import dataProcessing
+from dataProcessing import *
 
 # Probably all word classes, but if there are others they will show up when we get errors
 class_to_index = {
@@ -40,7 +30,8 @@ class_to_index = {
     'HD' : 22,
     'SN' : 23,
     'PS' : 24,
-    'IN' : 25
+    'IN' : 25,
+    'HS' : 26
     }
 
 
@@ -75,12 +66,15 @@ def iterate_transition_matrix(word_classes, transition_matrix):
             row[:] = [f / sum(row) for f in row]
     return transition_matrix
 
-def create_and_calculate():
-    word_classes = open_dict('word_classes.json')
+def create_and_calculate(file, t_matrix_name):
+    word_classes = open_dict(file)
     dimensioned_matrix = create_transition_matrix(class_to_index)
     transition_matrix = iterate_transition_matrix(word_classes, dimensioned_matrix)
-    print(transition_matrix)
-    with open("transition_matrix.json", "w") as outfile:
+    with open(t_matrix_name, "w") as outfile:
         json.dump(transition_matrix, outfile)
+    return transition_matrix
 
-create_and_calculate()
+if __name__ == "__main__":
+    create_and_calculate('WC_all.json', "TM_all.json")
+    create_and_calculate('WC_transl.json', "TM_transl.json")
+    create_and_calculate('WC_non_transl.json', 'TM_non_transl.json')
