@@ -50,3 +50,7 @@ def dual_norm(A):
 def distance(A, B, normtype):
     return normtype(np.subtract(A, B))
 
+def running_metrics(A,B):
+    print("1-norm: " + str(distance(A,B,norm1)))
+    print("infinity-norm: " + str(distance(A,B,norminf)))
+    print("frobenius norm: " + str(distance(A,B,frobnorm)))
