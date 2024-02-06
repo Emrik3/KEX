@@ -3,6 +3,7 @@ import nltk
 import json
 import requests
 import pandas as pd
+from metrics import maxlike
 
 """
 try:
@@ -104,7 +105,7 @@ def text_cleaner(text):
     #print(type(text))
     print(text)
     text = text.replace('- ', '')
-    print(text)
+    text = text.lower()
     text = text.split()
     first_clean = []
     common_long_clutter = ['<p>', '.</p>']
@@ -113,12 +114,12 @@ def text_cleaner(text):
             words = words.replace(substring, "")
         first_clean.append(words)
     # Then removes all unwanted characters
-    common_clutter = [',', ';', ')', '(', '>', '<', '/', '\"', '”', '?', "%", "&", "-", ".", "- "]
+    common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö".split()
     new_text_list = []
     for word in first_clean:
         new_word = ""
         for letter in word:
-            if letter not in common_clutter:
+            if letter in common_clutter:
                 new_word += letter
         new_text_list.append(new_word)
     new_text = ' '.join(new_text_list)
@@ -200,11 +201,13 @@ if __name__ == "__main__":
     #save_dict(fl)
 
     # all abstracts
-    abstracts_to_word_classes('export.csv')
+    #abstracts_to_word_classes('export.csv')
 
     # a translation to be evaluated
-    translations_to_word_classes('translated_sample.txt', "WC_transl.json")
+    #translations_to_word_classes('translated_sample.txt', "WC_transl.json")
 
     # a non translated swedish abstract to compare with
-    translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
+    sample = translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
+    TM_all = open_dict('TM_all.json')
+    maxlike(TM_all, sample)
 

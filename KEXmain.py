@@ -1,7 +1,7 @@
 import numpy as np
 from metrics import *
 from Visualisation import *
-from dataProcessing import open_dict
+from dataProcessing import open_dict, read_translation_txt
 
 TM_all = open_dict('TM_all.json')
 TM_transl = open_dict('TM_transl.json')
@@ -15,6 +15,7 @@ def main():
     transition_matrix_vis(TM_all)
     transition_matrix_vis(np.subtract(TM_all,TM_transl))
     transition_matrix_vis(np.subtract(TM_all,TM_non_transl))
+    
 
 
 
