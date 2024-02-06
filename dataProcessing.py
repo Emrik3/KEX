@@ -19,7 +19,7 @@ nltk.download()
 def convert_to_dict(words):
     dict = {}
     for i in range(0, len(words), 2):
-        dict[words[i][0].lower()] = words[i][1]
+        dict[words[i][0]] = words[i][1]
     return dict
 
 
@@ -35,7 +35,7 @@ def classify_data(text, lib):
                 classlist.append(lib[word])
             except:
                 print(word)
-                classlist.append('NN')
+                classlist.append('NA')
         classlist.append('.')
 
     return classlist
@@ -102,7 +102,9 @@ def check_english(text):
 def text_cleaner(text):
     # First removes combinations longer than 1 character
     #print(type(text))
+    print(text)
     text = text.replace('- ', '')
+    text = text.lower()
     text = text.split()
     first_clean = []
     common_long_clutter = ['<p>', '.</p>']
@@ -111,12 +113,12 @@ def text_cleaner(text):
             words = words.replace(substring, "")
         first_clean.append(words)
     # Then removes all unwanted characters
-    common_clutter = [',', ';', ')', '(', '>', '<', '/', '\"', '”', '?', "%", "&", "-", ".", "- "]
+    common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö".split()
     new_text_list = []
     for word in first_clean:
         new_word = ""
         for letter in word:
-            if letter not in common_clutter:
+            if letter in common_clutter:
                 new_word += letter
         new_text_list.append(new_word)
     new_text = ' '.join(new_text_list)
