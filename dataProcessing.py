@@ -34,6 +34,7 @@ def classify_data(text, lib):
             try:
                 classlist.append(lib[word])
             except:
+                print(word)
                 classlist.append('NA')
         classlist.append('.')
 
@@ -100,14 +101,19 @@ def check_english(text):
 
 def text_cleaner(text):
     # First removes combinations longer than 1 character
+    #print(type(text))
+    print(text)
+    text = text.replace('- ', '')
+    print(text)
+    text = text.split()
     first_clean = []
-    common_long_clutter = ['<p>', '</p>']
+    common_long_clutter = ['<p>', '.</p>']
     for words in text:
         for substring in common_long_clutter:
             words = words.replace(substring, "")
         first_clean.append(words)
     # Then removes all unwanted characters
-    common_clutter = [',', ';', ')', '(', '>', '<', '/', '\"', '”', '?', "%", "&", "-"]
+    common_clutter = [',', ';', ')', '(', '>', '<', '/', '\"', '”', '?', "%", "&", "-", ".", "- "]
     new_text_list = []
     for word in first_clean:
         new_word = ""
@@ -134,11 +140,14 @@ def abstracts_to_word_classes(file):
     classified_list = []  # [text, text, text..] (with text in word class form)
     word_class_list = []  # [all texts] (with text in word class form)
     dictionary_talbanken = open_dict('classdict.json')
+    print(type(file))
     text_all = read_traning_csv(file)
     for text in text_all:
         if check_english(text.split()):
             continue
-        text = text_cleaner(text.split())
+        #print(type(text))
+        #print(text)
+        text = text_cleaner(text)
         classified = classify_data(text, dictionary_talbanken)
         for i in classified:
             if i == 'NA':
@@ -158,7 +167,7 @@ def translations_to_word_classes(file, filename):
     # Takes a txt file and converts it to word classes
     dictionary_talbanken = open_dict('classdict.json')
     text = read_translation_txt(file)
-    text = text_cleaner(text.split())
+    text = text_cleaner(text)
     classified = classify_data(text, dictionary_talbanken)
     k = 0
     for i in classified:
@@ -175,7 +184,7 @@ def unique_word_classes():
     # returns set of all unique word classes
     large_list = []
     unique_codes = set()
-    dictionary_talbanken = open_dict('classdict.json')
+    dictionary_talbanken = open_dict('clas.split()sdict.json')
     text = read_traning_csv('export.csv')
     for elem in text:
         large_list.append(classify_data(elem, dictionary_talbanken))
