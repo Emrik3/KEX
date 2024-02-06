@@ -51,6 +51,8 @@ def distance(A, B, normtype):
     return normtype(np.subtract(A, B))
 
 def running_metrics(A,B):
+    print(frobnorm(np.array(A)))
+    print(frobnorm(np.array(B)))
     print("1-norm: " + str(distance(A,B,norm1)))
     print("infinity-norm: " + str(distance(A,B,norminf)))
     print("frobenius norm: " + str(distance(A,B,frobnorm)))
