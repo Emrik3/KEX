@@ -63,7 +63,7 @@ def read_traning_csv(file):
     return abstracts
 
 def read_translation_txt(file):
-    with open(file, 'r') as file:
+    with open(file, 'r', encoding='utf-8') as file:
         # Reading a text file
         return file.read()
 
@@ -199,15 +199,14 @@ def unique_word_classes():
 if __name__ == "__main__":
     #fl = joindicts()
     #save_dict(fl)
-
     # all abstracts
-    #abstracts_to_word_classes('export.csv')
+    abstracts_to_word_classes('export.csv')
 
     # a translation to be evaluated
-    #translations_to_word_classes('translated_sample.txt', "WC_transl.json")
+    translations_to_word_classes('translated_sample.txt', "WC_transl.json")
 
     # a non translated swedish abstract to compare with
-    sample = translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
+    """sample = translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
     TM_all = open_dict('TM_all.json')
-    maxlike(TM_all, sample)
+    maxlike(TM_all, sample)"""
 
