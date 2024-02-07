@@ -3,6 +3,7 @@ import json
 import dataProcessing
 from dataProcessing import *
 import numpy as np
+from dataProcessing import open_dict
 # Probably all word classes, but if there are others they will show up when we get errors
 class_to_index = {
     'NA': 0,
@@ -33,12 +34,6 @@ class_to_index = {
     'IN' : 25,
     'HS' : 26
     }
-
-
-def open_dict(file):
-    with open(file, 'r') as openfile:
-        # Reading from json file
-        return json.load(openfile)
 
 def iterate_transition_matrix(word_classes):
     # Creating an empty matrix
@@ -72,7 +67,8 @@ def create_and_calculate(file, t_matrix_name):
         json.dump(transition_matrix, outfile)
     return transition_matrix
 
-#For a 2d markov chain
+#For a 2nd order markov chain
+
 def iterate_tm_2_order(word_classes):
     # Creating an empty matrix
     transition_matrix = np.zeros((len(class_to_index), len(class_to_index), len(class_to_index)))
@@ -104,8 +100,44 @@ def run_2_order(file, t_matrix_name):
         json.dump(tm_2nd_order, outfile)
     return tm_2nd_order
 
+# for a 3rd order markov chain
+def iterate_tm_3_order(word_classes):
+    # Creating an empty matrix
+    transition_matrix = np.zeros((len(class_to_index), len(class_to_index), len(class_to_index), len(class_to_index)))
+    for i in range(2, len(word_classes) - 1):
+        # indexes written out a bit
+        old_2_class = word_classes[i-2]
+        old_class = word_classes[i-1]
+        current_class = word_classes[i]
+        next_class = word_classes[i + 1]
+        old_2_index = class_to_index[old_2_class]
+        old_index = class_to_index[old_class]
+        current_index = class_to_index[current_class]
+        next_index = class_to_index[next_class]
+
+        # The calculation
+        transition_matrix[old_2_index][old_index][current_index][next_index] += 1
+
+    for i in range(len(class_to_index)):  # for some row
+        for k in range(len(class_to_index)): # every row has another row in the "new" direction because 3d
+            for p in range(len(class_to_index)):
+                n = sum(transition_matrix[p][k][i])  # summing this row
+                if n > 0:
+                    for j in range(len(class_to_index)):  # for element in the row
+                        transition_matrix[p][k][i][j] = transition_matrix[p][k][i][j] / n  # normalizing
+    return transition_matrix
+
+def run_3_order(file, t_matrix_name):
+    word_classes = open_dict(file)
+    tm_3rd_order = iterate_tm_3_order(word_classes)
+    tm_3rd_order = tm_3rd_order.tolist()
+    with open(t_matrix_name, "w") as outfile:
+        json.dump(tm_3rd_order, outfile)
+    return tm_3rd_order
+
 if __name__ == "__main__":
     #create_and_calculate('WC_all.json', "TM_all.json")
     #create_and_calculate('WC_transl.json', "TM_transl.json")
     #create_and_calculate('WC_non_transl.json', 'TM_non_transl.json')
-    run_2_order('WC_all.json', 'TM_all_2nd')
+    #run_2_order('WC_all.json', 'TM_all_2nd')
+    run_3_order('WC_all.json', 'TM_all_3rd')
