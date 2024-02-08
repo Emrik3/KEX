@@ -3,7 +3,7 @@ import nltk
 import json
 import requests
 import pandas as pd
-from metrics import probofhappening
+from metrics import probofhappening1d, probofhappening2d
 
 """
 try:

@@ -93,7 +93,7 @@ def mostprobfollows(A, classtext):
 def maxlike():
     pass
 
-def probofhappening(A, classtext):
+def probofhappening1d(A, classtext):
     # Kolla sannolikheten av grejer att komma efter varandra här!..
     classtextnum = []
     error = []
@@ -120,6 +120,64 @@ def probofhappening(A, classtext):
             if A[result[i][j]][result[i][j-1]] == 0:
                 error.append((i, j))
     return p, error
+
+
+def probofhappening2d(A, classtext):
+    # Kolla sannolikheten av grejer att komma efter varandra här!..
+    classtextnum = []
+    error = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+
+    particular_value = 20
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+    
+    p = np.ones(len(result))
+    for i in range(len(result)):
+        for j in range(2, len(result[i])):
+            p[i] *= A[result[i][j]][result[i][j-1]][result[i][j-2]]
+            if A[result[i][j]][result[i][j-1]][result[i][j-2]] == 0:
+                error.append((i, j))
+    return p, error
+
+def probofhappening3d(A, classtext):
+    # Kolla sannolikheten av grejer att komma efter varandra här!..
+    classtextnum = []
+    error = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+
+    particular_value = 20
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+    
+    p = np.ones(len(result))
+    for i in range(len(result)):
+        for j in range(3, len(result[i])):
+            p[i] *= A[result[i][j]][result[i][j-1]][result[i][j-2]][result[i][j-3]]
+            if A[result[i][j]][result[i][j-1]][result[i][j-2]][result[i][j-3]] == 0:
+                error.append((i, j))
+    return p, error
+
 
 
 def distance(A, B, normtype):
