@@ -93,13 +93,38 @@ def mostprobfollows(A, classtext):
 def maxlike():
     pass
 
-def probofhappening():
+def probofhappening(A, classtext):
     # Kolla sannolikheten av grejer att komma efter varandra här!..
-    pass
+    classtextnum = []
+    error = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+
+    particular_value = 20
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+    
+    p = np.ones(len(result))
+    for i in range(len(result)):
+        for j in range(1, len(result[i])):
+            p[i] *= A[result[i][j]][result[i][j-1]]
+            if A[result[i][j]][result[i][j-1]] == 0:
+                error.append((i, j))
+    return p, error
 
 
 def distance(A, B, normtype):
     return normtype(np.subtract(A, B))
+
 
 def running_metrics(A,B):
     print("1-norm: " + str(distance(A,B,norm1)))

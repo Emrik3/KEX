@@ -139,5 +139,5 @@ if __name__ == "__main__":
     #create_and_calculate('WC_all.json', "TM_all.json")
     #create_and_calculate('WC_transl.json', "TM_transl.json")
     #create_and_calculate('WC_non_transl.json', 'TM_non_transl.json')
-    #run_2_order('WC_all.json', 'TM_all_2nd')
+    run_2_order('WC_all.json', 'TM_all_2nd')
     run_3_order('WC_all.json', 'TM_all_3rd')

@@ -3,7 +3,7 @@ import nltk
 import json
 import requests
 import pandas as pd
-from metrics import maxlike
+from metrics import probofhappening
 
 """
 try:
@@ -114,7 +114,7 @@ def text_cleaner(text):
             words = words.replace(substring, "")
         first_clean.append(words)
     # Then removes all unwanted characters
-    common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö".split()
+    common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö .".split()
     new_text_list = []
     for word in first_clean:
         new_word = ""
@@ -199,6 +199,8 @@ def unique_word_classes():
 if __name__ == "__main__":
     #fl = joindicts()
     #save_dict(fl)
+    # all abstracts
+    #abstracts_to_word_classes('export.csv')
     # all abstracts
     abstracts_to_word_classes('export.csv')
 
