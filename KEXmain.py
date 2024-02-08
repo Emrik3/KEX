@@ -2,7 +2,7 @@ import numpy as np
 from metrics import *
 from Visualisation import *
 from dataProcessing import open_dict, read_translation_txt, translations_to_word_classes
-from metrics import probofhappening2d, probofhappening1d, probofhappening3d
+from metrics import probofhappening2d, probofhappening1d, probofhappening3d, grammar_predictor, grammar_predictor2
 
 
 # first order
@@ -85,13 +85,25 @@ def testinggrammar3d():
     else:
         print("The most \'normal\' sentance: " + str(tlist[imax]))
 
+def predict():
+    text = read_translation_txt('translated_sample.txt')
+    sentences = text.split('. ')
+    textlist = []
+    for sentence in sentences:
+        words = sentence.split(' ')
+        textlist.append(words)
+
+    classlist = translations_to_word_classes('translated_sample.txt', "WC_transl.json")
+    TM_all = open_dict('TM_all_2nd')
+    grammar_predictor2(TM_all, classlist, textlist)
+
 def main():
     """print("Using a non translated abstract")
     running_metrics(TM_all, TM_transl)
     print("Using a translated abstract:")
     running_metrics(TM_all, TM_non_transl)
     transition_matrix_vis(TM_all)"""
-    testinggrammar1d()
+    predict()
     #transition_matrix_vis(np.subtract(TM_all,TM_transl))
     #transition_matrix_vis(np.subtract(TM_all,TM_non_transl))
 
