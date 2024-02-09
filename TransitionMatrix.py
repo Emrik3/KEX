@@ -5,41 +5,118 @@ from dataProcessing import *
 import numpy as np
 from dataProcessing import open_dict
 # Probably all word classes, but if there are others they will show up when we get errors
-class_to_index = {
+class_to_index_wait1 = {
     'NA': 0,
     'NN': 1,
-    'HP': 2,
-    'VB': 3,
-    'MAD': 4,
-    'PP': 5,
-    'AB': 6,
-    'MID': 7,
+    'VB': 2,
+    'PP': 3,
+    'JJ': 4,
+    'AB': 5,
+    'PM': 6,
+    '.': 7,
     'DT': 8,
-    'RG': 9,
-    'JJ': 10,
-    'KN': 11,
-    'PM': 12,
-    'PC': 13,
-    'IE': 14,
-    'PN': 15,
+    'KN': 9,
+    'PC': 10,
+    'SN': 11,
+    'PS': 12,
+    'PN': 13,
+    'HP': 14,
+    'IE': 15,
     'RO': 16,
     'HA': 17,
     'PAD': 18,
     'PL': 19,
-    '.': 20,
+    'MAD': 20,
     'UO' : 21,
     'HD' : 22,
-    'SN' : 23,
-    'PS' : 24,
+    'RG' : 23,
+    'MID' : 24,
     'IN' : 25,
     'HS' : 26
     }
+class_to_index_wait2 = {
+    #Lite motivationer, kommer raffinerasm
+    #PN = PM = PS = IN <=> pronomen = egennamn dvs Han = Stockholm = hans = AJ!
+    #HA = HP <=> frågande pronomen = frågande adverb dvs vem = när
+    #NA = UO (utländskt ord)
+    # MAD = . = PAD = MID? dvs . = . = .,; (just nu iaf då vi filtrerar bort nästan allt)
+    #  HS= något HS =vars, vems osv
+    # PL = nåt finns bara en i datan, kollade i classdict och hittade exemplet "tillinitiativ" som en enskild sträng??
+    #  RG= RO två = andra
+    # HD (relativt besätmning) exemplet från classdict är "hurdana"??
+    # SN subjunktion exemplet från classdict är "50som"??
+    # IE  verkar vara tom
+    'NA': 0,
+    'NN': 1,
+    'VB': 2,
+    'PP': 3,
+    'JJ': 4,
+    'AB': 5,
+    'PN': 6,
+    '.': 7,
+    'DT': 8,
+    'KN': 9,
+    'PC': 10,
+    'SN': 11,
+    'HP': 12,
+    'RO': 13,
+    'PS': 6,
+    'PM': 1,
+    'HA': 12,
+    'PAD': 7,
+    'PL': 0,
+    'MAD': 7,
+    'UO' : 0,
+    'HD' : 12,
+    'RG' : 13,
+    'MID' : 7,
+    'IN' : 6,
+    'HS' : 12
+}
+
+class_to_index = {
+    # Pronomen = substantiv Han är där = Grejen är där
+    # Adjektiv = Adverb Han är glad, Han springer fort
+    # konjunktion = preposition ( gissar lite )
+    # particip = adjektiv "Particip är ordformer som utgår från verb, men fungerar som adjektiv. "(källaisof)
+    # Subjunktion = konjunktion (båda binder ihop satsdelar)
+    # HP = pronomen (vem är där? = han är där)
+    # RO = adjektiv (Han är först, han är på andra plats = Han är bäst, han är på sämsta platsen) lite oklart men kanske
+    'NA': 0,
+    'NN': 1,
+    'VB': 2,
+    'PP': 3,
+    'JJ': 4,
+    '.': 5,
+    'DT': 6,
+    'AB': 4,
+    'PM': 1,
+    'KN': 3,
+    'PC': 4,
+    'SN': 3,
+    'HP': 1,
+    'RO': 4,
+    'PS': 1,
+    'PN': 1,
+    'HA': 1,
+    'PAD': 5,
+    'PL': 0,
+    'MAD': 5,
+    'UO' : 0,
+    'HD' : 1,
+    'RG' : 4,
+    'MID' : 5,
+    'IN' : 6,
+    'HS' : 1
+}
 
 def iterate_transition_matrix(word_classes):
     # Creating an empty matrix
     transition_matrix = []
-    for _ in range(len(class_to_index)):
-        transition_matrix.append([0] * len(class_to_index))
+    mat_size = max(class_to_index.values()) + 1
+
+    for _ in range(mat_size):
+        transition_matrix.append([0] * mat_size)
 
     for i in range(len(word_classes) - 1):
         # indexes written out a bit
@@ -53,10 +130,10 @@ def iterate_transition_matrix(word_classes):
 
     # Converting to a probabilty matrix (all rows sum to 1)
     #made this more clear now
-    for i in range(len(class_to_index)): # for some row
+    for i in range(mat_size): # for some row
         n = sum(transition_matrix[i]) # summing the row
         if n>0:
-            for j in range(len(class_to_index)): # for element in the row
+            for j in range(mat_size): # for element in the row
                 transition_matrix[i][j] = transition_matrix[i][j]/n # normalizing
     return transition_matrix
 
@@ -136,8 +213,8 @@ def run_3_order(file, t_matrix_name):
     return tm_3rd_order
 
 if __name__ == "__main__":
-    #create_and_calculate('WC_all.json', "TM_all.json")
-    #create_and_calculate('WC_transl.json', "TM_transl.json")
-    #create_and_calculate('WC_non_transl.json', 'TM_non_transl.json')
-    run_2_order('WC_all.json', 'TM_all_2nd')
-    run_3_order('WC_all.json', 'TM_all_3rd')
+    create_and_calculate('WC_all.json', "TM_all.json")
+    create_and_calculate('WC_transl.json', "TM_transl.json")
+    create_and_calculate('WC_non_transl.json', 'TM_non_transl.json')
+    #run_2_order('WC_all.json', 'TM_all_2nd')
+    #run_3_order('WC_all.json', 'TM_all_3rd')

@@ -2,23 +2,25 @@
 import matplotlib.pyplot as plt
 import json
 from TransitionMatrix import class_to_index
+import numpy as np
 
-def open_dict(file):
-    with open(file, 'r') as openfile:
-        # Reading from json file
-        return json.load(openfile)
 
 def transition_matrix_vis(matrix):
     # Heat map
     fig = plt.figure(figsize=(10,10))
     ax = fig.add_subplot(111)
-    im = ax.imshow(matrix, cmap='viridis', interpolation='nearest')
+    im = ax.imshow(np.flipud(matrix), cmap='viridis', interpolation='nearest')
     fig.colorbar(im)
+    mat_size = max(class_to_index.values()) + 1
+    ax.set_xticks(range(mat_size))
+    ax.set_yticks(range(mat_size-1,-1,-1))
 
-    ax.set_xticks(range(len((class_to_index))))
-    ax.set_yticks(range(len((class_to_index))))
-    ax.set_xticklabels(class_to_index.keys())
-    ax.set_yticklabels(class_to_index.keys())
+    keys_to_include = list(class_to_index.keys())[0:mat_size]
+    #print(class_to_index.keys())
+    #print(keys_to_include)
+
+    ax.set_xticklabels(keys_to_include)
+    ax.set_yticklabels(keys_to_include)
 
     plt.show()
 
