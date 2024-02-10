@@ -121,7 +121,6 @@ def probofhappening1d(A, classtext):
         else:
             temp_list.append(i)
     result.append(temp_list)
-
     p = np.ones(len(result))
     for i in range(len(result)):
         for j in range(1, len(result[i])):
@@ -189,6 +188,7 @@ def probofhappening3d(A, classtext):
 
 
 def grammar_predictor(A, classtext, textlist):
+    print(classtext)
     classtextnum = []
     error = []
     for i in range(len(classtext)):
@@ -205,7 +205,6 @@ def grammar_predictor(A, classtext, textlist):
         else:
             temp_list.append(i)
     result.append(temp_list)
-
     maxprob = np.zeros(len(A))
     for i in range(len(A)):
         for j in range(len(A)):
@@ -217,10 +216,8 @@ def grammar_predictor(A, classtext, textlist):
             if result[i][j] == 0:
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])]
-                    try:
-                        print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
-                    except IndexError:
-                        pass
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+
 
 def grammar_predictor2(A, classtext, textlist):
     classtextnum = []
@@ -250,10 +247,7 @@ def grammar_predictor2(A, classtext, textlist):
             if result[i][j] == 0:
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])]
-                    try:
-                        print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
-                    except IndexError:
-                        pass
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
 
 def grammar_predictor3(A, classtext, textlist):
     classtextnum = []
@@ -284,10 +278,7 @@ def grammar_predictor3(A, classtext, textlist):
             if result[i][j] == 0:
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])]
-                    try:
-                        print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
-                    except IndexError:
-                        pass
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
 
 def distance(A, B, normtype):
     return normtype(np.subtract(A, B))

@@ -1,5 +1,5 @@
 from metrics import *
-from dataProcessing import open_dict, read_translation_txt, translations_to_word_classes
+from dataProcessing import open_dict, read_translation_txt, translations_to_word_classes, text_cleaner
 from metrics import probofhappening2d, probofhappening1d, probofhappening3d, grammar_predictor, grammar_predictor2
 
 
@@ -83,12 +83,12 @@ def testinggrammar3d():
 
 def predict(file, giventext, WCgiventext, order):
     text = read_translation_txt(giventext)
-    sentences = text.split('. ')
+    text = text_cleaner(text)
+    sentences = text.lower().split('. ')
     textlist = []
     for sentence in sentences:
         words = sentence.split(' ')
         textlist.append(words)
-
     classlist = translations_to_word_classes(giventext, WCgiventext)
     TM= open_dict(file)
     if order == 1:
