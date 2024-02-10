@@ -254,6 +254,7 @@ def grammar_predictor2(A, classtext, textlist):
                         print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
                     except IndexError:
                         pass
+
 def grammar_predictor3(A, classtext, textlist):
     classtextnum = []
     error = []
@@ -279,7 +280,7 @@ def grammar_predictor3(A, classtext, textlist):
                     if A[i][j][k][p] > maxprob[i][j][k]:
                         maxprob[i][j][k] = p
     for i in range(len(result)):
-        for j in range(2, len(result[i]) - 1):
+        for j in range(3, len(result[i]) - 1):
             if result[i][j] == 0:
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])]
