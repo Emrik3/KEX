@@ -6,7 +6,7 @@ import numpy as np
 
 
 def transition_matrix_vis(matrix):
-    # Heat map
+    """Generates heat map of transition matrix """
     fig = plt.figure(figsize=(10,10))
     ax = fig.add_subplot(111)
     im = ax.imshow(np.flipud(matrix), cmap='viridis', interpolation='nearest')
@@ -16,8 +16,6 @@ def transition_matrix_vis(matrix):
     ax.set_yticks(range(mat_size-1,-1,-1))
 
     keys_to_include = list(class_to_index.keys())[0:mat_size]
-    #print(class_to_index.keys())
-    #print(keys_to_include)
 
     ax.set_xticklabels(keys_to_include)
     ax.set_yticklabels(keys_to_include)

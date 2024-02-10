@@ -3,8 +3,6 @@ import nltk
 import json
 import requests
 import pandas as pd
-from metrics import probofhappening1d, probofhappening2d
-import wikipedia
 
 """
 try:
@@ -36,7 +34,7 @@ def classify_data(text, lib):
             try:
                 classlist.append(lib[word])
             except:
-                print(word)
+                #print(word)
                 classlist.append('NA')
         classlist.append('.')
 
@@ -91,7 +89,7 @@ def joindicts():
 
 
 def check_english(text):
-    # Checks if the text contain any of these common english words (which don't occur in swedish)
+    """Checks if the text contain any of these common english words (which don't occur in swedish)"""
     common_english_words = ["the", "be", "to", "of", "and", "a", "that"]
     english = False
     for word in text:
@@ -101,10 +99,10 @@ def check_english(text):
     return english
 
 
+
 def text_cleaner(text):
-    # First removes combinations longer than 1 character
-    #print(type(text))
-    print(text)
+    #In the future we will want to preserve symbols which are supposed to be there such as comas
+    """Cleans text from symbols hindering word class identification"""
     text = text.replace('- ', '')
     text = text.lower()
     text = text.split()
@@ -138,17 +136,15 @@ def test():
     #print("Number of words that could not me classified: " + str(k) + " out of " + str(len(classified)))
 
 def abstracts_to_word_classes(file):
+    """Converts the text to word classes"""
     k = 0  # Counting amount of unclassified words
     classified_list = []  # [text, text, text..] (with text in word class form)
     word_class_list = []  # [all texts] (with text in word class form)
     dictionary_talbanken = open_dict('classdict.json')
-    print(type(file))
     text_all = read_traning_csv(file)
     for text in text_all:
         if check_english(text.split()):
             continue
-        #print(type(text))
-        #print(text)
         text = text_cleaner(text)
         classified = classify_data(text, dictionary_talbanken)
         for i in classified:
@@ -175,8 +171,8 @@ def translations_to_word_classes(file, filename):
     for i in classified:
         if i == 'NA':
             k += 1
-    print("Number of words that could not be classified: " + str(k) + " out of " + str(len(classified)))
-    print("in percent " + str(100 * k / len(classified)))
+    #print("Number of words that could not be classified: " + str(k) + " out of " + str(len(classified)))
+    #print("in percent " + str(100 * k / len(classified)))
     with open(filename, "w") as outfile:
         json.dump(classified, outfile)
     return classified
@@ -198,18 +194,18 @@ def unique_word_classes():
 
 
 if __name__ == "__main__":
-    #fl = joindicts()
-    #save_dict(fl)
-    # all abstracts
-    #abstracts_to_word_classes('export.csv')
-    # all abstracts
+    """For joining new files to the large word to word-class dictionary"""
+    # fl = joindicts()
+    # save_dict(fl)
+
+    """Translates web-scraped csv files to word classes"""
     abstracts_to_word_classes('export.csv')
 
-    # a translation to be evaluated
-    translations_to_word_classes('translated_sample.txt', "WC_transl.json")
+    """Translates txt file to word classes"""
+    # translations_to_word_classes('translated_sample.txt', "WC_transl.json")
+    # translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
 
-    # a non translated swedish abstract to compare with
-    """sample = translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
-    TM_all = open_dict('TM_all.json')
+    """
+    TM_all = open_dict('TM_all')
     maxlike(TM_all, sample)"""
 

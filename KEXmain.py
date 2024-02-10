@@ -1,111 +1,38 @@
-import numpy as np
 from metrics import *
 from Visualisation import *
-from dataProcessing import open_dict, read_translation_txt, translations_to_word_classes
-from metrics import probofhappening2d, probofhappening1d, probofhappening3d, grammar_predictor, grammar_predictor2
+from dataProcessing import open_dict
+from GrammarTests import testinggrammar1d, testinggrammar2d, testinggrammar3d, predict
 
-
-# first order
-TM_all = open_dict('TM_all.json')
+# Opening transition matrices
+TM_all = open_dict('TM_all')
 TM_transl = open_dict('TM_transl.json')
 TM_non_transl = open_dict('TM_non_transl.json')
-
-# second order
 TM_all_2nd = open_dict('TM_all_2nd')
 
-def testinggrammar1d():
-    text = read_translation_txt('translated_sample.txt')
-    classlist = translations_to_word_classes('translated_sample.txt', "WC_transl.json")
-    TM_all = open_dict('TM_all.json')
-    p, error = probofhappening1d(TM_all, classlist)
-    print(p)
-    print(error)
-    wlist = []
-    tlist = text.split('.')
-    for s in tlist:
-        wlist.append(s.split())
-    for er in error:
-        print("Zero probability of this happening: " + str(wlist[er[0]][er[1]-2:er[1]+2]))
-    pmax = 0
-    imax = -1
-    for i in range(len(p)-1):
-        if p[i] > pmax:
-            pmax = p[i]
-            imax = i
-    if imax == -1:
-        print("Everything zero")
-    else:
-        print("The most \'normal\' sentance: " + str(tlist[imax]))
 
-def testinggrammar2d():
-    text = read_translation_txt('translated_sample.txt')
-    classlist = translations_to_word_classes('translated_sample.txt', "WC_transl.json")
-    TM_all = open_dict('TM_all_2nd')
-    p, error = probofhappening2d(TM_all, classlist)
-    print(p)
-    print(error)
-    wlist = []
-    tlist = text.split('.')
-    for s in tlist:
-        wlist.append(s.split())
-    for er in error:
-        print("Zero probability of this happening: " + str(wlist[er[0]][er[1]-2:er[1]+2]))
-    pmax = 0
-    imax = -1
-    for i in range(len(p)-1):
-        if p[i] > pmax:
-            pmax = p[i]
-            imax = i
-    if imax == -1:
-        print("Everything zero")
-    else:
-        print("The most \'normal\' sentance: " + str(tlist[imax]))
 
-def testinggrammar3d():
-    text = read_translation_txt('translated_sample.txt')
-    classlist = translations_to_word_classes('translated_sample.txt', "WC_transl.json")
-    TM_all = open_dict('TM_all_3rd')
-    p, error = probofhappening3d(TM_all, classlist)
-    print(p)
-    print(error)
-    wlist = []
-    tlist = text.split('.')
-    for s in tlist:
-        wlist.append(s.split())
-    for er in error:
-        print("Zero probability of this happening: " + str(wlist[er[0]][er[1]-2:er[1]+2]))
-    pmax = 0
-    imax = -1
-    for i in range(len(p)-1):
-        if p[i] > pmax:
-            pmax = p[i]
-            imax = i
-    if imax == -1:
-        print("Everything zero")
-    else:
-        print("The most \'normal\' sentance: " + str(tlist[imax]))
-
-def predict():
-    text = read_translation_txt('translated_sample.txt')
-    sentences = text.split('. ')
-    textlist = []
-    for sentence in sentences:
-        words = sentence.split(' ')
-        textlist.append(words)
-
-    classlist = translations_to_word_classes('translated_sample.txt', "WC_transl.json")
-    TM_all = open_dict('TM_all_2nd')
-    grammar_predictor2(TM_all, classlist, textlist)
 
 def main():
-    """print("Using a non translated abstract")
+    """Uses the finished model to extract results"""
+
+    """Calculates the basic metrics"""
     running_metrics(TM_all, TM_transl)
-    print("Using a translated abstract:")
     running_metrics(TM_all, TM_non_transl)
-    transition_matrix_vis(TM_all)"""
-    predict()
-    #transition_matrix_vis(np.subtract(TM_all,TM_transl))
-    #transition_matrix_vis(np.subtract(TM_all,TM_non_transl))
+
+    """Plots a 2D transition Matrix"""
+    transition_matrix_vis(TM_all)
+    transition_matrix_vis(np.subtract(TM_all,TM_transl))
+    transition_matrix_vis(np.subtract(TM_all,TM_non_transl))
+
+    """Finds the most grammatically likely and all grammatically "impossible" sentences"""
+    testinggrammar1d()
+    testinggrammar2d()
+    testinggrammar3d()
+
+    """Predicts the unknown words in a given text"""
+    predict('TM_all', 'translated_sample.txt', 'WC_transl.json', 1)
+    predict('TM_all_2nd', 'translated_sample.txt', 'WC_transl.json', 2)
+    predict('TM_all_3rd', 'translated_sample.txt', 'WC_transl.json', 3)
 
 
 
