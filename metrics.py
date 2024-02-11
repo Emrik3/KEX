@@ -188,6 +188,7 @@ def probofhappening3d(A, classtext):
 
 
 def grammar_predictor(A, classtext, textlist):
+    dict = {}
     print(classtext)
     classtextnum = []
     error = []
@@ -217,7 +218,9 @@ def grammar_predictor(A, classtext, textlist):
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])]
                     print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
-
+                    dict[textlist[i][j]] = number_to_class[result[i][j]]
+    print(dict)
+    return dict
 
 def grammar_predictor2(A, classtext, textlist):
     classtextnum = []
