@@ -14,7 +14,7 @@ else:
 
 nltk.download()
 """
-
+failed_words = []
 
 def convert_to_dict(words):
     dict = {}
@@ -28,13 +28,15 @@ def classify_data(text, lib):
     # Returns a dict of the input data with matched word classes.
     classlist = []
     sentences = text.lower().split('. ')  #FIX: Last word in each sentence has a "."
+
     for sentence in sentences:
         words = sentence.split(' ')
         for word in words:
             try:
                 classlist.append(lib[word])
             except:
-                #print(word)
+                print(word)
+                failed_words.append(word)
                 classlist.append('NA')
         classlist.append('.')
 
@@ -66,7 +68,6 @@ def read_translation_txt(file):
         # Reading a text file
         return file.read()
 
-
 def scrape_and_save():
     abstracts = []
     raw = open_dict('abstractsmalltraining.json')
@@ -97,7 +98,6 @@ def check_english(text):
             english = True
             break
     return english
-
 
 
 def text_cleaner(text):
@@ -171,8 +171,8 @@ def translations_to_word_classes(file, filename):
     for i in classified:
         if i == 'NA':
             k += 1
-    #print("Number of words that could not be classified: " + str(k) + " out of " + str(len(classified)))
-    #print("in percent " + str(100 * k / len(classified)))
+    print("Number of words that could not be classified: " + str(k) + " out of " + str(len(classified)))
+    print("in percent " + str(100 * k / len(classified)))
     with open(filename, "w") as outfile:
         json.dump(classified, outfile)
     return classified
@@ -199,11 +199,11 @@ if __name__ == "__main__":
     # save_dict(fl)
 
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes('export.csv')
+    #abstracts_to_word_classes('export.csv')
 
     """Translates txt file to word classes"""
-    # translations_to_word_classes('translated_sample.txt', "WC_transl.json")
-    # translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
+    #translations_to_word_classes('translated_sample.txt', "WC_transl.json")
+    #translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
 
     """
     TM_all = open_dict('TM_all')

@@ -29,6 +29,7 @@ def testinggrammar1d():
         print("The most \'normal\' sentence: " + str(tlist[imax]))
 
 
+
 def testinggrammar2d():
     text = read_translation_txt('translated_sample.txt')
     classlist = translations_to_word_classes('translated_sample.txt', "WC_transl.json")
@@ -92,8 +93,9 @@ def predict(file, giventext, WCgiventext, order):
     classlist = translations_to_word_classes(giventext, WCgiventext)
     TM= open_dict(file)
     if order == 1:
-        grammar_predictor(TM, classlist, textlist)
+        res = grammar_predictor(TM, classlist, textlist)
     if order == 2:
-        grammar_predictor2(TM, classlist, textlist)
+        res = grammar_predictor2(TM, classlist, textlist)
     if order == 3:
-        grammar_predictor3(TM, classlist, textlist)
+        res = grammar_predictor3(TM, classlist, textlist)
+    return res
