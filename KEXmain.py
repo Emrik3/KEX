@@ -9,7 +9,9 @@ TM_transl = open_dict('TM_transl.json')
 TM_non_transl = open_dict('TM_non_transl.json')
 TM_all_2nd = open_dict('TM_all_2nd')
 
-
+import requests
+from bs4 import BeautifulSoup
+ 
 
 
 def main():
@@ -33,6 +35,13 @@ def main():
     #predict('TM_all', 'real_sample.txt', 'WC_transl.json', 1)
     #predict('TM_all_2nd', 'translated_sample.txt', 'WC_transl.json', 2)
     #predict('TM_all_3rd', 'translated_sample.txt', 'WC_transl.json', 3)
+    # get URL
+    page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
+    
+    soup = BeautifulSoup(page.content, 'html.parser')
+ 
+    # display scraped data
+    print(soup.prettify())
 
 
 

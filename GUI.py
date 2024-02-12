@@ -6,8 +6,8 @@ from GrammarTests import predict
 
 
 def process_predict(file):
-    translations_to_word_classes(file, 'WC_input.json')
-    return predict('TM_all', file, 'WC_input.json', 1)
+    #translations_to_word_classes(file, 'WC_input.json')
+    return predict('TM_all_2nd', file, 'WC_input.json', 2)
 
 def get_input():
     """Takes in text and and runs the appropriate program to generate the output"""
@@ -28,7 +28,7 @@ def options():
     Label(frame, text="3").pack(anchor=W)
     Label(frame, text="4").pack(anchor=W)
     Label(frame, text="5").pack(anchor=W)
-    Label(frame, text="6").pack(anchor=W)
+    Label(frame, text="6").pack(anchor=W) 
 
     frame2 = Frame(win)
     frame2.pack(side=LEFT, fill = Y)

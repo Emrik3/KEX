@@ -29,6 +29,7 @@ def classify_data(text, lib):
     classlist = []
     sentences = text.lower().split('. ')  #FIX: Last word in each sentence has a "."
 
+
     for sentence in sentences:
         words = sentence.split(' ')
         for word in words:
@@ -107,7 +108,7 @@ def text_cleaner(text):
     text = text.lower()
     text = text.split()
     first_clean = []
-    common_long_clutter = ['<p>', '.</p>']
+    common_long_clutter = ['<p>', '.</p>', '.']
     for words in text:
         for substring in common_long_clutter:
             words = words.replace(substring, "")
@@ -127,7 +128,7 @@ def text_cleaner(text):
 
 def test():
     dictionary_talbanken = open_dict('classdict.json')
-    text = read_traning_csv('export.csv')[0]
+    text = read_traning_csv('export1.csv')[0]
     classified = classify_data(text, dictionary_talbanken)
     k = 0
     for i in classified:
@@ -183,7 +184,7 @@ def unique_word_classes():
     large_list = []
     unique_codes = set()
     dictionary_talbanken = open_dict('clas.split()sdict.json')
-    text = read_traning_csv('export.csv')
+    text = read_traning_csv('export1.csv')
     for elem in text:
         large_list.append(classify_data(elem, dictionary_talbanken))
     for sublist in large_list:
@@ -199,7 +200,7 @@ if __name__ == "__main__":
     # save_dict(fl)
 
     """Translates web-scraped csv files to word classes"""
-    #abstracts_to_word_classes('export.csv')
+    abstracts_to_word_classes('export1.csv')
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('translated_sample.txt', "WC_transl.json")

@@ -91,11 +91,13 @@ def predict(file, giventext, WCgiventext, order):
         words = sentence.split(' ')
         textlist.append(words)
     classlist = translations_to_word_classes(giventext, WCgiventext)
-    TM= open_dict(file)
+    TM = open_dict(file)
     if order == 1:
         res = grammar_predictor(TM, classlist, textlist)
-    if order == 2:
+    elif order == 2:
         res = grammar_predictor2(TM, classlist, textlist)
-    if order == 3:
+    elif order == 3:
         res = grammar_predictor3(TM, classlist, textlist)
+        
+    print(res)
     return res

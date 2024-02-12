@@ -188,7 +188,7 @@ def probofhappening3d(A, classtext):
 
 
 def grammar_predictor(A, classtext, textlist):
-    dict = {}
+    d = {}
     print(classtext)
     classtextnum = []
     error = []
@@ -218,13 +218,13 @@ def grammar_predictor(A, classtext, textlist):
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])]
                     print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
-                    dict[textlist[i][j]] = number_to_class[result[i][j]]
-    print(dict)
-    return dict
+                    d[textlist[i][j]] = number_to_class[result[i][j]]
+    return d
 
 def grammar_predictor2(A, classtext, textlist):
     classtextnum = []
     error = []
+    d = {}
     for i in range(len(classtext)):
         classtextnum.append(class_to_index[classtext[i]])
     particular_value = class_to_index['.']
@@ -251,10 +251,13 @@ def grammar_predictor2(A, classtext, textlist):
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])]
                     print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                    d[textlist[i][j]] = number_to_class[result[i][j]]
+    return d
 
 def grammar_predictor3(A, classtext, textlist):
     classtextnum = []
     error = []
+    d = {}
     for i in range(len(classtext)):
         classtextnum.append(class_to_index[classtext[i]])
     particular_value = class_to_index['.']
@@ -282,6 +285,8 @@ def grammar_predictor3(A, classtext, textlist):
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])]
                     print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                    d[textlist[i][j]] = number_to_class[result[i][j]]
+    return d
 
 def distance(A, B, normtype):
     return normtype(np.subtract(A, B))
