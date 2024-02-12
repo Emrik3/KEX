@@ -127,6 +127,8 @@ def probofhappening1d(A, classtext):
             p[i] *= A[result[i][j]][result[i][j - 1]]
             if A[result[i][j]][result[i][j - 1]] == 0:
                 error.append((i, j))
+    #print(p)
+    #print(error)
     return p, error
 
 
