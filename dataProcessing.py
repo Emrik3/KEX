@@ -108,7 +108,7 @@ def text_cleaner(text):
     text = text.lower()
     text = text.split()
     first_clean = []
-    common_long_clutter = ['<p>', '.</p>', '.']
+    common_long_clutter = ['<p>', '.</p>']
     for words in text:
         for substring in common_long_clutter:
             words = words.replace(substring, "")
