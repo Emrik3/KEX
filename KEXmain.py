@@ -22,13 +22,13 @@ def main():
     #running_metrics(TM_all, TM_non_transl)
 
     """Plots a 2D transition Matrix"""
-    #transition_matrix_vis(TM_all)
+    transition_matrix_vis(TM_all)
     #transition_matrix_vis(np.subtract(TM_all,TM_transl))
     #transition_matrix_vis(np.subtract(TM_all,TM_non_transl))
 
     """Finds the most grammatically likely and all grammatically "impossible" sentences"""
     #testinggrammar1d()
-    testinggrammar2d()
+    #testinggrammar2d()
     #testinggrammar3d()
 
     """Predicts the unknown words in a given text"""
