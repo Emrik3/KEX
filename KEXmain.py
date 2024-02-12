@@ -36,12 +36,16 @@ def main():
     #predict('TM_all_2nd', 'translated_sample.txt', 'WC_transl.json', 2)
     #predict('TM_all_3rd', 'translated_sample.txt', 'WC_transl.json', 3)
     # get URL
-    """page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
+    page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
     
     soup = BeautifulSoup(page.content, 'html.parser')
  
     # display scraped data
-    print(soup.prettify())"""
+    print(soup.prettify())
+
+    # See this if you want to scrape wikipedia: https://stackoverflow.com/questions/61091843/scraping-links-from-wikipedia
+    
+
 
 
 
