@@ -214,8 +214,8 @@ def run_3_order(file, t_matrix_name):
 
 
 if __name__ == "__main__":
-    run_1_order('WC_all.json', "TM_all")
-    run_1_order('WC_transl.json', "TM_transl.json")
-    run_1_order('WC_non_transl.json', 'TM_non_transl.json')
-    run_2_order('WC_all.json', 'TM_all_2nd')
-    run_3_order('WC_all.json', 'TM_all_3rd')
+    run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
+    run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
+    run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
+    run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
+    run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')

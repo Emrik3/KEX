@@ -7,7 +7,7 @@ from GrammarTests import predict
 
 def process_predict(file):
     #translations_to_word_classes(file, 'WC_input.json')
-    return predict('TM_all_2nd', file, 'WC_input.json', 2)
+    return predict('transition_matrices/TM_all_2nd', file, 'WC_input.json', 2)
 
 def get_input():
     """Takes in text and and runs the appropriate program to generate the output"""

@@ -4,10 +4,10 @@ from dataProcessing import open_dict
 from GrammarTests import testinggrammar1d, testinggrammar2d, testinggrammar3d, predict
 
 # Opening transition matrices
-TM_all = open_dict('TM_all')
-TM_transl = open_dict('TM_transl.json')
-TM_non_transl = open_dict('TM_non_transl.json')
-TM_all_2nd = open_dict('TM_all_2nd')
+TM_all = open_dict('transition_matrices/TM_all')
+TM_transl = open_dict('transition_matrices/TM_transl.json')
+TM_non_transl = open_dict('transition_matrices/TM_non_transl.json')
+TM_all_2nd = open_dict('transition_matrices/TM_all_2nd')
 
 import requests
 from bs4 import BeautifulSoup
@@ -32,9 +32,9 @@ def main():
     #testinggrammar3d()
 
     """Predicts the unknown words in a given text"""
-    #predict('TM_all', 'real_sample.txt', 'WC_transl.json', 1)
-    #predict('TM_all_2nd', 'translated_sample.txt', 'WC_transl.json', 2)
-    #predict('TM_all_3rd', 'translated_sample.txt', 'WC_transl.json', 3)
+    #predict('TM_all', 'Trainingdata/real_sample.txt', 'transition_matrices/WC_transl.json', 1)
+    #predict('TM_all_2nd', 'Trainingdata/translated_sample.txt', 'transition_matrices/WC_transl.json', 2)
+    #predict('TM_all_3rd', 'Trainingdata/translated_sample.txt', 'transition_matrices/WC_transl.json', 3)
     # get URL
     """page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
     

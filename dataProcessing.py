@@ -46,7 +46,7 @@ def classify_data(text, lib):
 
 def save_dict(to_save):
     json_object = json.dumps(to_save, indent=4)
-    with open("classdict.json", "w") as outfile:
+    with open("dictionaries/classdict.json", "w") as outfile:
         outfile.write(json_object)
 
 
@@ -127,7 +127,7 @@ def text_cleaner(text):
 
 
 def test():
-    dictionary_talbanken = open_dict('classdict.json')
+    dictionary_talbanken = open_dict('dictionaries/classdict.json')
     text = read_traning_csv('export1.csv')[0]
     classified = classify_data(text, dictionary_talbanken)
     k = 0
@@ -141,7 +141,7 @@ def abstracts_to_word_classes(file):
     k = 0  # Counting amount of unclassified words
     classified_list = []  # [text, text, text..] (with text in word class form)
     word_class_list = []  # [all texts] (with text in word class form)
-    dictionary_talbanken = open_dict('classdict.json')
+    dictionary_talbanken = open_dict('dictionaries/classdict.json')
     text_all = read_traning_csv(file)
     for text in text_all:
         if check_english(text.split()):
@@ -157,14 +157,14 @@ def abstracts_to_word_classes(file):
             word_class_list.append(word_class)
     print("Number of words that could not be classified: " + str(k) + " out of " + str(len(word_class_list)))
     print("in percent " + str(100*k/len(word_class_list)))
-    with open('WC_all.json', "w") as outfile:
+    with open('wordvlasslists/WC_all.json', "w") as outfile:
         json.dump(word_class_list, outfile)
     return word_class_list
 
 
 def translations_to_word_classes(file, filename):
     # Takes a txt file and converts it to word classes
-    dictionary_talbanken = open_dict('classdict.json')
+    dictionary_talbanken = open_dict('dictionaries/classdict.json')
     text = read_translation_txt(file)
     text = text_cleaner(text)
     classified = classify_data(text, dictionary_talbanken)
@@ -184,7 +184,7 @@ def unique_word_classes():
     large_list = []
     unique_codes = set()
     dictionary_talbanken = open_dict('clas.split()sdict.json')
-    text = read_traning_csv('many_abstracts.csv')
+    text = read_traning_csv('Trainingdata/many_abstracts.csv')
     for elem in text:
         large_list.append(classify_data(elem, dictionary_talbanken))
     for sublist in large_list:
@@ -200,13 +200,13 @@ if __name__ == "__main__":
     # save_dict(fl)
 
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes('many_abstracts.csv')
+    abstracts_to_word_classes('Trainingdata/many_abstracts.csv')
 
     """Translates txt file to word classes"""
-    #translations_to_word_classes('translated_sample.txt', "WC_transl.json")
-    #translations_to_word_classes('real_sample.txt', 'WC_non_transl.json')
+    #translations_to_word_classes('Trainingdata/translated_sample.txt', "WC_transl.json")
+    #translations_to_word_classes('Trainingdata/real_sample.txt', 'WC_non_transl.json')
 
     """
-    TM_all = open_dict('TM_all')
+    TM_all = open_dict('transition_matrices/TM_all')
     maxlike(TM_all, sample)"""
 
