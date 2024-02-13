@@ -3,7 +3,7 @@ from dataProcessing import translations_to_word_classes
 from GrammarTests import predict
 
 
-
+# There are some errors here, with number of words and the dot is there when returned
 
 def process_predict(file):
     #translations_to_word_classes(file, 'WC_input.json')

@@ -157,7 +157,7 @@ def abstracts_to_word_classes(file):
             word_class_list.append(word_class)
     print("Number of words that could not be classified: " + str(k) + " out of " + str(len(word_class_list)))
     print("in percent " + str(100*k/len(word_class_list)))
-    with open('wordvlasslists/WC_all.json', "w") as outfile:
+    with open('wordclasslists/WC_all.json', "w") as outfile:
         json.dump(word_class_list, outfile)
     return word_class_list
 
