@@ -143,7 +143,8 @@ def run_1_order(file, t_matrix_name):
     return transition_matrix
 
 
-def iterate_tm_2_order(word_classes):
+def iterate_tm_2_order(word_classes, forward):
+    print(word_classes)
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
     transition_matrix = np.zeros((mat_size, mat_size, mat_size))
@@ -157,20 +158,23 @@ def iterate_tm_2_order(word_classes):
         next_index = class_to_index[next_class]
 
         # The calculation
-        transition_matrix[old_index][current_index][next_index] += 1
-    print(transition_matrix)
+        if forward:
+            transition_matrix[old_index][current_index][next_index] += 1
+        else:
+            # looks at the probability to get current wc given the old wc and next wc
+            transition_matrix[old_index][next_index][current_index] += 1
     for i in range(mat_size):  # for some row
         for k in range(mat_size): # every row has another row in the "new" direction because 3d
             n = sum(transition_matrix[i][k])  # summing this row
             if n > 0:
                 for j in range(mat_size):  # for element in the row
-                    transition_matrix[k][i][j] = transition_matrix[k][i][j] / n  # normalizing
+                    transition_matrix[i][k][j] = transition_matrix[i][k][j] / n  # normalizing
     return transition_matrix
 
 
-def run_2_order(file, t_matrix_name):
+def run_2_order(file, t_matrix_name, forward):
     word_classes = open_dict(file)
-    tm_2nd_order = iterate_tm_2_order(word_classes)
+    tm_2nd_order = iterate_tm_2_order(word_classes, forward)
     tm_2nd_order = tm_2nd_order.tolist()
     with open(t_matrix_name, "w") as outfile:
         json.dump(tm_2nd_order, outfile)
@@ -201,7 +205,7 @@ def iterate_tm_3_order(word_classes):
                 n = sum(transition_matrix[p][k][i])  # summing this row
                 if n > 0:
                     for j in range(mat_size):  # for element in the row
-                        transition_matrix[p][k][i][j] = transition_matrix[p][k][i][j] / n  # normalizing
+                        transition_matrix[i][k][p][j] = transition_matrix[i][k][p][j] / n  # normalizing
     return transition_matrix
 
 def run_3_order(file, t_matrix_name):

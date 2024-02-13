@@ -60,12 +60,12 @@ def options():
 win=Tk()
 win.geometry("1000x400")
 options()
-input_text = Text(win, height = 5,width = 40, bd = 2, relief="groove")
+input_text = Text(win, height = 15,width = 40, bd = 2, relief="groove")
 input_text.pack()
 button = Button(win, height = 1, width = 30,text = "Execute", command = get_input)
 button.pack()
 
-output_text = Text(win, height = 5, width = 40, bd = 2, relief="groove")
+output_text = Text(win, height = 15, width = 40, bd = 2, relief="groove")
 output_text.pack()
 
 

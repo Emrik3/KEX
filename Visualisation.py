@@ -16,10 +16,10 @@ def transition_matrix_vis(matrix):
     ax.set_yticks(range(mat_size-1,-1,-1))
 
     keys_to_include = list(class_to_index.keys())[0:mat_size]
-
+    print(class_to_index)
     ax.set_xticklabels(keys_to_include)
     ax.set_yticklabels(keys_to_include)
-
+    print("HERE")
     plt.show()
 
 if __name__ == "__main__":

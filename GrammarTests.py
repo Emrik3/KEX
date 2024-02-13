@@ -4,9 +4,9 @@ from metrics import probofhappening2d, probofhappening1d, probofhappening3d, gra
 
 
 def testinggrammar1d():
-    text = read_translation_txt('transition_matrices/translated_sample.txt')
-    classlist = translations_to_word_classes('transition_matrices/translated_sample.txt', "wordclasslists/WC_transl.json")
-    TM_all = open_dict('wordclasslists/TM_all')
+    text = read_translation_txt('Trainingdata/translated_sample.txt')
+    classlist = translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json")
+    TM_all = open_dict('transition_matrices/TM_all')
     p, error = probofhappening1d(TM_all, classlist)
     # print(p)
     # print(error)
@@ -31,9 +31,9 @@ def testinggrammar1d():
 
 
 def testinggrammar2d():
-    text = read_translation_txt('transition_matrices/translated_sample.txt')
-    classlist = translations_to_word_classes('transition_matrices/translated_sample.txt', "wordclasslists/WC_transl.json")
-    TM_all = open_dict('wordclasslists/TM_all_2nd')
+    text = read_translation_txt('Trainingdata/translated_sample.txt')
+    classlist = translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json")
+    TM_all = open_dict('transition_matrices/TM_all_2nd')
     p, error = probofhappening2d(TM_all, classlist)
     # print(p)
     # print(error)
@@ -57,9 +57,9 @@ def testinggrammar2d():
 
 
 def testinggrammar3d():
-    text = read_translation_txt('transition_matrices/translated_sample.txt')
-    classlist = translations_to_word_classes('transition_matrices/translated_sample.txt', "wordclasslists/WC_transl.json")
-    TM_all = open_dict('wordclasslists/TM_all_3rd')
+    text = read_translation_txt('Trainingdata/translated_sample.txt')
+    classlist = translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json")
+    TM_all = open_dict('transition_matrices/TM_all_3rd')
     p, error = probofhappening3d(TM_all, classlist)
     # print(p)
     # print(error)
