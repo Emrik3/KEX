@@ -32,7 +32,6 @@ def testinggrammar1d(text_to_test, WC_text_to_test, TM_file):
     return text_with_prob
 
 
-
 def testinggrammar2d(text_to_test, WC_text_to_test, TM_file):
     text = read_translation_txt(text_to_test)
     classlist = translations_to_word_classes(text_to_test, WC_text_to_test)
@@ -85,7 +84,7 @@ def testinggrammar3d(text_to_test, WC_text_to_test, TM_file):
         print("The most \'normal\' sentance: " + str(tlist[imax]))
 
 
-def predict(file, giventext, WCgiventext, order):
+def predict(file, giventext, WCgiventext, orderfunc):
     text = read_translation_txt(giventext)
     text = text_cleaner(text)
     sentences = text.lower().split('. ')
@@ -95,13 +94,7 @@ def predict(file, giventext, WCgiventext, order):
         textlist.append(words)
     classlist = translations_to_word_classes(giventext, WCgiventext)
     TM = open_dict(file)
-    if order == 1:
-        res = grammar_predictor(TM, classlist, textlist)
-    elif order == 2:
-        res = grammar_predictor2(TM, classlist, textlist)
-    elif order == 3:
-        res = grammar_predictor3(TM, classlist, textlist)
-        
+    res = orderfunc(TM, classlist, textlist)
     print(res)
     return res
 
@@ -226,6 +219,7 @@ def grammar_predictor(A, classtext, textlist):
                     d[textlist[i][j]] = number_to_class[result[i][j]]
     return d
 
+
 def grammar_predictor2(A, classtext, textlist):
     classtextnum = []
     error = []
@@ -259,6 +253,7 @@ def grammar_predictor2(A, classtext, textlist):
                     d[textlist[i][j]] = number_to_class[result[i][j]]
     return d
 
+
 def grammar_predictor3(A, classtext, textlist):
     classtextnum = []
     error = []
@@ -286,6 +281,42 @@ def grammar_predictor3(A, classtext, textlist):
                         maxprob[i][j][k] = p
     for i in range(len(result)):
         for j in range(3, len(result[i]) - 1):
+            if result[i][j] == 0:
+                if result[i][j - 1] != '':
+                    result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])]
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                    d[textlist[i][j]] = number_to_class[result[i][j]]
+    return d
+
+
+def grammar_predictor4(A, classtext, textlist):
+    classtextnum = []
+    error = []
+    d = {}
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+
+    maxprob = np.zeros((len(A), len(A), len(A), len(A)))
+    for i in range(len(A)):
+        for j in range(len(A)):
+            for k in range(len(A)):
+                for p in range(len(A)):
+                    for q in range(len(A)):
+                        if A[i][j][k][p][q] > maxprob[i][j][k][p]:
+                            maxprob[i][j][k][p] = q
+    for i in range(len(result)):
+        for j in range(4, len(result[i]) - 1):
             if result[i][j] == 0:
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])]
