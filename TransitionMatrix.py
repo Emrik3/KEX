@@ -212,6 +212,128 @@ def run_3_order(file, t_matrix_name):
         json.dump(tm_3rd_order, outfile)
     return tm_3rd_order
 
+def iterate_tm_4_order(word_classes):
+    mat_size = max(class_to_index.values()) + 1
+    # Creating an empty matrix
+    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size))
+    for i in range(3, len(word_classes) - 1):
+        # indexes written out a bit
+        old_3_class = word_classes[i-3]
+        old_2_class = word_classes[i-2]
+        old_class = word_classes[i-1]
+        current_class = word_classes[i]
+        next_class = word_classes[i + 1]
+        old_3_index = word_classes[old_3_class]
+        old_2_index = class_to_index[old_2_class]
+        old_index = class_to_index[old_class]
+        current_index = class_to_index[current_class]
+        next_index = class_to_index[next_class]
+
+        # The calculation
+        transition_matrix[old_3_index][old_2_index][old_index][current_index][next_index] += 1
+
+    for i in range(mat_size):  # for some row
+        for k in range(mat_size): # every row has another row in the "new" direction because 3d
+            for p in range(mat_size):
+                for q in range(mat_size):
+                    n = sum(transition_matrix[q][p][k][i])  # summing this row
+                    if n > 0:
+                        for j in range(mat_size):  # for element in the row
+                            transition_matrix[i][k][p][q][j] = transition_matrix[i][k][p][q][j] / n  # normalizing
+    return transition_matrix
+
+def run_4_order(file, t_matrix_name):
+    word_classes = open_dict(file)
+    tm_4rd_order = iterate_tm_4_order(word_classes)
+    tm_4rd_order = tm_4rd_order.tolist()
+    with open(t_matrix_name, "w") as outfile:
+        json.dump(tm_4rd_order, outfile)
+    return tm_4rd_order
+
+def iterate_tm_5_order(word_classes):
+    mat_size = max(class_to_index.values()) + 1
+    # Creating an empty matrix
+    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size))
+    for i in range(4, len(word_classes) - 1):
+        # indexes written out a bit
+        old_4_class = word_classes[i-4]
+        old_3_class = word_classes[i-3]
+        old_2_class = word_classes[i-2]
+        old_class = word_classes[i-1]
+        current_class = word_classes[i]
+        next_class = word_classes[i + 1]
+        old_4_index = word_classes[old_4_class]
+        old_3_index = word_classes[old_3_class]
+        old_2_index = class_to_index[old_2_class]
+        old_index = class_to_index[old_class]
+        current_index = class_to_index[current_class]
+        next_index = class_to_index[next_class]
+
+        # The calculation
+        transition_matrix[old_4_index][old_3_index][old_2_index][old_index][current_index][next_index] += 1
+
+    for i in range(mat_size):  # for some row
+        for k in range(mat_size): # every row has another row in the "new" direction because 3d
+            for p in range(mat_size):
+                for q in range(mat_size):
+                    for z in range(mat_size):
+                        n = sum(transition_matrix[z][q][p][k][i])  # summing this row
+                        if n > 0:
+                            for j in range(mat_size):  # for element in the row
+                                transition_matrix[i][k][p][q][z][j] = transition_matrix[i][k][p][q][z][j] / n  # normalizing
+    return transition_matrix
+
+def run_5_order(file, t_matrix_name):
+    word_classes = open_dict(file)
+    tm_5rd_order = iterate_tm_5_order(word_classes)
+    tm_5rd_order = tm_5rd_order.tolist()
+    with open(t_matrix_name, "w") as outfile:
+        json.dump(tm_5rd_order, outfile)
+    return tm_5rd_order
+
+def iterate_tm_6_order(word_classes):
+    mat_size = max(class_to_index.values()) + 1
+    # Creating an empty matrix
+    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size))
+    for i in range(4, len(word_classes) - 1):
+        # indexes written out a bit
+        old_5_class = word_classes[i-5]
+        old_4_class = word_classes[i-4]
+        old_3_class = word_classes[i-3]
+        old_2_class = word_classes[i-2]
+        old_class = word_classes[i-1]
+        current_class = word_classes[i]
+        next_class = word_classes[i + 1]
+        old_5_index = word_classes[old_5_class]
+        old_4_index = word_classes[old_4_class]
+        old_3_index = word_classes[old_3_class]
+        old_2_index = class_to_index[old_2_class]
+        old_index = class_to_index[old_class]
+        current_index = class_to_index[current_class]
+        next_index = class_to_index[next_class]
+
+        # The calculation
+        transition_matrix[old_5_index][old_4_index][old_3_index][old_2_index][old_index][current_index][next_index] += 1
+
+    for i in range(mat_size):  # for some row
+        for k in range(mat_size): # every row has another row in the "new" direction because 3d
+            for p in range(mat_size):
+                for q in range(mat_size):
+                    for z in range(mat_size):
+                        for v in range(mat_size):
+                            n = sum(transition_matrix[v][z][q][p][k][i])  # summing this row
+                            if n > 0:
+                                for j in range(mat_size):  # for element in the row
+                                    transition_matrix[i][k][p][q][z][v][j] = transition_matrix[i][k][p][q][z][v][j] / n  # normalizing
+    return transition_matrix
+
+def run_6_order(file, t_matrix_name):
+    word_classes = open_dict(file)
+    tm_6rd_order = iterate_tm_6_order(word_classes)
+    tm_6rd_order = tm_6rd_order.tolist()
+    with open(t_matrix_name, "w") as outfile:
+        json.dump(tm_6rd_order, outfile)
+    return tm_6rd_order
 
 def iterate_transition_matrix_future(word_classes):
     # Creating an empty matrix
