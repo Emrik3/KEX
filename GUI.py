@@ -1,6 +1,6 @@
 from tkinter import *
 from dataProcessing import translations_to_word_classes
-from GrammarTests import predict, testinggrammar1d
+from GrammarTests import *
 
 
 
@@ -8,7 +8,7 @@ from GrammarTests import predict, testinggrammar1d
 
 def process_predict(file):
     #translations_to_word_classes(file, 'WC_input.json')
-    return predict('transition_matrices/TM_all_2nd', file, 'wordclasslists/WC_input.json', 2)
+    return predict('transition_matrices/TM_all_4th', file, 'wordclasslists/WC_input.json', grammar_predictor4)
 def testing_grammar(file):
     translations_to_word_classes(file, 'wordclasslists/WC_input.json')
     result = testinggrammar1d('Trainingdata/user_input.txt', "wordclasslists/WC_input.json", 'transition_matrices/TM_all')
@@ -20,8 +20,8 @@ def get_input():
     value = input_text.get("1.0", "end-1c")
     with open("Trainingdata/user_input.txt", "w") as outfile:
         outfile.write(value)
-    result = testing_grammar("Trainingdata/user_input.txt")
-    #result = process_predict("Trainingdata/user_input.txt")
+    #result = testing_grammar("Trainingdata/user_input.txt")
+    result = process_predict("Trainingdata/user_input.txt")
     output_text.insert("end", result)
 
 def options():

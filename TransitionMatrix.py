@@ -3,8 +3,8 @@ import json
 import numpy as np
 from dataProcessing import open_dict
 
-class_to_index_wait1 = {
-    """ Probably all word classes, but if there are others they will show up when we get errors"""
+
+class_to_index = {
     'NA': 0,
     'NN': 1,
     'VB': 2,
@@ -33,7 +33,7 @@ class_to_index_wait1 = {
     'IN' : 25,
     'HS' : 26
     }
-class_to_index_wait2 = {
+class_to_index_ww = {
     #Lite motivationer, kommer raffineras
     #PN = PM = PS = IN <=> pronomen = egennamn dvs Han = Stockholm = hans = AJ!
     #HA = HP <=> frågande pronomen = frågande adverb dvs vem = när
@@ -73,7 +73,7 @@ class_to_index_wait2 = {
     'HS' : 12
 }
 
-class_to_index = {
+class_to_index_w = {
     # Pronomen = substantiv Han är där = Grejen är där
     # Adjektiv = Adverb Han är glad, Han springer fort
     # konjunktion = preposition ( gissar lite )
@@ -215,7 +215,7 @@ def run_3_order(file, t_matrix_name):
 def iterate_tm_4_order(word_classes):
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
-    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size))
+    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size, mat_size))
     for i in range(3, len(word_classes) - 1):
         # indexes written out a bit
         old_3_class = word_classes[i-3]
@@ -223,7 +223,7 @@ def iterate_tm_4_order(word_classes):
         old_class = word_classes[i-1]
         current_class = word_classes[i]
         next_class = word_classes[i + 1]
-        old_3_index = word_classes[old_3_class]
+        old_3_index = class_to_index[old_3_class]
         old_2_index = class_to_index[old_2_class]
         old_index = class_to_index[old_class]
         current_index = class_to_index[current_class]
@@ -253,7 +253,7 @@ def run_4_order(file, t_matrix_name):
 def iterate_tm_5_order(word_classes):
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
-    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size))
+    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size, mat_size, mat_size))
     for i in range(4, len(word_classes) - 1):
         # indexes written out a bit
         old_4_class = word_classes[i-4]
@@ -262,8 +262,8 @@ def iterate_tm_5_order(word_classes):
         old_class = word_classes[i-1]
         current_class = word_classes[i]
         next_class = word_classes[i + 1]
-        old_4_index = word_classes[old_4_class]
-        old_3_index = word_classes[old_3_class]
+        old_4_index = class_to_index[old_4_class]
+        old_3_index = class_to_index[old_3_class]
         old_2_index = class_to_index[old_2_class]
         old_index = class_to_index[old_class]
         current_index = class_to_index[current_class]
@@ -273,6 +273,7 @@ def iterate_tm_5_order(word_classes):
         transition_matrix[old_4_index][old_3_index][old_2_index][old_index][current_index][next_index] += 1
 
     for i in range(mat_size):  # for some row
+        print(i)
         for k in range(mat_size): # every row has another row in the "new" direction because 3d
             for p in range(mat_size):
                 for q in range(mat_size):
@@ -294,7 +295,7 @@ def run_5_order(file, t_matrix_name):
 def iterate_tm_6_order(word_classes):
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
-    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size))
+    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size,mat_size, mat_size))
     for i in range(4, len(word_classes) - 1):
         # indexes written out a bit
         old_5_class = word_classes[i-5]
@@ -304,9 +305,9 @@ def iterate_tm_6_order(word_classes):
         old_class = word_classes[i-1]
         current_class = word_classes[i]
         next_class = word_classes[i + 1]
-        old_5_index = word_classes[old_5_class]
-        old_4_index = word_classes[old_4_class]
-        old_3_index = word_classes[old_3_class]
+        old_5_index = class_to_index[old_5_class]
+        old_4_index = class_to_index[old_4_class]
+        old_3_index = class_to_index[old_3_class]
         old_2_index = class_to_index[old_2_class]
         old_index = class_to_index[old_class]
         current_index = class_to_index[current_class]

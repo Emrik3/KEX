@@ -36,7 +36,7 @@ def classify_data(text, lib):
             try:
                 classlist.append(lib[word])
             except:
-                #print(word)
+                print(word)
                 failed_words.append(word)
                 classlist.append('NA')
         classlist.append('.')

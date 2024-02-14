@@ -3,7 +3,7 @@ import numpy.linalg as la
 from sympy import *
 from TransitionMatrix import class_to_index
 
-number_to_class_large = {
+number_to_class = {
     0: 'NA',
     1: 'Substantiv',
     2: 'Frågande/relativt pronomen',
@@ -32,7 +32,7 @@ number_to_class_large = {
     25: 'Interjektion',
     26: 'Frågande/relativ possesiv uttryck'
 }
-number_to_class = {
+number_to_class_small = {
     0: "NA",
     1: "Substantiv, pronomen, egennamn etc",
     2: "Verb",

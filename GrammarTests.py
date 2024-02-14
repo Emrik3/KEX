@@ -206,9 +206,7 @@ def grammar_predictor(A, classtext, textlist):
     result.append(temp_list)
     maxprob = np.zeros(len(A))
     for i in range(len(A)):
-        for j in range(len(A)):
-            if A[i][j] > maxprob[i]:
-                maxprob[i] = j
+        maxprob[i] = A[i].index(max(A[i]))
 
     for i in range(len(result)):
         for j in range(1, len(result[i]) - 1):
@@ -241,9 +239,7 @@ def grammar_predictor2(A, classtext, textlist):
     maxprob = np.zeros((len(A), len(A)))
     for i in range(len(A)):
         for j in range(len(A)):
-            for k in range(len(A)):
-                if A[i][j][k] > maxprob[i][j]:
-                    maxprob[i][j] = k
+            maxprob[i][j] = A[i][j].index(max(A[i][j]))
     for i in range(len(result)):
         for j in range(2, len(result[i]) - 1):
             if result[i][j] == 0:
@@ -276,9 +272,8 @@ def grammar_predictor3(A, classtext, textlist):
     for i in range(len(A)):
         for j in range(len(A)):
             for k in range(len(A)):
-                for p in range(len(A)):
-                    if A[i][j][k][p] > maxprob[i][j][k]:
-                        maxprob[i][j][k] = p
+                maxprob[i][j][k] = A[i][j][k].index(max(A[i][j][k]))
+
     for i in range(len(result)):
         for j in range(3, len(result[i]) - 1):
             if result[i][j] == 0:
@@ -312,14 +307,50 @@ def grammar_predictor4(A, classtext, textlist):
         for j in range(len(A)):
             for k in range(len(A)):
                 for p in range(len(A)):
-                    for q in range(len(A)):
-                        if A[i][j][k][p][q] > maxprob[i][j][k][p]:
-                            maxprob[i][j][k][p] = q
+                    maxprob[i][j][k][p] = A[i][j][k][p].index(max(A[i][j][k][p]))
     for i in range(len(result)):
         for j in range(4, len(result[i]) - 1):
             if result[i][j] == 0:
                 if result[i][j - 1] != '':
-                    result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])]
-                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                    result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])][int(result[i][j-4])]
+                    print(result[i][j])
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[int(result[i][j])]))
                     d[textlist[i][j]] = number_to_class[result[i][j]]
     return d
+
+
+def grammar_predictor5(A, classtext, textlist):
+    classtextnum = []
+    error = []
+    d = {}
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+
+    maxprob = np.zeros((len(A), len(A), len(A), len(A), len(A)))
+    for i in range(len(A)):
+        for j in range(len(A)):
+            for k in range(len(A)):
+                for p in range(len(A)):
+                    for q in range(len(A)):
+                        maxprob[i][j][k][p][q] = A[i][j][k][p][q].index(max(A[i][j][k][p][q]))
+    for i in range(len(result)):
+        for j in range(5, len(result[i]) - 1):
+            if result[i][j] == 0:
+                if result[i][j - 1] != '':
+                    result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])][int(result[i][j-4])][int(result[i][j-5])]
+                    print(result[i][j])
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[int(result[i][j])]))
+                    d[textlist[i][j]] = number_to_class[result[i][j]]
+    return d
+

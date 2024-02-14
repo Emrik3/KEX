@@ -1,7 +1,7 @@
 from metrics import *
 from Visualisation import *
 from dataProcessing import open_dict
-from GrammarTests import testinggrammar1d, testinggrammar2d, testinggrammar3d, predict
+from GrammarTests import testinggrammar1d, testinggrammar2d, testinggrammar3d, predict, grammar_predictor, grammar_predictor2, grammar_predictor3, grammar_predictor4, grammar_predictor5
 from TransitionMatrix import *
 
 # Opening transition matrices
@@ -20,13 +20,14 @@ from bs4 import BeautifulSoup
 def main():
     """Uses the finished model to extract results"""
     """Updates Markov chains"""
-    """run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
-    run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
-    run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
-    run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
-    run_2_order('wordclasslists/WC_transl.json', 'transition_matrices/TM_transl_2nd.json')
-    run_2_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl_2nd.json')
-    run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')"""
+    #run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
+    #run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
+    #run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
+    #run_5_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_5th')
+
+    #run_2_order('wordclasslists/WC_transl.json', 'transition_matrices/TM_transl_2nd.json')
+    #run_2_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl_2nd.json')
+    #run_4_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_4th')
 
     """Calculates the basic metrics"""
     """running_metrics(TM_all, TM_transl)
@@ -49,10 +50,11 @@ def main():
 
 
     """Predicts the unknown words in a given text"""
-    predict('transition_matrices/TM_all', 'Trainingdata/real_sample.txt', 'wordclasslists/WC_transl.json', 1)
-    predict('transition_matrices/TM_all_2nd', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 2)
-    predict('transition_matrices/TM_all_3rd', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 3)
-    predict('transition_matrices/TM_all_4th', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 4)
+    #predict('transition_matrices/TM_all', 'Trainingdata/real_sample.txt', 'wordclasslists/WC_transl.json', grammar_predictor)
+    #predict('transition_matrices/TM_all_2nd', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', grammar_predictor2)
+    #predict('transition_matrices/TM_all_3rd', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', grammar_predictor3)
+    #predict('transition_matrices/TM_all_4th', 'Trainingdata/real_sample.txt', 'wordclasslists/WC_transl.json', grammar_predictor4)
+    predict('transition_matrices/TM_all_4th', 'Trainingdata/real_sample.txt', 'wordclasslists/WC_transl.json', grammar_predictor4)
     # get URL
     """page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
     
