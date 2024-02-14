@@ -20,38 +20,39 @@ from bs4 import BeautifulSoup
 def main():
     """Uses the finished model to extract results"""
     """Updates Markov chains"""
-    #run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
-    #run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
-    #run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
-    #run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
-    #run_2_order('wordclasslists/WC_transl.json', 'transition_matrices/TM_transl_2nd.json')
-    #run_2_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl_2nd.json')
-    #run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')
+    """run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
+    run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
+    run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
+    run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
+    run_2_order('wordclasslists/WC_transl.json', 'transition_matrices/TM_transl_2nd.json')
+    run_2_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl_2nd.json')
+    run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')"""
 
     """Calculates the basic metrics"""
-    #running_metrics(TM_all, TM_transl)
-    #running_metrics(TM_all, TM_non_transl)
+    """running_metrics(TM_all, TM_transl)
+    running_metrics(TM_all, TM_non_transl)"""
 
     #running_metrics(TM_all_2nd, TM_transl_2nd)
     #running_metrics(TM_all_2nd, TM_non_transl_2nd)
 
 
     """Plots a 2D transition Matrix"""
-    #transition_matrix_vis(TM_all)
-    #transition_matrix_vis(np.subtract(TM_all,TM_transl))
-    #transition_matrix_vis(np.subtract(TM_all,TM_non_transl))
+    """transition_matrix_vis(TM_all)
+    transition_matrix_vis(np.subtract(TM_all,TM_transl))
+    transition_matrix_vis(np.subtract(TM_all,TM_non_transl))"""
 
     """Finds the most grammatically likely and all grammatically "impossible" sentences"""
-    #testinggrammar1d('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json",'transition_matrices/TM_all')
-    #testinggrammar2d('Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 'transition_matrices/TM_all_2nd')
-    #testinggrammar3d('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json', 'transition_matrices/TM_all_3rd')
-    #testinggrammar3d('Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 'transition_matrices/TM_all_3rd')
+    """testinggrammar1d('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json",'transition_matrices/TM_all')
+    testinggrammar2d('Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 'transition_matrices/TM_all_2nd')
+    testinggrammar3d('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json', 'transition_matrices/TM_all_3rd')
+    testinggrammar3d('Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 'transition_matrices/TM_all_3rd')"""
 
 
     """Predicts the unknown words in a given text"""
-    #predict('transition_matrices/TM_all', 'Trainingdata/real_sample.txt', 'wordclasslists/WC_transl.json', 1)
-    #predict('transition_matrices/TM_all_2nd', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 2)
-    #predict('transition_matrices/TM_all_3rd', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 3)
+    predict('transition_matrices/TM_all', 'Trainingdata/real_sample.txt', 'wordclasslists/WC_transl.json', 1)
+    predict('transition_matrices/TM_all_2nd', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 2)
+    predict('transition_matrices/TM_all_3rd', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 3)
+    predict('transition_matrices/TM_all_4th', 'Trainingdata/translated_sample.txt', 'wordclasslists/WC_transl.json', 4)
     # get URL
     """page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
     
