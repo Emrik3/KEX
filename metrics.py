@@ -49,8 +49,6 @@ def frobnorm(A):
     for i in range(Ashape[0]):
         for j in range(Ashape[1]):
             fnorm += A[i, j] ** 2
-    if len(fnorm)>1:
-        fnorm = sum(fnorm)
     return fnorm ** .5
 
 
