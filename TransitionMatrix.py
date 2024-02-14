@@ -213,9 +213,44 @@ def run_3_order(file, t_matrix_name):
     return tm_3rd_order
 
 
+def iterate_transition_matrix_future(word_classes):
+    # Creating an empty matrix
+    transition_matrix = []
+    mat_size = max(class_to_index.values()) + 1
+
+    for _ in range(mat_size):
+        transition_matrix.append([0] * mat_size)
+
+    for i in range(len(word_classes) - 1):
+        # indexes written out a bit
+        current_class = word_classes[i+1]
+        next_class = word_classes[i]
+        current_index = class_to_index[current_class]
+        next_index = class_to_index[next_class]
+
+        # The calculation
+        transition_matrix[current_index][next_index] += 1
+
+    # Converting to a probabilty matrix (all rows sum to 1)
+    for i in range(mat_size): # for some row
+        n = sum(transition_matrix[i]) # summing the row
+        if n>0:
+            for j in range(mat_size): # for element in the row
+                transition_matrix[i][j] = transition_matrix[i][j]/n # normalizing
+    return transition_matrix
+
+def run_1_order_future(file, t_matrix_name):
+    word_classes = open_dict(file)
+    transition_matrix = iterate_transition_matrix_future(word_classes)
+    with open(t_matrix_name, "w") as outfile:
+        json.dump(transition_matrix, outfile)
+    return transition_matrix
+
+
 if __name__ == "__main__":
-    run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
-    run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
+    #run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
+    """run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
     run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
     run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
-    run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')
+    run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')"""
+    run_1_order_future("wordclasslists/WC_all.json", "transition_matrices/TM_all_future")
