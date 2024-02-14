@@ -36,7 +36,7 @@ def classify_data(text, lib):
             try:
                 classlist.append(lib[word])
             except:
-                print(word)
+                #print(word)
                 failed_words.append(word)
                 classlist.append('NA')
         classlist.append('.')
@@ -204,6 +204,8 @@ if __name__ == "__main__":
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('Trainingdata/translated_sample.txt', "WC_transl.json")
+    #translations_to_word_classes('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json')
+    #translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json")
     #translations_to_word_classes('Trainingdata/real_sample.txt', 'WC_non_transl.json')
 
     """

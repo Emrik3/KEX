@@ -1,12 +1,11 @@
 from metrics import *
 from dataProcessing import open_dict, read_translation_txt, translations_to_word_classes, text_cleaner
-from metrics import probofhappening2d, probofhappening1d, probofhappening3d, grammar_predictor, grammar_predictor2
 
 
-def testinggrammar1d():
-    text = read_translation_txt('Trainingdata/translated_sample.txt')
-    classlist = translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json")
-    TM_all = open_dict('transition_matrices/TM_all')
+def testinggrammar1d(text_to_test, WC_text_to_test, TM_file):
+    text = read_translation_txt(text_to_test)
+    classlist = translations_to_word_classes(text_to_test, WC_text_to_test)
+    TM_all = open_dict(TM_file)
     p, error = probofhappening1d(TM_all, classlist)
     # print(p)
     # print(error)
@@ -27,13 +26,17 @@ def testinggrammar1d():
         print("Everything zero")
     else:
         print("The most \'normal\' sentence: " + str(tlist[imax]))
+    text_with_prob = []
+    for i in range(len(wlist)-1):
+        text_with_prob.append((wlist[i],p[i]))
+    return text_with_prob
 
 
 
-def testinggrammar2d():
-    text = read_translation_txt('Trainingdata/translated_sample.txt')
-    classlist = translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json")
-    TM_all = open_dict('transition_matrices/TM_all_2nd')
+def testinggrammar2d(text_to_test, WC_text_to_test, TM_file):
+    text = read_translation_txt(text_to_test)
+    classlist = translations_to_word_classes(text_to_test, WC_text_to_test)
+    TM_all = open_dict(TM_file)
     p, error = probofhappening2d(TM_all, classlist)
     # print(p)
     # print(error)
@@ -56,13 +59,13 @@ def testinggrammar2d():
         print("The most \'normal\' sentance: " + str(tlist[imax]))
 
 
-def testinggrammar3d():
-    text = read_translation_txt('Trainingdata/translated_sample.txt')
-    classlist = translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json")
-    TM_all = open_dict('transition_matrices/TM_all_3rd')
+def testinggrammar3d(text_to_test, WC_text_to_test, TM_file):
+    text = read_translation_txt(text_to_test)
+    classlist = translations_to_word_classes(text_to_test, WC_text_to_test)
+    TM_all = open_dict(TM_file)
     p, error = probofhappening3d(TM_all, classlist)
-    # print(p)
-    # print(error)
+    print(p)
+    print(error)
     wlist = []
     tlist = text.split('.')
     for s in tlist:
@@ -101,3 +104,191 @@ def predict(file, giventext, WCgiventext, order):
         
     print(res)
     return res
+
+
+def probofhappening1d(A, classtext):
+    # Kolla sannolikheten av grejer att komma efter varandra här!..
+    classtextnum = []
+    error = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+    p = np.ones(len(result))
+    for i in range(len(result)):
+        for j in range(1, len(result[i])):
+            p[i] *= A[result[i][j]][result[i][j - 1]]
+            if A[result[i][j]][result[i][j - 1]] == 0:
+                error.append((i, j))
+    print(p)
+    print(error)
+    return p, error
+
+
+def probofhappening2d(A, classtext):
+    # Kolla sannolikheten av grejer att komma efter varandra här!..
+    classtextnum = []
+    error = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+    p = np.ones(len(result))
+    for i in range(len(result)):
+        for j in range(2, len(result[i])):
+            p[i] *= A[result[i][j]][result[i][j - 1]][result[i][j - 2]]
+            if A[result[i][j]][result[i][j - 1]][result[i][j - 2]] == 0:
+                error.append((i, j))
+    print(p)
+    return p, error
+
+
+def probofhappening3d(A, classtext):
+    # Kolla sannolikheten av grejer att komma efter varandra här!..
+    classtextnum = []
+    error = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+
+    p = np.ones(len(result))
+    for i in range(len(result)):
+        for j in range(3, len(result[i])):
+            p[i] *= A[result[i][j]][result[i][j - 1]][result[i][j - 2]][result[i][j - 3]]
+            if A[result[i][j]][result[i][j - 1]][result[i][j - 2]][result[i][j - 3]] == 0:
+                error.append((i, j))
+    return p, error
+
+
+def grammar_predictor(A, classtext, textlist):
+    d = {}
+    print(classtext)
+    classtextnum = []
+    error = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+    maxprob = np.zeros(len(A))
+    for i in range(len(A)):
+        for j in range(len(A)):
+            if A[i][j] > maxprob[i]:
+                maxprob[i] = j
+
+    for i in range(len(result)):
+        for j in range(1, len(result[i]) - 1):
+            if result[i][j] == 0:
+                if result[i][j - 1] != '':
+                    result[i][j] = maxprob[int(result[i][j - 1])]
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                    d[textlist[i][j]] = number_to_class[result[i][j]]
+    return d
+
+def grammar_predictor2(A, classtext, textlist):
+    classtextnum = []
+    error = []
+    d = {}
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+
+    maxprob = np.zeros((len(A), len(A)))
+    for i in range(len(A)):
+        for j in range(len(A)):
+            for k in range(len(A)):
+                if A[i][j][k] > maxprob[i][j]:
+                    maxprob[i][j] = k
+    for i in range(len(result)):
+        for j in range(2, len(result[i]) - 1):
+            if result[i][j] == 0:
+                if result[i][j - 1] != '':
+                    result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])]
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                    d[textlist[i][j]] = number_to_class[result[i][j]]
+    return d
+
+def grammar_predictor3(A, classtext, textlist):
+    classtextnum = []
+    error = []
+    d = {}
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+
+    maxprob = np.zeros((len(A), len(A), len(A)))
+    for i in range(len(A)):
+        for j in range(len(A)):
+            for k in range(len(A)):
+                for p in range(len(A)):
+                    if A[i][j][k][p] > maxprob[i][j][k]:
+                        maxprob[i][j][k] = p
+    for i in range(len(result)):
+        for j in range(3, len(result[i]) - 1):
+            if result[i][j] == 0:
+                if result[i][j - 1] != '':
+                    result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])]
+                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                    d[textlist[i][j]] = number_to_class[result[i][j]]
+    return d

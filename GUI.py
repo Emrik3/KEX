@@ -1,20 +1,27 @@
 from tkinter import *
 from dataProcessing import translations_to_word_classes
-from GrammarTests import predict
+from GrammarTests import predict, testinggrammar1d
+
 
 
 # There are some errors here, with number of words and the dot is there when returned
 
 def process_predict(file):
     #translations_to_word_classes(file, 'WC_input.json')
-    return predict('transition_matrices/TM_all_2nd', file, 'WC_input.json', 2)
+    return predict('transition_matrices/TM_all_2nd', file, 'wordclasslists/WC_input.json', 2)
+def testing_grammar(file):
+    translations_to_word_classes(file, 'wordclasslists/WC_input.json')
+    result = testinggrammar1d('Trainingdata/user_input.txt', "wordclasslists/WC_input.json", 'transition_matrices/TM_all')
+    return result
+
 
 def get_input():
     """Takes in text and and runs the appropriate program to generate the output"""
     value = input_text.get("1.0", "end-1c")
-    with open("user_input.txt", "w") as outfile:
+    with open("Trainingdata/user_input.txt", "w") as outfile:
         outfile.write(value)
-    result = process_predict("user_input.txt")
+    result = testing_grammar("Trainingdata/user_input.txt")
+    #result = process_predict("Trainingdata/user_input.txt")
     output_text.insert("end", result)
 
 def options():
@@ -58,14 +65,14 @@ def options():
 
 
 win=Tk()
-win.geometry("1000x400")
+win.geometry("1000x800")
 options()
-input_text = Text(win, height = 15,width = 40, bd = 2, relief="groove")
+input_text = Text(win, height = 30,width = 70, bd = 2, relief="groove")
 input_text.pack()
-button = Button(win, height = 1, width = 30,text = "Execute", command = get_input)
+button = Button(win, height = 1, width = 70,text = "Execute", command = get_input)
 button.pack()
 
-output_text = Text(win, height = 15, width = 40, bd = 2, relief="groove")
+output_text = Text(win, height = 30, width = 70, bd = 2, relief="groove")
 output_text.pack()
 
 
