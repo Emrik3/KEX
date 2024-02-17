@@ -1,11 +1,11 @@
 from metrics import *
 from dataProcessing import open_dict, read_translation_txt, translations_to_word_classes, text_cleaner
+from choose_word_classes import number_to_class
 
 
-def testinggrammar1d(text_to_test, WC_text_to_test, TM_file):
+def testinggrammar1d(text_to_test, WC_text_to_test, TM_all):
     text = read_translation_txt(text_to_test)
-    classlist = translations_to_word_classes(text_to_test, WC_text_to_test)
-    TM_all = open_dict(TM_file)
+    classlist = translations_to_word_classes(text_to_test, WC_text_to_test, no_NA=False)
     p, error = probofhappening1d(TM_all, classlist)
     # print(p)
     # print(error)
@@ -32,10 +32,9 @@ def testinggrammar1d(text_to_test, WC_text_to_test, TM_file):
     return text_with_prob
 
 
-def testinggrammar2d(text_to_test, WC_text_to_test, TM_file):
+def testinggrammar2d(text_to_test, WC_text_to_test, TM_all):
     text = read_translation_txt(text_to_test)
-    classlist = translations_to_word_classes(text_to_test, WC_text_to_test)
-    TM_all = open_dict(TM_file)
+    classlist = translations_to_word_classes(text_to_test, WC_text_to_test, no_NA=False)
     p, error = probofhappening2d(TM_all, classlist)
     # print(p)
     # print(error)
@@ -58,10 +57,9 @@ def testinggrammar2d(text_to_test, WC_text_to_test, TM_file):
         print("The most \'normal\' sentance: " + str(tlist[imax]))
 
 
-def testinggrammar3d(text_to_test, WC_text_to_test, TM_file):
+def testinggrammar3d(text_to_test, WC_text_to_test, TM_all):
     text = read_translation_txt(text_to_test)
-    classlist = translations_to_word_classes(text_to_test, WC_text_to_test)
-    TM_all = open_dict(TM_file)
+    classlist = translations_to_word_classes(text_to_test, WC_text_to_test, no_NA=False)
     p, error = probofhappening3d(TM_all, classlist)
     print(p)
     print(error)
@@ -84,7 +82,7 @@ def testinggrammar3d(text_to_test, WC_text_to_test, TM_file):
         print("The most \'normal\' sentance: " + str(tlist[imax]))
 
 
-def predict(file, giventext, WCgiventext, orderfunc):
+def predict(TM, giventext, WC_list, orderfunc):
     text = read_translation_txt(giventext)
     text = text_cleaner(text)
     sentences = text.lower().split('. ')
@@ -92,9 +90,7 @@ def predict(file, giventext, WCgiventext, orderfunc):
     for sentence in sentences:
         words = sentence.split(' ')
         textlist.append(words)
-    classlist = translations_to_word_classes(giventext, WCgiventext)
-    TM = open_dict(file)
-    res = orderfunc(TM, classlist, textlist)
+    res = orderfunc(TM, WC_list, textlist)
     print(res)
     return res
 
@@ -211,10 +207,11 @@ def grammar_predictor(A, classtext, textlist):
     for i in range(len(result)):
         for j in range(1, len(result[i]) - 1):
             if result[i][j] == 0:
-                if result[i][j - 1] != '':
-                    result[i][j] = maxprob[int(result[i][j - 1])]
-                    print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
-                    d[textlist[i][j]] = number_to_class[result[i][j]]
+                print(maxprob)
+                result[i][j] = maxprob[int(result[i][j - 1])]
+                print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                d[textlist[i][j]] = number_to_class[result[i][j]]
+
     return d
 
 
@@ -301,7 +298,7 @@ def grammar_predictor4(A, classtext, textlist):
         else:
             temp_list.append(i)
     result.append(temp_list)
-
+    print(result)
     maxprob = np.zeros((len(A), len(A), len(A), len(A)))
     for i in range(len(A)):
         for j in range(len(A)):
@@ -309,11 +306,10 @@ def grammar_predictor4(A, classtext, textlist):
                 for p in range(len(A)):
                     maxprob[i][j][k][p] = A[i][j][k][p].index(max(A[i][j][k][p]))
     for i in range(len(result)):
-        for j in range(4, len(result[i]) - 1):
+        for j in range(2, len(result[i]) - 3):
             if result[i][j] == 0:
                 if result[i][j - 1] != '':
                     result[i][j] = maxprob[int(result[i][j - 1])][int(result[i][j - 2])][int(result[i][j-3])][int(result[i][j-4])]
-                    print(result[i][j])
                     print(textlist[i][j] + " predicted as " + str(number_to_class[int(result[i][j])]))
                     d[textlist[i][j]] = number_to_class[result[i][j]]
     return d

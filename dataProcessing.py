@@ -23,13 +23,13 @@ def convert_to_dict(words):
     return dict
 
 
-def classify_data(text, lib):
+def classify_data(text, lib, no_NA):
     # Input training data and dict of what word class a word is
     # Returns a dict of the input data with matched word classes.
     classlist = []
     sentences = text.lower().split('. ')  #FIX: Last word in each sentence has a "."
 
-
+    NA_list = []
     for sentence in sentences:
         words = sentence.split(' ')
         for word in words:
@@ -37,10 +37,20 @@ def classify_data(text, lib):
                 classlist.append(lib[word])
             except:
                 print(word)
-                failed_words.append(word)
                 classlist.append('NA')
-        classlist.append('.')
-
+                NA_list.append('NA')
+        #print(len(NA_list))
+        if no_NA:
+            if len(NA_list)>0:
+                #print(classlist)
+                #print(len(words))
+                for _ in range(len(words)):
+                    classlist.pop(-1)
+                NA_list = []
+            else:
+                classlist.append('.')
+        else:
+            classlist.append('.')
     return classlist
 
 
@@ -136,7 +146,7 @@ def test():
             k += 1
     #print("Number of words that could not me classified: " + str(k) + " out of " + str(len(classified)))
 
-def abstracts_to_word_classes(file):
+def abstracts_to_word_classes(file, no_NA):
     """Converts the text to word classes"""
     k = 0  # Counting amount of unclassified words
     classified_list = []  # [text, text, text..] (with text in word class form)
@@ -147,7 +157,7 @@ def abstracts_to_word_classes(file):
         if check_english(text.split()):
             continue
         text = text_cleaner(text)
-        classified = classify_data(text, dictionary_talbanken)
+        classified = classify_data(text, dictionary_talbanken, no_NA)
         for i in classified:
             if i == 'NA':
                 k += 1
@@ -159,15 +169,16 @@ def abstracts_to_word_classes(file):
     print("in percent " + str(100*k/len(word_class_list)))
     with open('wordclasslists/WC_all.json', "w") as outfile:
         json.dump(word_class_list, outfile)
+    #print(word_class_list)
     return word_class_list
 
 
-def translations_to_word_classes(file, filename):
+def translations_to_word_classes(file, filename, no_NA):
     # Takes a txt file and converts it to word classes
     dictionary_talbanken = open_dict('dictionaries/classdict.json')
     text = read_translation_txt(file)
     text = text_cleaner(text)
-    classified = classify_data(text, dictionary_talbanken)
+    classified = classify_data(text, dictionary_talbanken, no_NA)
     k = 0
     for i in classified:
         if i == 'NA':
@@ -184,7 +195,7 @@ def unique_word_classes():
     large_list = []
     unique_codes = set()
     dictionary_talbanken = open_dict('clas.split()sdict.json')
-    text = read_traning_csv('Trainingdata/many_abstracts.csv')
+    text = read_traning_csv('Trainingdata/testmerge.csv')
     for elem in text:
         large_list.append(classify_data(elem, dictionary_talbanken))
     for sublist in large_list:
@@ -198,9 +209,9 @@ if __name__ == "__main__":
     """For joining new files to the large word to word-class dictionary"""
     # fl = joindicts()
     # save_dict(fl)
-
+    
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes('Trainingdata/many_abstracts.csv')
+    abstracts_to_word_classes('Trainingdata/testmerge.csv')
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('Trainingdata/translated_sample.txt', "WC_transl.json")

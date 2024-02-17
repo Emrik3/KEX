@@ -19,7 +19,6 @@ def transition_matrix_vis(matrix):
     print(class_to_index)
     ax.set_xticklabels(keys_to_include)
     ax.set_yticklabels(keys_to_include)
-    print("HERE")
     plt.show()
 
 if __name__ == "__main__":

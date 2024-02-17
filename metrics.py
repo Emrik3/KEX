@@ -1,46 +1,7 @@
 import numpy as np
 import numpy.linalg as la
 from sympy import *
-from TransitionMatrix import class_to_index
-
-number_to_class = {
-    0: 'NA',
-    1: 'Substantiv',
-    2: 'Frågande/relativt pronomen',
-    3: 'Verb',
-    4: 'Meningskiljande interpunktion',
-    5: 'Preposition',
-    6: 'Adverb',
-    7: 'Interpunktion',
-    8: 'Determinerare',
-    9: 'Grundtal',
-    10: 'Adjektiv',
-    11: 'Konjuktion',
-    12: 'Egennamn',
-    13: 'Particip',
-    14: 'Infinitivmärke',
-    15: 'Pronomen',
-    16: 'Ordningstal',
-    17: 'Frågande/relativt adverb',
-    18: 'Interpunktion',
-    19: 'Partikel',
-    20: '.',
-    21: 'Utländskt ord',
-    22: 'Frågande/relativt bestämning',
-    23: 'Subjuktion',
-    24: 'Possesiv uttryck',
-    25: 'Interjektion',
-    26: 'Frågande/relativ possesiv uttryck'
-}
-number_to_class_small = {
-    0: "NA",
-    1: "Substantiv, pronomen, egennamn etc",
-    2: "Verb",
-    3: "Preposition, konjunktion etc",
-    4: "Adjektiv",
-    5: "Punkt",
-    6: "Determinerare"
-}
+from choose_word_classes import class_to_index
 
 
 def frobnorm(A):
@@ -108,6 +69,6 @@ def distance(A, B, normtype):
 
 
 def running_metrics(A, B):
-    #print("1-norm: " + str(distance(A, B, norm1)))
-    #print("infinity-norm: " + str(distance(A, B, norminf)))
+    print("1-norm: " + str(distance(A, B, norm1)))
+    print("infinity-norm: " + str(distance(A, B, norminf)))
     print("frobenius norm: " + str(distance(A, B, frobnorm)))

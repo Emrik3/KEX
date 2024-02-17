@@ -2,112 +2,9 @@ import json
 
 import numpy as np
 from dataProcessing import open_dict
+from choose_word_classes import class_to_index
 
 
-class_to_index = {
-    'NA': 0,
-    'NN': 1,
-    'VB': 2,
-    'PP': 3,
-    'JJ': 4,
-    'AB': 5,
-    'PM': 6,
-    '.': 7,
-    'DT': 8,
-    'KN': 9,
-    'PC': 10,
-    'SN': 11,
-    'PS': 12,
-    'PN': 13,
-    'HP': 14,
-    'IE': 15,
-    'RO': 16,
-    'HA': 17,
-    'PAD': 18,
-    'PL': 19,
-    'MAD': 20,
-    'UO' : 21,
-    'HD' : 22,
-    'RG' : 23,
-    'MID' : 24,
-    'IN' : 25,
-    'HS' : 26
-    }
-class_to_index_ww = {
-    #Lite motivationer, kommer raffineras
-    #PN = PM = PS = IN <=> pronomen = egennamn dvs Han = Stockholm = hans = AJ!
-    #HA = HP <=> frågande pronomen = frågande adverb dvs vem = när
-    #NA = UO (utländskt ord)
-    # MAD = . = PAD = MID? dvs . = . = .,; (just nu iaf då vi filtrerar bort nästan allt)
-    #  HS= något HS =vars, vems osv
-    # PL = nåt finns bara en i datan, kollade i classdict och hittade exemplet "tillinitiativ" som en enskild sträng??
-    #  RG= RO två = andra
-    # HD (relativt besätmning) exemplet från classdict är "hurdana"??
-    # SN subjunktion exemplet från classdict är "50som"??
-    # IE  verkar vara tom
-    'NA': 0,
-    'NN': 1,
-    'VB': 2,
-    'PP': 3,
-    'JJ': 4,
-    'AB': 5,
-    'PN': 6,
-    '.': 7,
-    'DT': 8,
-    'KN': 9,
-    'PC': 10,
-    'SN': 11,
-    'HP': 12,
-    'RO': 13,
-    'PS': 6,
-    'PM': 1,
-    'HA': 12,
-    'PAD': 7,
-    'PL': 0,
-    'MAD': 7,
-    'UO' : 0,
-    'HD' : 12,
-    'RG' : 13,
-    'MID' : 7,
-    'IN' : 6,
-    'HS' : 12
-}
-
-class_to_index_w = {
-    # Pronomen = substantiv Han är där = Grejen är där
-    # Adjektiv = Adverb Han är glad, Han springer fort
-    # konjunktion = preposition ( gissar lite )
-    # particip = adjektiv "Particip är ordformer som utgår från verb, men fungerar som adjektiv. "(källaisof)
-    # Subjunktion = konjunktion (båda binder ihop satsdelar)
-    # HP = pronomen (vem är där? = han är där)
-    # RO = adjektiv (Han är först, han är på andra plats = Han är bäst, han är på sämsta platsen) lite oklart men kanske
-    'NA': 0,
-    'NN': 1,
-    'VB': 2,
-    'PP': 3,
-    'JJ': 4,
-    '.': 5,
-    'DT': 6,
-    'AB': 4,
-    'PM': 1,
-    'KN': 3,
-    'PC': 4,
-    'SN': 3,
-    'HP': 1,
-    'RO': 4,
-    'PS': 1,
-    'PN': 1,
-    'HA': 1,
-    'PAD': 5,# ev Problem
-    'PL': 0,
-    'MAD': 5, # ev Problem
-    'UO' : 0,
-    'HD' : 1,
-    'RG' : 4,
-    'MID' : 5, # ev problem
-    'IN' : 1,
-    'HS' : 1
-}
 
 def iterate_transition_matrix(word_classes):
     # Creating an empty matrix
@@ -131,7 +28,7 @@ def iterate_transition_matrix(word_classes):
     for i in range(mat_size): # for some row
         n = sum(transition_matrix[i]) # summing the row
         if n>0:
-            for j in range(mat_size): # for element in the row
+            for j in range(mat_size):  # for element in the row
                 transition_matrix[i][j] = transition_matrix[i][j]/n # normalizing
     return transition_matrix
 
@@ -144,7 +41,6 @@ def run_1_order(file, t_matrix_name):
 
 
 def iterate_tm_2_order(word_classes):
-    print(word_classes)
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
     transition_matrix = np.zeros((mat_size, mat_size, mat_size))
@@ -158,7 +54,7 @@ def iterate_tm_2_order(word_classes):
         next_index = class_to_index[next_class]
 
         # looks at the probability to get current wc given the old wc and next wc
-        transition_matrix[old_index][next_index][current_index] += 1
+        transition_matrix[old_index][current_index][next_index] += 1
     for i in range(mat_size):  # for some row
         for k in range(mat_size): # every row has another row in the "new" direction because 3d
             n = sum(transition_matrix[i][k])  # summing this row
@@ -212,7 +108,7 @@ def run_3_order(file, t_matrix_name):
         json.dump(tm_3rd_order, outfile)
     return tm_3rd_order
 
-def iterate_tm_4_order(word_classes):
+def iterate_tm_4_order(word_classes, setup):
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
     transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size, mat_size))
@@ -230,7 +126,16 @@ def iterate_tm_4_order(word_classes):
         next_index = class_to_index[next_class]
 
         # The calculation
-        transition_matrix[old_3_index][old_2_index][old_index][current_index][next_index] += 1
+        if setup == [0, 0, 0, 0, 1]:
+            transition_matrix[old_3_index][old_2_index][old_index][current_index][next_index] += 1
+        if setup == [0, 0, 0, 1, 0]:
+            transition_matrix[old_3_index][old_2_index][old_index][next_index][current_index] += 1
+        if setup == [0, 0, 1, 0, 0]:
+            transition_matrix[old_3_index][old_2_index][current_index][next_index][old_index] += 1
+        if setup == [0, 1, 0, 0, 0]:
+            transition_matrix[old_3_index][old_index][current_index][next_index][old_2_index] += 1
+        if setup == [1, 0, 0, 0, 0]:
+            transition_matrix[old_3_index][old_2_index][old_index][next_index][current_index] += 1
 
     for i in range(mat_size):  # for some row
         for k in range(mat_size): # every row has another row in the "new" direction because 3d
@@ -242,9 +147,9 @@ def iterate_tm_4_order(word_classes):
                             transition_matrix[i][k][p][q][j] = transition_matrix[i][k][p][q][j] / n  # normalizing
     return transition_matrix
 
-def run_4_order(file, t_matrix_name):
+def run_4_order(file, t_matrix_name, setup):
     word_classes = open_dict(file)
-    tm_4rd_order = iterate_tm_4_order(word_classes)
+    tm_4rd_order = iterate_tm_4_order(word_classes, setup)
     tm_4rd_order = tm_4rd_order.tolist()
     with open(t_matrix_name, "w") as outfile:
         json.dump(tm_4rd_order, outfile)
