@@ -22,11 +22,11 @@ def update_TM():
 
 def update_WC():
     """Translates web-scraped csv files to word classes"""
-    #abstracts_to_word_classes(Training_data_dir, no_NA=True)
+    abstracts_to_word_classes(Training_data_dir, no_NA=True)
 
     """Translates txt file to word classes"""
     translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
-    #translations_to_word_classes(translated_sample_dir, WC_transl_dir, no_NA = False)
+    translations_to_word_classes(translated_sample_dir, WC_transl_dir, no_NA = False)
 
 def plot():
     """Plots a 2D transition Matrix"""
@@ -66,10 +66,10 @@ def main():
     """Uses the finished model to extract results"""
     #update_WC()
     #update_TM()
-    #plot()
-    #metrics()
+    plot()
+    metrics()
     evaluate_grammar()
-    #predict_NA()
+    predict_NA()
     #get_url()
 
 

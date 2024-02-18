@@ -195,7 +195,7 @@ def unique_word_classes():
     large_list = []
     unique_codes = set()
     dictionary_talbanken = open_dict('clas.split()sdict.json')
-    text = read_traning_csv('Trainingdata/testmerge.csv')
+    text = read_traning_csv('Trainingdata/many_abstracts.csv')
     for elem in text:
         large_list.append(classify_data(elem, dictionary_talbanken))
     for sublist in large_list:
@@ -211,7 +211,7 @@ if __name__ == "__main__":
     # save_dict(fl)
     
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes('Trainingdata/testmerge.csv')
+    abstracts_to_word_classes('Trainingdata/many_abstracts.csv')
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('Trainingdata/translated_sample.txt', "WC_transl.json")

@@ -27,7 +27,7 @@ WC_transl = open_dict(WC_transl_dir)
 WC_non_transl = open_dict(WC_non_transl_dir)
 
 # text to analyse
-Training_data_dir = 'Trainingdata/testmerge.csv'
+Training_data_dir = 'Trainingdata/many_abstracts.csv'
 translated_sample_dir = 'Trainingdata/translated_sample.txt'
 real_sample_dir = 'Trainingdata/real_sample.txt'
 
