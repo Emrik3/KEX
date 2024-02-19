@@ -183,7 +183,6 @@ def probofhappening3d(A, classtext):
 
 def grammar_predictor(A, classtext, textlist):
     d = {}
-    print(classtext)
     classtextnum = []
     error = []
     for i in range(len(classtext)):

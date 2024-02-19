@@ -1,5 +1,5 @@
-from sb_corpus_reader import SBCorpusReader
-import nltk
+#from sb_corpus_reader import SBCorpusReader
+#import nltk
 import json
 import requests
 import pandas as pd

@@ -6,6 +6,7 @@ from TransitionMatrix import *
 import requests
 from bs4 import BeautifulSoup
 from choose_word_classes import *
+from sympy import *
 
 
 
@@ -48,27 +49,28 @@ def evaluate_grammar():
 
 def predict_NA():
     """Predicts the unknown words in a given text"""
-    predict(TM_all, translated_sample_dir, WC_transl, grammar_predictor)
-    predict(TM_all_2nd, translated_sample_dir, WC_transl, grammar_predictor2)
-    predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
+    #predict(TM_all, translated_sample_dir, WC_transl, grammar_predictor)
+    #predict(TM_all_2nd, translated_sample_dir, WC_transl, grammar_predictor2)
+    #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
+    predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
     #predict(TM_all_4th,translated_sample_dir, WC_transl, grammar_predictor4)
 
 def get_url():
     # get URL
-    """page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
+    page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
 
     soup = BeautifulSoup(page.content, 'html.parser')
 
     # display scraped data
-    print(soup.prettify())"""
+    print(soup.prettify())
 
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
     #update_TM()
-    plot()
-    metrics()
-    evaluate_grammar()
+    #plot()
+    #metrics()
+    #evaluate_grammar()
     predict_NA()
     #get_url()
 
