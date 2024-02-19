@@ -52,7 +52,7 @@ def predict_NA():
     #predict(TM_all, translated_sample_dir, WC_transl, grammar_predictor)
     #predict(TM_all_2nd, translated_sample_dir, WC_transl, grammar_predictor2)
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
-    predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
+    #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
     #predict(TM_all_4th,translated_sample_dir, WC_transl, grammar_predictor4)
 
 def get_url():

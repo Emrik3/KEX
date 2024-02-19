@@ -125,7 +125,7 @@ def iterate_tm_4_order(word_classes, setup):
         current_index = class_to_index[current_class]
         next_index = class_to_index[next_class]
 
-        # The calculation
+        # The calculation; Need this explained not sure if it is correct
         if setup == [0, 0, 0, 0, 1]:
             transition_matrix[old_3_index][old_2_index][old_index][current_index][next_index] += 1
         if setup == [0, 0, 0, 1, 0]:
@@ -135,7 +135,7 @@ def iterate_tm_4_order(word_classes, setup):
         if setup == [0, 1, 0, 0, 0]:
             transition_matrix[old_3_index][old_index][current_index][next_index][old_2_index] += 1
         if setup == [1, 0, 0, 0, 0]:
-            transition_matrix[old_3_index][old_2_index][old_index][next_index][current_index] += 1
+            transition_matrix[old_2_index][old_index][current_index][next_index][old_3_index] += 1
 
     for i in range(mat_size):  # for some row
         for k in range(mat_size): # every row has another row in the "new" direction because 3d
@@ -276,9 +276,9 @@ def run_1_order_future(file, t_matrix_name):
 
 
 if __name__ == "__main__":
-    #run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
-    """run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
-    run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
-    run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
-    run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')"""
+    run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
+    #run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
+    #run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
+    #run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
+    #run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')
     run_1_order_future("wordclasslists/WC_all.json", "transition_matrices/TM_all_future")
