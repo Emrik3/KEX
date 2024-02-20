@@ -12,18 +12,18 @@ from sympy import *
 
 def update_TM():
     """Updates Markov chains"""
-    run_1_order(WC_all_dir,TM_all_dir)
-    run_1_order(WC_transl_dir, TM_transl_dir)
-    run_1_order(WC_non_transl_dir, TM_non_transl_dir)
+    #run_1_order(WC_all_dir,TM_all_dir)
+    #run_1_order(WC_transl_dir, TM_transl_dir)
+    #run_1_order(WC_non_transl_dir, TM_non_transl_dir)
 
-    run_2_order(WC_all_dir, TM_all_2nd_dir)
-    run_3_order(WC_all_dir, TM_all_3rd_dir)
-    run_4_order(WC_all_dir, TM_all_4th_dir, setup = [0, 0, 0, 0, 1]) #1 för den man vill kolla på
+    #run_2_order(WC_all_dir, TM_all_2nd_dir)
+    #run_3_order(WC_all_dir, TM_all_3rd_dir)
+    run_4_order(WC_all_dir, TM_all_4th_dir, setup = [0, 0, 1, 0, 0]) #1 för den man vill kolla på
     #run_5_order(WC_all_dir, TM_all_5th_dir)
 
 def update_WC():
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes(Training_data_dir, no_NA=True)
+    abstracts_to_word_classes(Training_data_dir, no_NA=False)
 
     """Translates txt file to word classes"""
     translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
@@ -49,29 +49,22 @@ def evaluate_grammar():
 
 def predict_NA():
     """Predicts the unknown words in a given text"""
+
+    """One thing that happends is if it is a row with all zeos the first index is returned aand gives NA because of that
+    I fized this by replacing NA with substantiv in the printed result
+    But this should not happen unless there is a ordföljd that never happend before!!!"""
+
     #predict(TM_all, translated_sample_dir, WC_transl, grammar_predictor)
     #predict(TM_all_2nd, translated_sample_dir, WC_transl, grammar_predictor2)
-    #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
+    predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
-    #predict(TM_all_4th,translated_sample_dir, WC_transl, grammar_predictor4)
+
 
 def get_url():
     # get URL
     page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
-<<<<<<< HEAD
-    
-    soup = BeautifulSoup(page.content, 'html.parser')
- 
-    # display scraped data
-    print(soup.prettify())
-
-    # See this if you want to scrape wikipedia: https://stackoverflow.com/questions/61091843/scraping-links-from-wikipedia
-    
-
-=======
 
     soup = BeautifulSoup(page.content, 'html.parser')
->>>>>>> 8397053c86c3994c7ddd279f5cbdf1c84d3f49a5
 
     # display scraped data
     print(soup.prettify())

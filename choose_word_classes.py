@@ -63,6 +63,32 @@ class_to_index = {
     'HS' : 23,
     'MID' : 24
     }
+class_to_indexnoNA = {
+    'NN': 0,
+    'VB': 1,
+    'PP': 2,
+    'JJ': 3,
+    'AB': 4,
+    'PM': 5,
+    '.': 6,
+    'DT': 7,
+    'KN': 8,
+    'PC': 9,
+    'SN': 10,
+    'PS': 11,
+    'PN': 12,
+    'HP': 13,
+    'RO': 14,
+    'HA': 15,
+    'PL': 16,
+    'MAD': 17,
+    'UO' : 18,
+    'HD' : 19,
+    'RG' : 20,
+    'IN' : 21,
+    'HS' : 22,
+    'MID' : 23
+    }
 class_to_index_ww = {
     #Lite motivationer, kommer raffineras
     #PN = PM = PS = IN <=> pronomen = egennamn dvs Han = Stockholm = hans = AJ!

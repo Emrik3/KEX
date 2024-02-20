@@ -44,7 +44,7 @@ def classify_data(text, lib, no_NA):
             if len(NA_list)>0:
                 #print(classlist)
                 #print(len(words))
-                for _ in range(len(words)):
+                for _ in range(len(words)): # Dont understand this!
                     classlist.pop(-1)
                 NA_list = []
             else:
@@ -211,13 +211,11 @@ if __name__ == "__main__":
     # save_dict(fl)
     
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes('Trainingdata/many_abstracts.csv')
+    #abstracts_to_word_classes('Trainingdata/many_abstracts.csv', False)
 
     """Translates txt file to word classes"""
-    #translations_to_word_classes('Trainingdata/translated_sample.txt', "WC_transl.json")
     #translations_to_word_classes('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json')
-    #translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json")
-    #translations_to_word_classes('Trainingdata/real_sample.txt', 'WC_non_transl.json')
+    translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json", False)
 
     """
     TM_all = open_dict('transition_matrices/TM_all')
