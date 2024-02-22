@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import json
 from TransitionMatrix import class_to_index
 import numpy as np
+from collections import Counter
 
 
 def transition_matrix_vis(matrix):
@@ -20,6 +21,70 @@ def transition_matrix_vis(matrix):
     ax.set_xticklabels(keys_to_include)
     ax.set_yticklabels(keys_to_include)
     plt.show()
+
+def organize_and_plot(res):
+    wrong_predicted_class = [] # When the model predicted wrong it predicted these wc
+    wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
+    corr_actual_class = [] # When the model predicted right it predicted these wc
+
+    for elem in res:
+        wrong_predicted_class.append(elem[0])
+        wrong_actual_class.append(elem[1])
+        corr_actual_class.append(elem[2])
+    wrong_predicted_class = sum(wrong_predicted_class,[])
+    wrong_actual_class = sum(wrong_actual_class,[])
+    corr_actual_class = sum(corr_actual_class,[])
+
+    # new list with all the wc that appeared in the test text
+    all_actual_classes = wrong_actual_class + corr_actual_class
+
+    # Counts how many times each wc appears in each list and places these in a dictionary
+
+    total_occurrences = dict(Counter(all_actual_classes)) #Counter sorts them so {1(nouns):300 times, 2(verb):150 times..etc)
+    correct_counts = Counter(corr_actual_class)
+    wrong_counts = Counter(wrong_predicted_class)
+
+    #Sorts them
+    total_occurrences = {k: total_occurrences[k] for k in sorted(total_occurrences)}
+    correct_counts = {k: correct_counts[k] for k in sorted(correct_counts)}
+    wrong_counts = {k: wrong_counts[k] for k in sorted(wrong_counts)}
+
+
+
+    plot_missed(correct_counts, wrong_counts)
+    plot_found(correct_counts, total_occurrences)
+
+def plot_missed(correct_vals, incorrect_vals):
+    x_right = []
+    x_left = []
+    x = []
+    for x_values in correct_vals.keys():
+        x_right.append((x_values+0.15))
+        x_left.append(x_values-0.15)
+        x.append(x_values)
+    plt.bar(x_right, correct_vals.values(), 0.3, label='Correct')
+    plt.bar(x_left, incorrect_vals.values(), 0.3, label='Incorrect')
+    plt.title('Correct vs incorrect predictions for a certain class')
+    plt.xticks(x)
+    plt.legend()
+    plt.show()
+
+def plot_found(correct_counts, total_occurrences):
+    x_right = []
+    x_left = []
+    x = []
+    for x_values in correct_counts.keys():
+        x_right.append((x_values+0.15))
+    for x_values in total_occurrences.keys():
+        x_left.append(x_values-0.15)
+        x.append(x_values)
+    plt.bar(x_left, total_occurrences.values(), 0.3, label='Total amount in test data')
+    plt.bar(x_right, correct_counts.values(), 0.3, label='Correctly identified')
+    plt.title('Correct identification of each word class out of total')
+    plt.xticks(x)
+    plt.legend()
+    plt.show()
+
 
 if __name__ == "__main__":
     pass

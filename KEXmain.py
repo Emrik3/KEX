@@ -56,8 +56,12 @@ def predict_NA():
 
     #predict(TM_all, translated_sample_dir, WC_transl, grammar_predictor)
     #predict(TM_all_2nd, translated_sample_dir, WC_transl, grammar_predictor2)
-    predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
+    #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
+
+    #Using a csv file for a larger test
+    results = predict_csv(TM_all, 'Trainingdata/export.csv', WC_transl, grammar_predictor_percentage_test)
+    organize_and_plot(results)
 
 def update_end_prob():
     text = read_traning_csv('Trainingdata/many_abstracts.csv')
@@ -86,8 +90,8 @@ def main():
     #plot()
     #metrics()
     #evaluate_grammar()
-    #predict_NA()
-    update_end_prob()
+    predict_NA()
+    #update_end_prob()
     #get_url()
 
 

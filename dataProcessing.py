@@ -114,7 +114,7 @@ def check_english(text):
     return english
 
 
-def text_cleaner(text):
+def text_cleaner(text, no_dot):
     #In the future we will want to preserve symbols which are supposed to be there such as comas
     """Cleans text from symbols hindering word class identification"""
     text = text.replace('- ', '')
@@ -127,7 +127,11 @@ def text_cleaner(text):
             words = words.replace(substring, "")
         first_clean.append(words)
     # Then removes all unwanted characters
-    common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö".split() # Removed the dot, i think it sitll works
+    if no_dot:
+        common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö".split() # Removed the dot, i think it sitll works
+    else:
+        common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö .".split() # Removed the dot, i think it sitll works
+
     new_text_list = []
     for word in first_clean:
         new_word = ""
