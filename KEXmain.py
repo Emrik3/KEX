@@ -59,6 +59,16 @@ def predict_NA():
     predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
+def update_end_prob():
+    text = read_traning_csv('Trainingdata/many_abstracts.csv')
+    fulltext = ""
+    for abstract in text:
+        if check_english(abstract.split()):
+            continue
+        abstract = text_cleaner(abstract)
+        fulltext += ' ' + abstract
+    ending_freq(fulltext, ending_list)
+
 
 def get_url():
     # get URL
@@ -76,7 +86,8 @@ def main():
     #plot()
     #metrics()
     #evaluate_grammar()
-    predict_NA()
+    #predict_NA()
+    update_end_prob()
     #get_url()
 
 

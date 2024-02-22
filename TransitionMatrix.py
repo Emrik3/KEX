@@ -1,8 +1,8 @@
 import json
 
 import numpy as np
-from dataProcessing import open_dict
-from choose_word_classes import class_to_index
+from dataProcessing import open_dict, read_traning_csv, read_translation_txt, text_cleaner, save_dict
+from choose_word_classes import class_to_index, ending_list
 
 
 
@@ -275,10 +275,37 @@ def run_1_order_future(file, t_matrix_name):
     return transition_matrix
 
 
+def ending_freq(text, ending_list):
+    # Saves dictionary of probability of ending, does not look at one letter words
+    ending_freq = {}
+    #text = text_cleaner(text)
+    for ending in ending_list:
+        ending_freq[ending] = 0
+    ending_prob = ending_freq
+    words = text.split(' ')
+    for word in words:
+        if len(word) > 1:
+            ending_freq[word[-2:]] += 1
+    total_words = sum(ending_freq.values())
+    for ending in ending_list:
+        ending_prob[ending] = ending_freq[ending] / total_words
+
+    ending_prob = dict(sorted(ending_prob.items(), key=lambda item: item[1], reverse=True))
+    json_object = json.dumps(ending_prob, indent=4)
+    with open("dictionaries/ending_prob.json", "w") as outfile:
+        outfile.write(json_object)
+
+
+def emmision_matrix():
+    # Calculates a matrix containing the rows of a an endng and the column beig the wordclass, i.e given an ending, what is the probability of a certian wwordclass
+    pass
+
 if __name__ == "__main__":
-    run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
+    #run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
     #run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
     #run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
     #run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
     #run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')
-    run_1_order_future("wordclasslists/WC_all.json", "transition_matrices/TM_all_future")
+    #run_1_order_future("wordclasslists/WC_all.json", "transition_matrices/TM_all_future")
+    text = read_translation_txt('Trainingdata/translated_sample.txt')
+    ending_freq(text, ending_list)

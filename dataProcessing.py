@@ -4,6 +4,7 @@ import json
 import requests
 import pandas as pd
 
+
 """
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -52,6 +53,8 @@ def classify_data(text, lib, no_NA):
         else:
             classlist.append('.')
     return classlist
+
+
 
 
 def save_dict(to_save):
@@ -124,7 +127,7 @@ def text_cleaner(text):
             words = words.replace(substring, "")
         first_clean.append(words)
     # Then removes all unwanted characters
-    common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö .".split()
+    common_clutter = "a b c d e f g h i j k l m n o p q r s t u v w x y z å ä ö".split() # Removed the dot, i think it sitll works
     new_text_list = []
     for word in first_clean:
         new_word = ""

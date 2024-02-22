@@ -201,4 +201,18 @@ number_to_class_small = {
     5: "Punkt",
     6: "Determinerare"
 }
+def create_ending_list():
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Å', 'Ä', 'Ö']
+    ending_list = []
+    for letter1 in letters:
+        for letter2 in letters:
+            ending_list.append(letter1.lower() + letter2.lower())
 
+    return ending_list
+
+ending_list = create_ending_list()
+
+
+
+if __name__ == '__main__':
+    print(create_ending_list())
