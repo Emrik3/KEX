@@ -296,9 +296,38 @@ def ending_freq(text, ending_list):
         outfile.write(json_object)
 
 
-def emmision_matrix():
+def emmision_matrix(file, t_matrix_name):
     # Calculates a matrix containing the rows of a an endng and the column beig the wordclass, i.e given an ending, what is the probability of a certian wwordclass
-    pass
+    word_classes = open_dict(file)
+    # Creating an empty matrix
+    transition_matrix = []
+    mat_size = max(class_to_index.values()) + 1
+    
+    #Something like this.
+    """for _ in range(mat_size):
+        transition_matrix.append([0] * mat_size)
+
+    for i in range(len(word_classes) - 1):
+        # indexes written out a bit
+        current_class = word_classes[i+1]
+        next_class = word_classes[i]
+        current_index = class_to_index[current_class]
+        next_index = class_to_index[next_class]
+
+        # The calculation
+        transition_matrix[current_index][next_index] += 1
+
+    # Converting to a probabilty matrix (all rows sum to 1)
+    for i in range(mat_size): # for some row
+        n = sum(transition_matrix[i]) # summing the row
+        if n>0:
+            for j in range(mat_size): # for element in the row
+                transition_matrix[i][j] = transition_matrix[i][j]/n # normalizing
+                """
+    with open(t_matrix_name, "w") as outfile:
+        json.dump(transition_matrix, outfile)
+    return transition_matrix
+
 
 if __name__ == "__main__":
     #run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
