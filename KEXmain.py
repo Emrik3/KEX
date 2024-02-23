@@ -23,12 +23,12 @@ def update_TM():
 
 def update_WC():
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes(Training_data_dir, no_NA=False)
+    abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=True)
+    abstracts_to_word_classes(export_dir, WC_export_dir, no_NA=True)
 
     """Translates txt file to word classes"""
-    translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
-    translations_to_word_classes(translated_sample_dir, WC_transl_dir, no_NA = False)
-
+    #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
+    #translations_to_word_classes(translated_sample_dir, WC_transl_dir, no_NA = False)
 def plot():
     """Plots a 2D transition Matrix"""
     transition_matrix_vis(TM_all)
@@ -59,9 +59,25 @@ def predict_NA():
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
+
     #Using a csv file for a larger test
-    results = predict_csv(TM_all, 'Trainingdata/export.csv', WC_transl, grammar_predictor_percentage_test)
+    #results = predict_csv(TM_all, export_dir, WC_export, grammar_predictor_percentage_test)
+   # organize_and_plot(results)
+
+    #results = predict_csv(TM_all_2nd, export_dir, WC_export, grammar_predictor_percentage_test2)
+    #organize_and_plot(results)
+
+    #results = predict_csv(TM_all_3rd, export_dir, WC_export, grammar_predictor_percentage_test3)
+    #organize_and_plot(results)
+
+    """Bör lägga till [0, 0, 1, 0, 0] som argument här men för tillfället funkar det såhär:
+    1. Kör run_4_order med vald config t.ex[0, 0, 1,0, 0]
+    2. Gå till GrammarTests ->grammar_predictor_percentage_test4 och 
+    ändra j+/- (på 2 ställen) till det som överenstämmer med konfigurationen t.ex.[0, 1,0,0,0]-> j-1, j+1, j+2, j+3
+    Ändra rangen på dessa 2 ställen också"""
+    results = predict_csv(TM_all_4th, export_dir, WC_export, grammar_predictor_percentage_test4)
     organize_and_plot(results)
+
 
 def update_end_prob():
     text = read_traning_csv('Trainingdata/many_abstracts.csv')
@@ -69,7 +85,7 @@ def update_end_prob():
     for abstract in text:
         if check_english(abstract.split()):
             continue
-        abstract = text_cleaner(abstract)
+        abstract = text_cleaner(abstract, no_dot=True)
         fulltext += ' ' + abstract
     ending_freq(fulltext, ending_list)
 

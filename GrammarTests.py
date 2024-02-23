@@ -101,7 +101,10 @@ def predict_csv(TM, giventext, WC_list, orderfunc):
     # What happends when NA is given, that is when it should predict, fix this code for this but in other functin
     text = read_traning_csv(giventext)
     res = []
+    print(len(text))
+    i=0
     for textt in text:
+        print(i)
         textt = text_cleaner(textt, no_dot=False)
         sentences = textt.lower().split('. ')
         textlist = []
@@ -109,6 +112,7 @@ def predict_csv(TM, giventext, WC_list, orderfunc):
             words = sentence.split(' ')
             textlist.append(words)
         res.append(orderfunc(TM, WC_list, textlist))
+        i+=1
     return res
 
 def probofhappening1d(A, classtext):
@@ -307,7 +311,7 @@ def grammar_predictor2(A, classtext, textlist):
                     d[textlist[i][j]] = number_to_class[result[i][j]]
     return d
 
-def grammar_predictor_percentage_test_2(A, classtext, textlist):
+def grammar_predictor_percentage_test2(A, classtext, textlist):
     """Does the same thing as grammar predictor but creates is own NA:s and ignores
     spots where NA exists. The old result is saved and compared to the prediction."""
     classtextnum = []
@@ -329,10 +333,10 @@ def grammar_predictor_percentage_test_2(A, classtext, textlist):
     for i in range(len(result)):
         for j in range(1, len(result[i])-2):
             if rnd.randint(1, 10) == 10:  # every 1 out of 10 words
-                if result[i][j] != 0 and result[i][j -1] != 0:  # current and following words are not already NA
+                if result[i][j] != 0 and result[i][j -1] != 0 and result[i][j-2] != 0:  # current and following words are not already NA
                     result[i][j] = -1  # sets this word to NA
                     tot_counter += 1
-    maxprob = np.zeros((len(A)-1, len(A)-1))
+    maxprob = np.zeros((len(A), len(A)))
     for i in range(1,len(A)):
         for j in range(1,len(A)):
             maxprob[i-1][j-1] = A[i][j].index(max(A[i][j]))
@@ -343,7 +347,7 @@ def grammar_predictor_percentage_test_2(A, classtext, textlist):
     for i in range(len(result)):
         for j in range(1, len(result[i]) - 2):
             if result[i][j] == -1: # creates -1 which doesn't exist in class to index and treats this as NA(0) was treated before
-                result[i][j] = maxprob[int(result[i][j - 1][j-2])]
+                result[i][j] = maxprob[int(result[i][j - 2])][int(result[i][j - 1])]
                 if result[i][j] == copy_result[i][j]: #If the prediction was correct
                     correct_counter += 1
                     correct_predicted_class.append(copy_result[i][j]) #Doesn't matter if copy or not since they are the same
@@ -390,6 +394,54 @@ def grammar_predictor3(A, classtext, textlist):
                     d[textlist[i][j]] = number_to_class[result[i][j]]
     return d
 
+def grammar_predictor_percentage_test3(A, classtext, textlist):
+    """Does the same thing as grammar predictor but creates is own NA:s and ignores
+    spots where NA exists. The old result is saved and compared to the prediction."""
+    classtextnum = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+    copy_result = copy.deepcopy(result)
+    tot_counter = 0
+    for i in range(len(result)):
+        for j in range(1, len(result[i])-2):
+            if rnd.randint(1, 10) == 10:  # every 1 out of 10 words
+                if result[i][j] != 0 and result[i][j -1] != 0 and result[i][j-2] != 0 and result[i][j-3] != 0:  # current and following words are not already NA
+                    result[i][j] = -1  # sets this word to NA
+                    tot_counter += 1
+    maxprob = np.zeros((len(A), len(A), len(A)))
+    for i in range(1,len(A)):
+        for j in range(1,len(A)):
+            for k in range(1,len(A)):
+                maxprob[i-1][j-1][k-1] = A[i][j][k].index(max(A[i][j][k]))
+    correct_counter = 0
+    correct_predicted_class = []
+    wrong_predicted_class = []
+    wrong_actual_class = []
+    for i in range(len(result)):
+        for j in range(1, len(result[i]) - 2):
+            if result[i][j] == -1: # creates -1 which doesn't exist in class to index and treats this as NA(0) was treated before
+                result[i][j] = maxprob[int(result[i][j - 3])][int(result[i][j - 2])][int(result[i][j - 1])]
+                if result[i][j] == copy_result[i][j]: #If the prediction was correct
+                    correct_counter += 1
+                    correct_predicted_class.append(copy_result[i][j]) #Doesn't matter if copy or not since they are the same
+                else:
+                    wrong_predicted_class.append(result[i][j])
+                    wrong_actual_class.append(copy_result[i][j])
+    #print("amount of words classfied correctly: " + str(correct_counter) + "of " + str(tot_counter))
+    #print("in percent: " + str(100 * correct_counter / tot_counter) + "%")
+    return wrong_predicted_class, wrong_actual_class, correct_predicted_class
+
 
 def grammar_predictor4(A, classtext, textlist):
     classtextnum = []
@@ -424,6 +476,58 @@ def grammar_predictor4(A, classtext, textlist):
                     print(textlist[i][j] + " predicted as " + str(number_to_class[int(result[i][j])]))
                     d[textlist[i][j]] = number_to_class[result[i][j]]
     return d
+
+def grammar_predictor_percentage_test4(A, classtext, textlist):
+    """Does the same thing as grammar predictor but creates is own NA:s and ignores
+    spots where NA exists. The old result is saved and compared to the prediction."""
+    classtextnum = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    temp_list = []
+    for i in classtextnum:
+        if i == particular_value:
+            temp_list.append(i)
+            result.append(temp_list)
+            temp_list = []
+        else:
+            temp_list.append(i)
+    result.append(temp_list)
+    copy_result = copy.deepcopy(result)
+    tot_counter = 0
+    for i in range(len(result)):
+        for j in range(2, len(result[i])-2): #CHANGE THIS RANGE
+            if rnd.randint(1, 10) == 10:  # every 1 out of 10 words
+                """ADJUST HERE CURRENTLY: [0 0 1 0 0]"""
+                if result[i][j] != 0 and result[i][j -1] != 0 and result[i][j+1] != 0 and result[i][j+2] != 0 and result[i][j-2] != 0:  # current and following words are not already NA
+                    result[i][j] = -1  # sets this word to NA
+                    tot_counter += 1
+    maxprob = np.zeros((len(A), len(A), len(A), len(A)))
+    for i in range(len(A)):
+        for j in range(len(A)):
+            for k in range(len(A)):
+                for p in range(len(A)):
+                    maxprob[i][j][k][p] = A[i][j][k][p].index(max(A[i][j][k][p]))
+    correct_counter = 0
+    correct_predicted_class = []
+    wrong_predicted_class = []
+    wrong_actual_class = []
+    for i in range(len(result)):
+        for j in range(2, len(result[i]) - 2): #CHANGE THIS RANGE
+            if result[i][j] == -1: # creates -1 which doesn't exist in class to index and treats this as NA(0) was treated before
+                """ADJUST HERE WHEN CHANGING FROM [0 0 1 0 0]"""
+                result[i][j] = maxprob[int(result[i][j - 2])][int(result[i][j -1 ])][int(result[i][j +1])][
+                    int(result[i][j +2])]
+                if result[i][j] == copy_result[i][j]: #If the prediction was correct
+                    correct_counter += 1
+                    correct_predicted_class.append(copy_result[i][j]) #Doesn't matter if copy or not since they are the same
+                else:
+                    wrong_predicted_class.append(result[i][j])
+                    wrong_actual_class.append(copy_result[i][j])
+    #print("amount of words classfied correctly: " + str(correct_counter) + "of " + str(tot_counter))
+    #print("in percent: " + str(100 * correct_counter / tot_counter) + "%")
+    return wrong_predicted_class, wrong_actual_class, correct_predicted_class
 
 
 def grammar_predictor5(A, classtext, textlist):

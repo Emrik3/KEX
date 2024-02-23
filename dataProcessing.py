@@ -153,7 +153,7 @@ def test():
             k += 1
     #print("Number of words that could not me classified: " + str(k) + " out of " + str(len(classified)))
 
-def abstracts_to_word_classes(file, no_NA):
+def abstracts_to_word_classes(file, WC_dir, no_NA):
     """Converts the text to word classes"""
     k = 0  # Counting amount of unclassified words
     classified_list = []  # [text, text, text..] (with text in word class form)
@@ -163,7 +163,7 @@ def abstracts_to_word_classes(file, no_NA):
     for text in text_all:
         if check_english(text.split()):
             continue
-        text = text_cleaner(text)
+        text = text_cleaner(text, no_dot=False)
         classified = classify_data(text, dictionary_talbanken, no_NA)
         for i in classified:
             if i == 'NA':
@@ -174,7 +174,7 @@ def abstracts_to_word_classes(file, no_NA):
             word_class_list.append(word_class)
     print("Number of words that could not be classified: " + str(k) + " out of " + str(len(word_class_list)))
     print("in percent " + str(100*k/len(word_class_list)))
-    with open('wordclasslists/WC_all.json', "w") as outfile:
+    with open(WC_dir, "w") as outfile:
         json.dump(word_class_list, outfile)
     #print(word_class_list)
     return word_class_list
@@ -184,7 +184,7 @@ def translations_to_word_classes(file, filename, no_NA):
     # Takes a txt file and converts it to word classes
     dictionary_talbanken = open_dict('dictionaries/classdict.json')
     text = read_translation_txt(file)
-    text = text_cleaner(text)
+    text = text_cleaner(text, no_dot=False)
     classified = classify_data(text, dictionary_talbanken, no_NA)
     k = 0
     for i in classified:

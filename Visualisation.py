@@ -49,37 +49,42 @@ def organize_and_plot(res):
     correct_counts = {k: correct_counts[k] for k in sorted(correct_counts)}
     wrong_counts = {k: wrong_counts[k] for k in sorted(wrong_counts)}
 
+    print(total_occurrences)
+    print(correct_counts)
+    print(wrong_counts)
 
 
     plot_missed(correct_counts, wrong_counts)
     plot_found(correct_counts, total_occurrences)
 
-def plot_missed(correct_vals, incorrect_vals):
+def plot_missed(correct, incorrect):
     x_right = []
     x_left = []
     x = []
-    for x_values in correct_vals.keys():
+    for x_values in correct.keys():
         x_right.append((x_values+0.15))
+    for x_values in incorrect.keys():
         x_left.append(x_values-0.15)
         x.append(x_values)
-    plt.bar(x_right, correct_vals.values(), 0.3, label='Correct')
-    plt.bar(x_left, incorrect_vals.values(), 0.3, label='Incorrect')
+    plt.bar(x_left, incorrect.values(), 0.3, label='Incorrect')
+    plt.bar(x_right, correct.values(), 0.3, label='Correct')
     plt.title('Correct vs incorrect predictions for a certain class')
+
     plt.xticks(x)
     plt.legend()
     plt.show()
 
-def plot_found(correct_counts, total_occurrences):
+def plot_found(correct, total_occurrences):
     x_right = []
     x_left = []
     x = []
-    for x_values in correct_counts.keys():
+    for x_values in correct.keys():
         x_right.append((x_values+0.15))
     for x_values in total_occurrences.keys():
         x_left.append(x_values-0.15)
         x.append(x_values)
     plt.bar(x_left, total_occurrences.values(), 0.3, label='Total amount in test data')
-    plt.bar(x_right, correct_counts.values(), 0.3, label='Correctly identified')
+    plt.bar(x_right, correct.values(), 0.3, label='Correctly identified')
     plt.title('Correct identification of each word class out of total')
     plt.xticks(x)
     plt.legend()

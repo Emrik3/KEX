@@ -24,15 +24,18 @@ TM_all_future = open_dict(TM_all_future_dir)
 WC_all_dir = "wordclasslists/WC_all.json"
 WC_transl_dir = 'wordclasslists/WC_transl.json'
 WC_non_transl_dir = 'wordclasslists/WC_non_transl.json'
+WC_export_dir = 'wordclasslists/WC_export'
 # Opening wordclasslists
 WC_all = open_dict(WC_all_dir)
 WC_transl = open_dict(WC_transl_dir)
 WC_non_transl = open_dict(WC_non_transl_dir)
+WC_export = open_dict(WC_export_dir)
 
 # text to analyse
 Training_data_dir = 'Trainingdata/many_abstracts.csv'
 translated_sample_dir = 'Trainingdata/translated_sample.txt'
 real_sample_dir = 'Trainingdata/real_sample.txt'
+export_dir = 'Trainingdata/export.csv'
 
 
 """Choosing which word classes should be part of the transition matrix"""
