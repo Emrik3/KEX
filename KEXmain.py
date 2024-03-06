@@ -12,19 +12,20 @@ from sympy import *
 
 def update_TM():
     """Updates Markov chains"""
-    #run_1_order(WC_all_dir,TM_all_dir)
+    run_1_order(WC_all_dir,TM_all_dir)
     #run_1_order(WC_transl_dir, TM_transl_dir)
     #run_1_order(WC_non_transl_dir, TM_non_transl_dir)
 
     #run_2_order(WC_all_dir, TM_all_2nd_dir)
     #run_3_order(WC_all_dir, TM_all_3rd_dir)
-    run_4_order(WC_all_dir, TM_all_4th_dir, setup = [0, 0, 1, 0, 0]) #1 för den man vill kolla på
-    #run_5_order(WC_all_dir, TM_all_5th_dir)
+    #run_4_order(WC_all_dir, TM_all_4th_dir, setup = [0, 0, 1, 0, 0]) #1 för den man vill kolla på
+    #run_5_order(WC_all_dir, TM_all_5th_dir, setup = [0, 0, 1, 0, 0, 0])
+    #run_6_order(WC_all_dir, TM_all_6th_dir, setup = [0, 0, 0, 1, 0, 0, 0])
 
 def update_WC():
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=True)
-    abstracts_to_word_classes(export_dir, WC_export_dir, no_NA=True)
+    abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False)
+    abstracts_to_word_classes(export_dir, WC_export_dir, no_NA=False)
 
     """Translates txt file to word classes"""
     #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
@@ -62,7 +63,7 @@ def predict_NA():
 
     #Using a csv file for a larger test
     #results = predict_csv(TM_all, export_dir, WC_export, grammar_predictor_percentage_test)
-   # organize_and_plot(results)
+    #organize_and_plot(results)
 
     #results = predict_csv(TM_all_2nd, export_dir, WC_export, grammar_predictor_percentage_test2)
     #organize_and_plot(results)
@@ -78,6 +79,11 @@ def predict_NA():
     results = predict_csv(TM_all_4th, export_dir, WC_export, grammar_predictor_percentage_test4)
     organize_and_plot(results)
 
+    #5th order now with .npy format
+    #results = predict_csv(TM_all_5th, export_dir, WC_export, grammar_predictor_percentage_test5)
+    #organize_and_plot(results)
+
+    #6th order when TM_all_6th.npy exists, currently too slow normalization
 
 def update_end_prob():
     text = read_traning_csv('Trainingdata/many_abstracts.csv')
@@ -103,10 +109,10 @@ def main():
     """Uses the finished model to extract results"""
     #update_WC()
     #update_TM()
-    #plot()
+    plot()
     #metrics()
     #evaluate_grammar()
-    predict_NA()
+    #predict_NA()
     #update_end_prob()
     #get_url()
 

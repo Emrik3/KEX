@@ -138,6 +138,7 @@ def iterate_tm_4_order(word_classes, setup):
             transition_matrix[old_2_index][old_index][current_index][next_index][old_3_index] += 1
 
     for i in range(mat_size):  # for some row
+        print(i)
         for k in range(mat_size): # every row has another row in the "new" direction because 3d
             for p in range(mat_size):
                 for q in range(mat_size):
@@ -150,12 +151,15 @@ def iterate_tm_4_order(word_classes, setup):
 def run_4_order(file, t_matrix_name, setup):
     word_classes = open_dict(file)
     tm_4rd_order = iterate_tm_4_order(word_classes, setup)
+    print("Here")
     tm_4rd_order = tm_4rd_order.tolist()
+    print("there")
     with open(t_matrix_name, "w") as outfile:
         json.dump(tm_4rd_order, outfile)
+    print("exit")
     return tm_4rd_order
 
-def iterate_tm_5_order(word_classes):
+def iterate_tm_5_order(word_classes, setup):
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
     transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size, mat_size, mat_size))
@@ -174,8 +178,19 @@ def iterate_tm_5_order(word_classes):
         current_index = class_to_index[current_class]
         next_index = class_to_index[next_class]
 
-        # The calculation
-        transition_matrix[old_4_index][old_3_index][old_2_index][old_index][current_index][next_index] += 1
+        # The calculation; Need this explained not sure if it is correct
+        if setup == [0, 0, 0, 0, 0, 1]:
+            transition_matrix[old_4_index][old_3_index][old_2_index][old_index][current_index][next_index] += 1
+        if setup == [0, 0, 0, 0, 1, 0]:
+            transition_matrix[old_4_index][old_3_index][old_2_index][old_index][next_index][current_index] += 1
+        if setup == [0, 0, 0, 1, 0, 0]:
+            transition_matrix[old_4_index][old_3_index][old_2_index][current_index][next_index][old_index] += 1
+        if setup == [0, 0, 1, 0, 0, 0]:
+            transition_matrix[old_4_index][old_3_index][old_index][current_index][next_index][old_2_index] += 1
+        if setup == [0, 1, 0, 0, 0, 0]:
+            transition_matrix[old_4_index][old_2_index][old_index][current_index][next_index][old_3_index] += 1
+        if setup == [1, 0, 0, 0, 0, 0]:
+            transition_matrix[old_3_index][old_2_index][old_index][current_index][next_index][old_4_index] += 1
 
     for i in range(mat_size):  # for some row
         print(i)
@@ -189,25 +204,26 @@ def iterate_tm_5_order(word_classes):
                                 transition_matrix[i][k][p][q][z][j] = transition_matrix[i][k][p][q][z][j] / n  # normalizing
     return transition_matrix
 
-def run_5_order(file, t_matrix_name):
+def run_5_order(file, t_matrix_name, setup):
     word_classes = open_dict(file)
-    tm_5rd_order = iterate_tm_5_order(word_classes)
-    tm_5rd_order = tm_5rd_order.tolist()
-    with open(t_matrix_name, "w") as outfile:
-        json.dump(tm_5rd_order, outfile)
-    return tm_5rd_order
+    tm_5th_order = iterate_tm_5_order(word_classes, setup)
+    print("here")
+    np.save(t_matrix_name, tm_5th_order) # Avoid json and .tolist() since they are slow
 
-def iterate_tm_6_order(word_classes):
+    print("exit")
+    return tm_5th_order
+
+def iterate_tm_6_order(word_classes, setup):
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
-    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size,mat_size, mat_size))
-    for i in range(4, len(word_classes) - 1):
+    transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size, mat_size, mat_size, mat_size))
+    for i in range(5, len(word_classes) - 1):
         # indexes written out a bit
         old_5_class = word_classes[i-5]
-        old_4_class = word_classes[i-4]
-        old_3_class = word_classes[i-3]
-        old_2_class = word_classes[i-2]
-        old_class = word_classes[i-1]
+        old_4_class = word_classes[i - 4]
+        old_3_class = word_classes[i - 3]
+        old_2_class = word_classes[i - 2]
+        old_class = word_classes[i - 1]
         current_class = word_classes[i]
         next_class = word_classes[i + 1]
         old_5_index = class_to_index[old_5_class]
@@ -218,27 +234,42 @@ def iterate_tm_6_order(word_classes):
         current_index = class_to_index[current_class]
         next_index = class_to_index[next_class]
 
-        # The calculation
-        transition_matrix[old_5_index][old_4_index][old_3_index][old_2_index][old_index][current_index][next_index] += 1
+        # The calculation; Need this explained not sure if it is correct
+        if setup == [0, 0, 0, 0, 0, 0, 1]:
+            transition_matrix[old_4_index][old_3_index][old_2_index][old_index][current_index][next_index] += 1
+        if setup == [0, 0, 0, 0, 0, 1, 0]:
+            transition_matrix[old_4_index][old_3_index][old_2_index][old_index][next_index][current_index] += 1
+        if setup == [0, 0, 0, 0, 1, 0, 0]:
+            transition_matrix[old_4_index][old_3_index][old_2_index][current_index][next_index][old_index] += 1
+        if setup == [0, 0, 0, 1, 0, 0, 0]:
+            transition_matrix[old_4_index][old_3_index][old_index][current_index][next_index][old_2_index] += 1
+        if setup == [0, 0, 1, 0, 0, 0, 0]:
+            transition_matrix[old_4_index][old_2_index][old_index][current_index][next_index][old_3_index] += 1
+        if setup == [0, 1, 0, 0, 0, 0, 0]:
+            transition_matrix[old_3_index][old_2_index][old_index][current_index][next_index][old_4_index] += 1
+        if setup == [1, 0, 0, 0, 0, 0, 0]:
+            transition_matrix[old_4_index][old_3_index][old_2_index][old_index][current_index][next_index][old_5_index] += 1
 
     for i in range(mat_size):  # for some row
-        for k in range(mat_size): # every row has another row in the "new" direction because 3d
+        #To slow at the moment, needs new approach
+        print(i)
+        for k in range(mat_size):  # every row has another row in the "new" direction because 3d
             for p in range(mat_size):
                 for q in range(mat_size):
                     for z in range(mat_size):
                         for v in range(mat_size):
-                            n = sum(transition_matrix[v][z][q][p][k][i])  # summing this row
+                            n = sum(transition_matrix[z][q][p][k][i][v])  # summing this row
                             if n > 0:
                                 for j in range(mat_size):  # for element in the row
-                                    transition_matrix[i][k][p][q][z][v][j] = transition_matrix[i][k][p][q][z][v][j] / n  # normalizing
+                                    transition_matrix[i][k][p][q][z][v][j] = transition_matrix[i][k][p][q][z][v][
+                                                                          j] / n  # normalizing
     return transition_matrix
 
-def run_6_order(file, t_matrix_name):
+def run_6_order(file, t_matrix_name, setup):
     word_classes = open_dict(file)
-    tm_6rd_order = iterate_tm_6_order(word_classes)
-    tm_6rd_order = tm_6rd_order.tolist()
-    with open(t_matrix_name, "w") as outfile:
-        json.dump(tm_6rd_order, outfile)
+    tm_6th_order = iterate_tm_6_order(word_classes, setup)
+    print("here")
+    np.save(t_matrix_name, tm_6th_order) # Avoid json and .tolist() since they are slow
     return tm_6rd_order
 
 def iterate_transition_matrix_future(word_classes):
@@ -297,36 +328,7 @@ def ending_freq(text, ending_list):
 
 
 def emmision_matrix(file, t_matrix_name):
-    # Calculates a matrix containing the rows of a an endng and the column beig the wordclass, i.e given an ending, what is the probability of a certian wwordclass
-    word_classes = open_dict(file)
-    # Creating an empty matrix
-    transition_matrix = []
-    mat_size = max(class_to_index.values()) + 1
-    
-    #Something like this.
-    """for _ in range(mat_size):
-        transition_matrix.append([0] * mat_size)
-
-    for i in range(len(word_classes) - 1):
-        # indexes written out a bit
-        current_class = word_classes[i+1]
-        next_class = word_classes[i]
-        current_index = class_to_index[current_class]
-        next_index = class_to_index[next_class]
-
-        # The calculation
-        transition_matrix[current_index][next_index] += 1
-
-    # Converting to a probabilty matrix (all rows sum to 1)
-    for i in range(mat_size): # for some row
-        n = sum(transition_matrix[i]) # summing the row
-        if n>0:
-            for j in range(mat_size): # for element in the row
-                transition_matrix[i][j] = transition_matrix[i][j]/n # normalizing
-                """
-    with open(t_matrix_name, "w") as outfile:
-        json.dump(transition_matrix, outfile)
-    return transition_matrix
+    """possibly to implement in the future"""
 
 
 if __name__ == "__main__":

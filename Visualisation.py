@@ -14,10 +14,9 @@ def transition_matrix_vis(matrix):
     fig.colorbar(im)
     mat_size = max(class_to_index.values()) + 1
     ax.set_xticks(range(mat_size))
-    ax.set_yticks(range(mat_size-1,-1,-1))
+    ax.set_yticks(range(mat_size))
 
     keys_to_include = list(class_to_index.keys())[0:mat_size]
-    print(class_to_index)
     ax.set_xticklabels(keys_to_include)
     ax.set_yticklabels(keys_to_include)
     plt.show()
@@ -68,8 +67,9 @@ def plot_missed(correct, incorrect):
         x.append(x_values)
     plt.bar(x_left, incorrect.values(), 0.3, label='Incorrect')
     plt.bar(x_right, correct.values(), 0.3, label='Correct')
-    plt.title('Correct vs incorrect predictions for a certain class')
-
+    plt.title('Correct vs incorrect predictions for a certain class 5th order')
+    plt.xlabel("Word class")
+    plt.ylabel("Predicted word classes")
     plt.xticks(x)
     plt.legend()
     plt.show()
@@ -83,10 +83,13 @@ def plot_found(correct, total_occurrences):
     for x_values in total_occurrences.keys():
         x_left.append(x_values-0.15)
         x.append(x_values)
-    plt.bar(x_left, total_occurrences.values(), 0.3, label='Total amount in test data')
-    plt.bar(x_right, correct.values(), 0.3, label='Correctly identified')
-    plt.title('Correct identification of each word class out of total')
+    plt.bar(x_left, total_occurrences.values(), 0.3, label='Total amount')
+    plt.bar(x_right, correct.values(), 0.3, label='Correctly identified by model')
+    plt.title('Correct identification of each word class out of total, 5th order')
+    plt.xlabel("Word class")
+    plt.ylabel("Word classes in data")
     plt.xticks(x)
+
     plt.legend()
     plt.show()
 

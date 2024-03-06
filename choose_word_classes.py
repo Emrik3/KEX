@@ -1,5 +1,5 @@
 from dataProcessing import open_dict
-
+import numpy as np
 # File locations
 TM_all_dir = 'transition_matrices/TM_all'
 TM_transl_dir = 'transition_matrices/TM_transl.json'
@@ -7,7 +7,9 @@ TM_non_transl_dir = 'transition_matrices/TM_non_transl.json'
 TM_all_2nd_dir = 'transition_matrices/TM_all_2nd'
 TM_all_3rd_dir = 'transition_matrices/TM_all_3rd'
 TM_all_4th_dir = 'transition_matrices/TM_all_4th'
-TM_all_5th_dir = 'transition_matrices/TM_all_5th'
+TM_all_5th_dir = 'transition_matrices/TM_all_5th.npy'
+TM_all_6th_dir = 'transition_matrices/TM_all_6th.npy'
+
 TM_all_future_dir = 'transition_matrices/TM_all_future'
 
 # Opening transition matrices
@@ -17,7 +19,8 @@ TM_non_transl = open_dict(TM_non_transl_dir)
 TM_all_2nd = open_dict(TM_all_2nd_dir)
 TM_all_3rd = open_dict(TM_all_3rd_dir)
 TM_all_4th = open_dict(TM_all_4th_dir)
-TM_all_5th = open_dict(TM_all_5th_dir)
+TM_all_5th = np.load(TM_all_5th_dir)
+#TM_all_6th = np.load(TM_all_6th_dir)
 TM_all_future = open_dict(TM_all_future_dir)
 
 # Opening wordclasslists
