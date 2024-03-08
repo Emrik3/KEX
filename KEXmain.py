@@ -7,14 +7,18 @@ import requests
 from bs4 import BeautifulSoup
 from choose_word_classes import *
 from sympy import *
+import copy
 
 
 
 def update_TM():
     """Updates Markov chains"""
-    run_1_order(WC_all_dir,TM_all_dir)
-    #run_1_order(WC_transl_dir, TM_transl_dir)
-    #run_1_order(WC_non_transl_dir, TM_non_transl_dir)
+    #run_1_order(WC_all_dir, TM_all_dir, mixed=False)
+    #run_1_order(WC_export_dir, TM_transl_dir, mixed=True)
+    #run_1_order(WC_export_dir, TM_non_transl_dir, mixed=False)
+
+    run_2_order(WC_export_dir, TM_transl_2nd_dir, mixed=True)
+    run_2_order(WC_export_dir, TM_non_transl_2nd_dir, mixed=False)
 
     #run_2_order(WC_all_dir, TM_all_2nd_dir)
     #run_3_order(WC_all_dir, TM_all_3rd_dir)
@@ -24,12 +28,17 @@ def update_TM():
 
 def update_WC():
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False)
-    abstracts_to_word_classes(export_dir, WC_export_dir, no_NA=False)
+    #abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False)
+    #abstracts_to_word_classes(export_dir, WC_export_dir, no_NA=False, segment=False)
 
     """Translates txt file to word classes"""
     #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
     #translations_to_word_classes(translated_sample_dir, WC_transl_dir, no_NA = False)
+
+    """WC, with different lists for each abstract"""
+    abstracts_to_word_classes(export_dir, WC_export_segment_dir, no_NA=False, segment=True)
+
+
 def plot():
     """Plots a 2D transition Matrix"""
     transition_matrix_vis(TM_all)
@@ -38,8 +47,42 @@ def plot():
 
 def metrics():
     """Calculates the basic metrics"""
-    running_metrics(TM_all, TM_transl)
-    running_metrics(TM_all, TM_non_transl)
+    #running_metrics(TM_all, TM_transl)
+    #running_metrics(TM_all, TM_non_transl)
+    running_metrics2(TM_all_2nd, TM_transl_2nd)
+    running_metrics2(TM_all_2nd, TM_non_transl_2nd)
+
+    print("Should be high")
+    running_metrics2(TM_all_3rd, TM_transl_3rd)
+    print("Should be low")
+    running_metrics2(TM_all_3rd, TM_non_transl_3rd)
+
+def metrics_test():
+    counter_1norm = 0
+    counter_infnorm = 0
+    counter_frobnorm = 0
+    n=100
+
+    for i in range(n): #Only relevant when there is randomness involved like with mixing word order
+        print("hej")
+        for abstract in WC_export_segment:
+            copy_abs = copy.deepcopy(abstract)
+            run_1_order(copy_abs, TM_non_transl_dir, mixed=False)
+            run_1_order(copy_abs, TM_transl_dir, mixed=True)
+            transl = running_metrics(TM_all, open_dict('transition_matrices/TM_transl.json'))
+            normal = running_metrics(TM_all, open_dict('transition_matrices/TM_non_transl.json'))
+            if normal[0] < transl[0]:
+                counter_1norm +=1
+            if normal[1] < transl[1]:
+                counter_infnorm +=1
+            if normal[2] < transl[2]:
+                counter_frobnorm +=1
+    print("correct percentage 1-norm: " + str(counter_1norm/(n*len(WC_export_segment))*100) + "%")
+    print("correct percentage inf-norm: " + str(counter_infnorm/(n*len(WC_export_segment))*100) + "%")
+    print("correct percentage Frob-norm: " + str(counter_frobnorm/(n*len(WC_export_segment))*100) + "%")
+
+
+
 
 def evaluate_grammar():
     """Finds the most grammatically likely and all grammatically "impossible" sentences"""
@@ -109,12 +152,13 @@ def main():
     """Uses the finished model to extract results"""
     #update_WC()
     #update_TM()
-    plot()
+    #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
     #update_end_prob()
     #get_url()
+    metrics_test()
 
 
 if __name__ == '__main__':

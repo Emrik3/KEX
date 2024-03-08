@@ -153,7 +153,7 @@ def test():
             k += 1
     #print("Number of words that could not me classified: " + str(k) + " out of " + str(len(classified)))
 
-def abstracts_to_word_classes(file, WC_dir, no_NA):
+def abstracts_to_word_classes(file, WC_dir, no_NA, segment):
     """Converts the text to word classes"""
     k = 0  # Counting amount of unclassified words
     classified_list = []  # [text, text, text..] (with text in word class form)
@@ -169,15 +169,19 @@ def abstracts_to_word_classes(file, WC_dir, no_NA):
             if i == 'NA':
                 k += 1
         classified_list.append(classified)
-    for sublist in classified_list:
-        for word_class in sublist:
-            word_class_list.append(word_class)
-    print("Number of words that could not be classified: " + str(k) + " out of " + str(len(word_class_list)))
-    print("in percent " + str(100*k/len(word_class_list)))
-    with open(WC_dir, "w") as outfile:
-        json.dump(word_class_list, outfile)
-    #print(word_class_list)
-    return word_class_list
+    if not segment:
+        for sublist in classified_list:
+            for word_class in sublist:
+                word_class_list.append(word_class)
+    #print("Number of words that could not be classified: " + str(k) + " out of " + str(len(word_class_list)))
+    #print("in percent " + str(100*k/len(word_class_list)))
+        with open(WC_dir, "w") as outfile:
+            json.dump(word_class_list, outfile)
+        #print(word_class_list)
+        return word_class_list
+    else:
+        with open(WC_dir, "w") as outfile:
+            json.dump(classified_list, outfile)
 
 
 def translations_to_word_classes(file, filename, no_NA):

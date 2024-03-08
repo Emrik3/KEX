@@ -3,10 +3,13 @@ import json
 import numpy as np
 from dataProcessing import open_dict, read_traning_csv, read_translation_txt, text_cleaner, save_dict
 from choose_word_classes import class_to_index, ending_list
+import random
 
 
 
-def iterate_transition_matrix(word_classes):
+def iterate_transition_matrix(word_classes, mixed):
+    if mixed:
+        random.shuffle(word_classes)
     # Creating an empty matrix
     transition_matrix = []
     mat_size = max(class_to_index.values()) + 1
@@ -32,15 +35,18 @@ def iterate_transition_matrix(word_classes):
                 transition_matrix[i][j] = transition_matrix[i][j]/n # normalizing
     return transition_matrix
 
-def run_1_order(file, t_matrix_name):
-    word_classes = open_dict(file)
-    transition_matrix = iterate_transition_matrix(word_classes)
+def run_1_order(word_classes, t_matrix_name, mixed):
+    if type(word_classes) != list:
+        word_classes = open_dict(word_classes)
+    transition_matrix = iterate_transition_matrix(word_classes, mixed)
     with open(t_matrix_name, "w") as outfile:
         json.dump(transition_matrix, outfile)
     return transition_matrix
 
 
-def iterate_tm_2_order(word_classes):
+def iterate_tm_2_order(word_classes, mixed):
+    if mixed:
+        random.shuffle(word_classes)
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
     transition_matrix = np.zeros((mat_size, mat_size, mat_size))
@@ -64,9 +70,9 @@ def iterate_tm_2_order(word_classes):
     return transition_matrix
 
 
-def run_2_order(file, t_matrix_name):
+def run_2_order(file, t_matrix_name, mixed):
     word_classes = open_dict(file)
-    tm_2nd_order = iterate_tm_2_order(word_classes)
+    tm_2nd_order = iterate_tm_2_order(word_classes, mixed)
     tm_2nd_order = tm_2nd_order.tolist()
     with open(t_matrix_name, "w") as outfile:
         json.dump(tm_2nd_order, outfile)

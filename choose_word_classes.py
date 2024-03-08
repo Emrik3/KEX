@@ -4,7 +4,11 @@ import numpy as np
 TM_all_dir = 'transition_matrices/TM_all'
 TM_transl_dir = 'transition_matrices/TM_transl.json'
 TM_non_transl_dir = 'transition_matrices/TM_non_transl.json'
+
 TM_all_2nd_dir = 'transition_matrices/TM_all_2nd'
+TM_transl_2nd_dir = 'transition_matrices/TM_transl_2nd.json'
+TM_non_transl_2nd_dir = 'transition_matrices/TM_non_transl_2nd.json'
+
 TM_all_3rd_dir = 'transition_matrices/TM_all_3rd'
 TM_all_4th_dir = 'transition_matrices/TM_all_4th'
 TM_all_5th_dir = 'transition_matrices/TM_all_5th.npy'
@@ -12,11 +16,14 @@ TM_all_6th_dir = 'transition_matrices/TM_all_6th.npy'
 
 TM_all_future_dir = 'transition_matrices/TM_all_future'
 
+
 # Opening transition matrices
 TM_all = open_dict(TM_all_dir)
 TM_transl = open_dict(TM_transl_dir)
 TM_non_transl = open_dict(TM_non_transl_dir)
 TM_all_2nd = open_dict(TM_all_2nd_dir)
+TM_transl_2nd = open_dict(TM_transl_2nd_dir)
+TM_non_transl_2nd = open_dict(TM_non_transl_2nd_dir)
 TM_all_3rd = open_dict(TM_all_3rd_dir)
 TM_all_4th = open_dict(TM_all_4th_dir)
 TM_all_5th = np.load(TM_all_5th_dir)
@@ -28,11 +35,14 @@ WC_all_dir = "wordclasslists/WC_all.json"
 WC_transl_dir = 'wordclasslists/WC_transl.json'
 WC_non_transl_dir = 'wordclasslists/WC_non_transl.json'
 WC_export_dir = 'wordclasslists/WC_export'
+WC_export_segment_dir = 'wordclasslists/WC_export_segment'
+
 # Opening wordclasslists
 WC_all = open_dict(WC_all_dir)
 WC_transl = open_dict(WC_transl_dir)
 WC_non_transl = open_dict(WC_non_transl_dir)
 WC_export = open_dict(WC_export_dir)
+WC_export_segment = open_dict(WC_export_segment_dir)
 
 # text to analyse
 Training_data_dir = 'Trainingdata/many_abstracts.csv'

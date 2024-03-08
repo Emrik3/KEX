@@ -59,6 +59,8 @@ def mostprobfollows(A, classtext):
 
         position = val_list.index(holdj)
         print(cl + ": " + key_list[position])
+def tensor1norm(A):
+    return np.linalg.norm(A.flatten(), ord=1)
 
 
 def maxlike():
@@ -69,6 +71,10 @@ def distance(A, B, normtype):
 
 
 def running_metrics(A, B):
-    print("1-norm: " + str(distance(A, B, norm1)))
-    print("infinity-norm: " + str(distance(A, B, norminf)))
-    print("frobenius norm: " + str(distance(A, B, frobnorm)))
+    #print("1-norm: " + str(distance(A, B, norm1)))
+    #print("infinity-norm: " + str(distance(A, B, norminf)))
+    #print("frobenius norm: " + str(distance(A, B, frobnorm)))
+    return distance(A, B, norm1), distance(A, B, norminf), distance(A, B, frobnorm)
+def running_metrics2(A,B):
+    print("1-norm: " + str(distance(A, B, tensor1norm)))
+
