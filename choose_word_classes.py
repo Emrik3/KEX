@@ -1,48 +1,66 @@
 from dataProcessing import open_dict
 import numpy as np
 # File locations
-TM_all_dir = 'transition_matrices/TM_all'
-TM_transl_dir = 'transition_matrices/TM_transl.json'
-TM_non_transl_dir = 'transition_matrices/TM_non_transl.json'
+TM_all_dir = 'transition_matrices/TM_all.npy'
+TM_transl_dir = 'transition_matrices/TM_transl.npy'
+TM_non_transl_dir = 'transition_matrices/TM_non_transl.npy'
 
-TM_all_2nd_dir = 'transition_matrices/TM_all_2nd'
-TM_transl_2nd_dir = 'transition_matrices/TM_transl_2nd.json'
-TM_non_transl_2nd_dir = 'transition_matrices/TM_non_transl_2nd.json'
+TM_all_2nd_dir = 'transition_matrices/TM_all_2nd.npy'
+TM_transl_2nd_dir = 'transition_matrices/TM_transl_2nd.npy'
+TM_non_transl_2nd_dir = 'transition_matrices/TM_non_transl_2nd.npy'
 
-TM_all_3rd_dir = 'transition_matrices/TM_all_3rd'
-TM_all_4th_dir = 'transition_matrices/TM_all_4th'
+TM_all_3rd_dir = 'transition_matrices/TM_all_3rd.npy'
+TM_transl_3rd_dir = 'transition_matrices/TM_transl_3rd.npy'
+TM_non_transl_3rd_dir = 'transition_matrices/TM_non_transl_3rd.npy'
+
+TM_all_4th_dir = 'transition_matrices/TM_all_4th.npy'
+TM_transl_4th_dir = 'transition_matrices/TM_transl_4th.npy'
+TM_non_transl_4th_dir = 'transition_matrices/TM_non_transl_4th.npy'
+
+
 TM_all_5th_dir = 'transition_matrices/TM_all_5th.npy'
-TM_all_6th_dir = 'transition_matrices/TM_all_6th.npy'
+TM_transl_5th_dir = 'transition_matrices/TM_transl_5th.npy'
+TM_non_transl_5th_dir = 'transition_matrices/TM_non_transl_5th.npy'
 
-TM_all_future_dir = 'transition_matrices/TM_all_future'
+
+TM_all_6th_dir = 'transition_matrices/TM_all_6th.npy'
+TM_transl_6th_dir = 'transition_matrices/TM_transl_6th.npy'
+TM_non_transl_6th_dir = 'transition_matrices/TM_non_transl_6th.npy'
+
+#WCs file locations
+WC_all_dir = "wordclasslists/WC_all.json" 
+WC_all_transl_dir = "wordclasslists/WC_all_transl.json"
+WC_transl_dir = 'wordclasslists/WC_transl.json' # Might be obsolete?
+WC_non_transl_dir = 'wordclasslists/WC_non_transl.json' # Might be obsolete?
+WC_export_dir = 'wordclasslists/WC_export'
+WC_export_segment_dir = 'wordclasslists/WC_export_segment'
+WC_export_segment_fulltransl_dir = 'wordclasslists/WC_export_segment_notransl' #Not wrong directory
+#Note that swtransl_dir only works for the first 17 abstracts, after that it is approx= WC_export_segment_dir
+wc_export_segment_swtransl_dir = 'wordclasslists/WC_export_segment_swtransl'
 
 
 # Opening transition matrices
-TM_all = open_dict(TM_all_dir)
-TM_transl = open_dict(TM_transl_dir)
-TM_non_transl = open_dict(TM_non_transl_dir)
-TM_all_2nd = open_dict(TM_all_2nd_dir)
-TM_transl_2nd = open_dict(TM_transl_2nd_dir)
-TM_non_transl_2nd = open_dict(TM_non_transl_2nd_dir)
-TM_all_3rd = open_dict(TM_all_3rd_dir)
-TM_all_4th = open_dict(TM_all_4th_dir)
-TM_all_5th = np.load(TM_all_5th_dir)
+#TM_all = np.load(TM_all_dir)
+#TM_transl = np.load(TM_transl_dir)
+#TM_non_transl = np.load(TM_non_transl_dir)
+#TM_all_2nd = np.load(TM_all_2nd_dir)
+#TM_transl_2nd = np.load(TM_transl_2nd_dir)
+#TM_non_transl_2nd = open_dict(TM_non_transl_2nd_dir)
+#TM_all_3rd = np.load(TM_all_3rd_dir)
+#TM_all_4th = np.load(TM_all_4th_dir)
+#TM_all_5th = np.load(TM_all_5th_dir)
 #TM_all_6th = np.load(TM_all_6th_dir)
-TM_all_future = open_dict(TM_all_future_dir)
+#TM_all_future = open_dict(TM_all_future_dir)
+
 
 # Opening wordclasslists
-WC_all_dir = "wordclasslists/WC_all.json"
-WC_transl_dir = 'wordclasslists/WC_transl.json'
-WC_non_transl_dir = 'wordclasslists/WC_non_transl.json'
-WC_export_dir = 'wordclasslists/WC_export'
-WC_export_segment_dir = 'wordclasslists/WC_export_segment'
-
-# Opening wordclasslists
-WC_all = open_dict(WC_all_dir)
-WC_transl = open_dict(WC_transl_dir)
-WC_non_transl = open_dict(WC_non_transl_dir)
-WC_export = open_dict(WC_export_dir)
+#WC_all = open_dict(WC_all_dir)
+#WC_transl = open_dict(WC_transl_dir)
+#WC_non_transl = open_dict(WC_non_transl_dir)
+#WC_export = open_dict(WC_export_dir)
 WC_export_segment = open_dict(WC_export_segment_dir)
+#WC_export_segment_fulltransl = open_dict(WC_export_segment_fulltransl_dir)
+#WC_export_segment_swtransl = open_dict(wc_export_segment_swtransl_dir)
 
 # text to analyse
 Training_data_dir = 'Trainingdata/many_abstracts.csv'

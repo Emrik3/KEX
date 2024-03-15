@@ -11,39 +11,49 @@ import copy
 
 
 
-def update_TM():
+def update_TM(order, setup):
     """Updates Markov chains"""
-    #run_1_order(WC_all_dir, TM_all_dir, mixed=False)
-    #run_1_order(WC_export_dir, TM_transl_dir, mixed=True)
-    #run_1_order(WC_export_dir, TM_non_transl_dir, mixed=False)
+    if order == 1:
+        func = run_1_order
+        TM_dir = TM_all_dir
+    elif order == 2:
+        func = run_2_order
+        TM_dir = TM_all_2nd_dir
+    elif order == 3:
+        func = run_3_order
+        TM_dir = TM_all_3rd_dir
+    elif order == 4:
+        func = run_4_order
+        TM_dir = TM_all_4th_dir
+    elif order == 5:
+        func = run_5_order
+        TM_dir = TM_all_5th_dir
+    else:
+        print("ERROR: Choose the order of markov chain as 1,2,3,4 or 5")
+        return
+    func(WC_all_dir, TM_dir,setup, mixed=False)
 
-    run_2_order(WC_export_dir, TM_transl_2nd_dir, mixed=True)
-    run_2_order(WC_export_dir, TM_non_transl_2nd_dir, mixed=False)
-
-    #run_2_order(WC_all_dir, TM_all_2nd_dir)
-    #run_3_order(WC_all_dir, TM_all_3rd_dir)
-    #run_4_order(WC_all_dir, TM_all_4th_dir, setup = [0, 0, 1, 0, 0]) #1 för den man vill kolla på
-    #run_5_order(WC_all_dir, TM_all_5th_dir, setup = [0, 0, 1, 0, 0, 0])
-    #run_6_order(WC_all_dir, TM_all_6th_dir, setup = [0, 0, 0, 1, 0, 0, 0])
 
 def update_WC():
     """Translates web-scraped csv files to word classes"""
-    #abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False)
-    #abstracts_to_word_classes(export_dir, WC_export_dir, no_NA=False, segment=False)
+    #abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False, transl=False)
+
 
     """Translates txt file to word classes"""
     #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
     #translations_to_word_classes(translated_sample_dir, WC_transl_dir, no_NA = False)
 
     """WC, with different lists for each abstract"""
-    abstracts_to_word_classes(export_dir, WC_export_segment_dir, no_NA=False, segment=True)
+    #abstracts_to_word_classes(export_dir, WC_export_segment_dir, no_NA=False, segment=True)
+    #abstracts_to_word_classes(export_dir, WC_export_segment_fulltransl_dir, no_NA=False, segment=True, transl='Full')
+    #abstracts_to_word_classes(export_dir, wc_export_segment_swtransl_dir, no_NA=False, segment=True, transl='Single')
 
 
 def plot():
     """Plots a 2D transition Matrix"""
-    transition_matrix_vis(TM_all)
+    #transition_matrix_vis(TM_all)
     #transition_matrix_vis(TM_transl)
-    #transition_matrix_vis(TM_non_transl)
+    transition_matrix_vis(TM_non_transl)
 
 def metrics():
     """Calculates the basic metrics"""
@@ -56,46 +66,232 @@ def metrics():
     running_metrics2(TM_all_3rd, TM_transl_3rd)
     print("Should be low")
     running_metrics2(TM_all_3rd, TM_non_transl_3rd)
-
-def metrics_test():
+def metrics_test_translation(order, setup, type):
+    # For running test using a translation
+    prog = 0
     counter_1norm = 0
+    counter_2norm = 0
     counter_infnorm = 0
     counter_frobnorm = 0
-    n=100
+    counter_crossE = 0
+    counter_kullback = 0
+    counter_singularv = 0
+    counter_wassenstein = 0
+    normal = [] #metrics for normal version
+    transl = [] #metrics for translated version
+    other_metrics = [0]*6
+    if order == 1:
+        func = run_1_order
+        metric_fun = running_metrics
+        TM_big_dir = TM_all_dir
+        TM_org_dir = TM_transl_non_dir
+        TM_trnsl_dir = TM_transl_dir
+    elif order == 2:
+        func = run_2_order
+        metric_fun = running_metrics2
+        TM_big_dir = TM_all_2nd_dir
+        TM_org_dir = TM_non_transl_2nd_dir
+        TM_trnsl_dir = TM_transl_2nd_dir
+    elif order == 3:
+        func = run_3_order
+        metric_fun = running_metrics2
+        TM_big_dir = TM_all_3rd_dir
+        TM_org_dir = TM_non_transl_3rd_dir
+        TM_trnsl_dir = TM_transl_3rd_dir
+    elif order == 4:
+        func = run_4_order
+        metric_fun = running_metrics2
+        TM_big_dir = TM_all_4th_dir
+        TM_org_dir = TM_non_transl_4th_dir
+        TM_trnsl_dir = TM_transl_4th_dir
+    elif order == 5:
+        func = run_5_order
+        metric_fun = running_metrics2
+        TM_big_dir = TM_all_5th_dir
+        TM_org_dir = TM_non_transl_5th_dir
+        TM_trnsl_dir = TM_transl_5th_dir
+    else:
+        print("ERROR: Choose the order of markov chain as 1,2,3,4 or 5")
+        return
+    WC = open_dict(type)
+    for i in range(len(WC_export_segment)):
+        if prog<17: # Set to 17 if using single word translation, otherwise anything over 54
+            abstract_org = WC_export_segment[i]
+            abstract_tnsl = WC[i]  # full<->sw to change test
+            prog +=1
+            print("Progress: " + str(prog) + "/" + str(len(WC)))
+            func(abstract_org, TM_org_dir, setup, mixed=False)
+            normal.append(metric_fun(np.load(TM_big_dir), np.load(TM_org_dir)))
+            func(abstract_tnsl, TM_trnsl_dir,setup, mixed=False)
+            transl.append(metric_fun(np.load(TM_big_dir), np.load(TM_trnsl_dir)))
+            other_metrics[0] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[0]
+            other_metrics[1] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[1]
+            other_metrics[2] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[2]
+            other_metrics[3] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[3]
+            other_metrics[4] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[4]
+            other_metrics[5] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[5]
 
+    length = prog
+    for i in range(length):
+        if normal[i] == transl[i]:
+            length -= 1
+            continue
+        if normal[i][0] < transl[i][0]:
+            counter_1norm +=1
+        if normal[i][1] < transl[i][1]:
+            counter_2norm += 1
+        if normal[i][2] < transl[i][2]:
+            counter_infnorm +=1
+        if normal[i][3] < transl[i][3]:
+            counter_frobnorm +=1
+        if normal[i][4] < transl[i][4]:
+            counter_crossE +=1
+        if normal[i][5] < transl[i][5]:
+            counter_kullback += 1
+        if normal[i][6] < transl[i][6]:
+            counter_singularv += 1
+        if normal[i][7] < transl[i][7]:
+            counter_wassenstein += 1
+
+    print("Amount of abstracts which changed: " + str(length) + " out of " + str(prog))
+    print("correct percentage 1-norm: " + str(counter_1norm/(length)*100) + "%")
+    print("corrent percentage 2-norm: " + str(counter_2norm/(length)*100) + "%")
+    print("correct percentage inf-norm: " + str(counter_infnorm/(length)*100) + "%")
+    print("correct percentage Frob-norm: " + str(counter_frobnorm/(length)*100) + "%")
+    print("correct percentage Cross entropy: " + str(counter_crossE/(length)*100) + "%")
+    print("correct percentage Kullback: " + str(counter_kullback / (length) * 100) + "%")
+    print("largest singular value: " + str(counter_singularv / (length) * 100) + "%")
+    print("wassenstein: " + str(counter_wassenstein / (length) * 100) + "%")
+
+    print("DIFFERENCE BETWEEN ORIGINAL AND TRANSLATED TEXT, MEASURES SEVERITY OF TRANSLATION/SHUFFLE")
+    print("largest singular value: " + str(other_metrics[0] / (prog)))
+    print("Wessenstein (cost): " + str(other_metrics[1] / (prog)))
+    print("1-norm: " + str(other_metrics[2] / (prog)))
+    print("Frob-norm: " + str(other_metrics[3] / (prog)))
+    print("cross entropy: " + str(other_metrics[4] / (prog)))
+    print("Kullback: " + str(other_metrics[5] / (prog)))
+
+    print("Setup = " + str(setup))
+def metrics_test_scramble(order, setup):
+    #For running tests with only scrambled word order
+    counter_1norm = 0
+    counter_2norm = 0
+    counter_infnorm = 0
+    counter_frobnorm = 0
+    counter_crossE = 0
+    counter_kullback = 0
+    counter_singularv = 0
+    counter_wassenstein = 0
+    other_metrics = [0]*6
+    n=2
+    prog=0
+    if order == 1:
+        func = run_1_order
+        metric_fun = running_metrics
+        TM_big_dir = TM_all_dir
+        TM_org_dir = TM_non_transl_dir
+        TM_trnsl_dir = TM_transl_dir
+    elif order == 2:
+        func = run_2_order
+        metric_fun = running_metrics2
+        TM_big_dir = TM_all_2nd_dir
+        TM_org_dir = TM_non_transl_2nd_dir
+        TM_trnsl_dir = TM_transl_2nd_dir
+    elif order == 3:
+        func = run_3_order
+        metric_fun = running_metrics2
+        TM_big_dir = TM_all_3rd_dir
+        TM_org_dir = TM_non_transl_3rd_dir
+        TM_trnsl_dir = TM_transl_3rd_dir
+    elif order == 4:
+        func = run_4_order
+        metric_fun = running_metrics2
+        TM_big_dir = TM_all_4th_dir
+        TM_org_dir = TM_non_transl_4th_dir
+        TM_trnsl_dir = TM_transl_4th_dir
+    elif order == 5:
+        func = run_5_order
+        metric_fun = running_metrics2
+        TM_big_dir = TM_all_5th_dir
+        TM_org_dir = TM_non_transl_5th_dir
+        TM_trnsl_dir = TM_transl_5th_dir
+    else:
+        print("ERROR: Choose the order of markov chain as 1,2,3,4 or 5")
+        return
     for i in range(n): #Only relevant when there is randomness involved like with mixing word order
-        print("hej")
+        print(i)
+        prog = 0
         for abstract in WC_export_segment:
-            copy_abs = copy.deepcopy(abstract)
-            run_1_order(copy_abs, TM_non_transl_dir, mixed=False)
-            run_1_order(copy_abs, TM_transl_dir, mixed=True)
-            transl = running_metrics(TM_all, open_dict('transition_matrices/TM_transl.json'))
-            normal = running_metrics(TM_all, open_dict('transition_matrices/TM_non_transl.json'))
-            if normal[0] < transl[0]:
-                counter_1norm +=1
-            if normal[1] < transl[1]:
-                counter_infnorm +=1
-            if normal[2] < transl[2]:
-                counter_frobnorm +=1
-    print("correct percentage 1-norm: " + str(counter_1norm/(n*len(WC_export_segment))*100) + "%")
-    print("correct percentage inf-norm: " + str(counter_infnorm/(n*len(WC_export_segment))*100) + "%")
-    print("correct percentage Frob-norm: " + str(counter_frobnorm/(n*len(WC_export_segment))*100) + "%")
+            if prog <100: #just to get the 13th in case this matrix should be plotted
+                prog +=1
+                copy_abs = copy.deepcopy(abstract) #use copy_abs for both and change mixed for the second to True if a scramble test
+                # then use abstract org
+                func(copy_abs, TM_non_transl_dir,setup, mixed=False)
+                func(copy_abs, TM_trnsl_dir, setup, mixed=True)
+                transl = metric_fun(np.load(TM_big_dir), np.load(TM_trnsl_dir))
+                normal = metric_fun(np.load(TM_big_dir), np.load(TM_org_dir))
+                other_metrics[0] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[0]
+                other_metrics[1] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[1]
+                other_metrics[2] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[2]
+                other_metrics[3] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[3]
+                other_metrics[4] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[4]
+                other_metrics[5] += running_change_metrics(np.load(TM_trnsl_dir), np.load(TM_org_dir))[5]
 
+
+
+                if normal[0] < transl[0]:
+                    counter_1norm +=1
+                if normal[1] < transl[1]:
+                    counter_2norm +=1
+                if normal[2] < transl[2]:
+                    counter_infnorm +=1
+                if normal[3] < transl[3]:
+                    counter_frobnorm +=1
+                if normal[4] < transl[4]:
+                    counter_crossE +=1
+                if normal[5] < transl[5]:
+                    counter_kullback +=1
+                if normal[6] < transl[6]:
+                    counter_singularv +=1
+                if normal[7] > transl[7]:
+                    counter_wassenstein +=1
+
+    print("correct percentage 1-norm: " + str(counter_1norm / (n*prog) * 100) + "%")
+    print("corrent percentage 2-norm: " + str(counter_2norm / (n*prog) * 100) + "%")
+    print("correct percentage inf-norm: " + str(counter_infnorm / (n*prog) * 100) + "%")
+    print("correct percentage Frob-norm: " + str(counter_frobnorm / (n*prog) * 100) + "%")
+    print("correct percentage Cross entropy: " + str(counter_crossE / (n*prog) * 100) + "%")
+    print("correct percentage kullback: " + str(counter_kullback / (n*prog) * 100) + "%")
+    print("correct percentage largest singular value: " + str(counter_singularv / (n * prog) * 100) + "%")
+    print("correct percentage wassenstein: " + str(counter_wassenstein / (n * prog) * 100) + "%")
+
+    print("DIFFERENCE BETWEEN ORIGINAL AND TRANSLATED TEXT, MEASURES SEVERITY OF TRANSLATION/SHUFFLE")
+    print("largest singular value: " + str(other_metrics[0]/(n*prog)))
+    print("Wessenstein (cost): " + str(other_metrics[1]/(n*prog)))
+    print("1-norm: " + str(other_metrics[2] / (n*prog)))
+    print("Frob-norm: " + str(other_metrics[3] / (n*prog)))
+    print("cross entropy: " + str(other_metrics[4] / (n*prog)))
+    print("Kullback: " + str(other_metrics[5] / (n*prog)))
+
+
+
+    print("Setup = " + str(setup))
 
 
 
 def evaluate_grammar():
     """Finds the most grammatically likely and all grammatically "impossible" sentences"""
     ### Funkar inte för tillfället. Varje sekvens med NA ord sätts till 0 sannolikhet då NA inte finns i TM
-    testinggrammar1d(real_sample_dir, WC_non_transl_dir, TM_all)
-    testinggrammar2d(real_sample_dir, WC_non_transl_dir, TM_all_2nd)
-    testinggrammar3d(real_sample_dir, WC_non_transl_dir, TM_all_3rd)
+    #testinggrammar1d(real_sample_dir, WC_non_transl_dir, TM_all)
+    #testinggrammar2d(real_sample_dir, WC_non_transl_dir, TM_all_2nd)
+    #testinggrammar3d(real_sample_dir, WC_non_transl_dir, TM_all_3rd)
+    #byt namn på nontransldir
 
 def predict_NA():
-    """Predicts the unknown words in a given text"""
+    """Predicts the unknown words in a given text (vet inte om denna funkar längre)"""
 
     """One thing that happends is if it is a row with all zeos the first index is returned aand gives NA because of that
-    I fized this by replacing NA with substantiv in the printed result
+    I fixed this by replacing NA with substantiv in the printed result
     But this should not happen unless there is a ordföljd that never happend before!!!"""
 
     #predict(TM_all, translated_sample_dir, WC_transl, grammar_predictor)
@@ -103,30 +299,28 @@ def predict_NA():
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
-
-    #Using a csv file for a larger test
-    #results = predict_csv(TM_all, export_dir, WC_export, grammar_predictor_percentage_test)
-    #organize_and_plot(results)
-
-    #results = predict_csv(TM_all_2nd, export_dir, WC_export, grammar_predictor_percentage_test2)
-    #organize_and_plot(results)
-
-    #results = predict_csv(TM_all_3rd, export_dir, WC_export, grammar_predictor_percentage_test3)
-    #organize_and_plot(results)
-
-    """Bör lägga till [0, 0, 1, 0, 0] som argument här men för tillfället funkar det såhär:
-    1. Kör run_4_order med vald config t.ex[0, 0, 1,0, 0]
-    2. Gå till GrammarTests ->grammar_predictor_percentage_test4 och 
-    ändra j+/- (på 2 ställen) till det som överenstämmer med konfigurationen t.ex.[0, 1,0,0,0]-> j-1, j+1, j+2, j+3
-    Ändra rangen på dessa 2 ställen också"""
-    results = predict_csv(TM_all_4th, export_dir, WC_export, grammar_predictor_percentage_test4)
-    organize_and_plot(results)
-
-    #5th order now with .npy format
-    #results = predict_csv(TM_all_5th, export_dir, WC_export, grammar_predictor_percentage_test5)
-    #organize_and_plot(results)
-
-    #6th order when TM_all_6th.npy exists, currently too slow normalization
+def predict_big(order, setup):
+    """Plots the results of predicting words in export_dir for some order of Markov chain"""
+    if order ==1:
+        TM_dir = TM_all_dir
+        grammar_pred_test = grammar_predictor_percentage_test
+    elif order ==2:
+        TM_dir = TM_all_2nd_dir
+        grammar_pred_test = grammar_predictor_percentage_test2
+    elif order == 3:
+        TM_dir = TM_all_3rd_dir
+        grammar_pred_test = grammar_predictor_percentage_test3
+    elif order == 4:
+        TM_dir = TM_all_4th_dir
+        grammar_pred_test = grammar_predictor_percentage_test4
+    elif order == 5:
+        TM_dir = TM_all_5th_dir
+        grammar_pred_test = grammar_predictor_percentage_test5
+    else:
+        print("ERROR: Choose the order of markov chain as 1,2,3,4 or 5")
+        return
+    results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
+    organize_and_plot(results, order=order)
 
 def update_end_prob():
     text = read_traning_csv('Trainingdata/many_abstracts.csv')
@@ -142,23 +336,25 @@ def update_end_prob():
 def get_url():
     # get URL
     page = requests.get("https://sv.wikipedia.org/wiki/Lista_%C3%B6ver_sj%C3%A4lvst%C3%A4ndiga_stater")
-
     soup = BeautifulSoup(page.content, 'html.parser')
-
     # display scraped data
     print(soup.prettify())
 
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    #update_TM()
+    update_TM(order=2, setup=[0, 1, 0])
     #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
+    #predict_big(order=4, setup=[0, 0, 1,0,0])
     #update_end_prob()
     #get_url()
-    metrics_test()
+    metrics_test_translation(order=2, setup=[0, 1,0], type=WC_export_segment_fulltransl_dir) # Remember to update_TM() if using a new setup
+    metrics_test_translation(order=2, setup=[0, 1,0], type=wc_export_segment_swtransl_dir) # Remember to update_TM() if using a new setup
+    metrics_test_scramble(order=2, setup=[0, 1,0])
+
 
 
 if __name__ == '__main__':

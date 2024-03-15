@@ -2,8 +2,8 @@
 import matplotlib.pyplot as plt
 import json
 from TransitionMatrix import class_to_index
-import numpy as np
 from collections import Counter
+import numpy as np
 
 
 def transition_matrix_vis(matrix):
@@ -21,7 +21,7 @@ def transition_matrix_vis(matrix):
     ax.set_yticklabels(keys_to_include)
     plt.show()
 
-def organize_and_plot(res):
+def organize_and_plot(res, order):
     wrong_predicted_class = [] # When the model predicted wrong it predicted these wc
     wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
     corr_actual_class = [] # When the model predicted right it predicted these wc
@@ -53,10 +53,10 @@ def organize_and_plot(res):
     print(wrong_counts)
 
 
-    plot_missed(correct_counts, wrong_counts)
-    plot_found(correct_counts, total_occurrences)
+    plot_missed(correct_counts, wrong_counts, order)
+    plot_found(correct_counts, total_occurrences, order)
 
-def plot_missed(correct, incorrect):
+def plot_missed(correct, incorrect, order):
     x_right = []
     x_left = []
     x = []
@@ -65,16 +65,21 @@ def plot_missed(correct, incorrect):
     for x_values in incorrect.keys():
         x_left.append(x_values-0.15)
         x.append(x_values)
-    plt.bar(x_left, incorrect.values(), 0.3, label='Incorrect')
-    plt.bar(x_right, correct.values(), 0.3, label='Correct')
-    plt.title('Correct vs incorrect predictions for a certain class 5th order')
+    print(x_left)
+    print(x_right)
+    print(incorrect.values())
+    print(correct.values())
+    plt.bar(x_left, list(incorrect.values()), 0.3, label='Incorrect')
+    plt.bar(x_right, list(correct.values()), 0.3, label='Correct')
+    plt.title('Correct vs Incorrect Predictions by Markov Chain Order: ' + str(order)) 
     plt.xlabel("Word class")
     plt.ylabel("Predicted word classes")
     plt.xticks(x)
     plt.legend()
+    print("hej")
     plt.show()
 
-def plot_found(correct, total_occurrences):
+def plot_found(correct, total_occurrences, order):
     x_right = []
     x_left = []
     x = []
@@ -85,7 +90,7 @@ def plot_found(correct, total_occurrences):
         x.append(x_values)
     plt.bar(x_left, total_occurrences.values(), 0.3, label='Total amount')
     plt.bar(x_right, correct.values(), 0.3, label='Correctly identified by model')
-    plt.title('Correct identification of each word class out of total, 5th order')
+    plt.title('Correct Identification vs Total by Markov Chain Order: ' + str(order))
     plt.xlabel("Word class")
     plt.ylabel("Word classes in data")
     plt.xticks(x)

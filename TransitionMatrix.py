@@ -7,7 +7,7 @@ import random
 
 
 
-def iterate_transition_matrix(word_classes, mixed):
+def iterate_transition_matrix(word_classes, setup, mixed):
     if mixed:
         random.shuffle(word_classes)
     # Creating an empty matrix
@@ -23,9 +23,11 @@ def iterate_transition_matrix(word_classes, mixed):
         next_class = word_classes[i + 1]
         current_index = class_to_index[current_class]
         next_index = class_to_index[next_class]
-
-        # The calculation
-        transition_matrix[current_index][next_index] += 1
+        if setup == [0, 1]:
+            transition_matrix[current_index][next_index] += 1
+        if setup == [1, 0]:
+        # backward
+            transition_matrix[next_index][current_index] += 1
 
     # Converting to a probabilty matrix (all rows sum to 1)
     for i in range(mat_size): # for some row
@@ -35,16 +37,15 @@ def iterate_transition_matrix(word_classes, mixed):
                 transition_matrix[i][j] = transition_matrix[i][j]/n # normalizing
     return transition_matrix
 
-def run_1_order(word_classes, t_matrix_name, mixed):
+def run_1_order(word_classes, t_matrix_name,setup, mixed):
     if type(word_classes) != list:
         word_classes = open_dict(word_classes)
-    transition_matrix = iterate_transition_matrix(word_classes, mixed)
-    with open(t_matrix_name, "w") as outfile:
-        json.dump(transition_matrix, outfile)
+    transition_matrix = iterate_transition_matrix(word_classes, setup, mixed)
+    np.save(t_matrix_name, transition_matrix)
     return transition_matrix
 
 
-def iterate_tm_2_order(word_classes, mixed):
+def iterate_tm_2_order(word_classes, setup, mixed):
     if mixed:
         random.shuffle(word_classes)
     mat_size = max(class_to_index.values()) + 1
@@ -58,9 +59,13 @@ def iterate_tm_2_order(word_classes, mixed):
         old_index = class_to_index[old_class]
         current_index = class_to_index[current_class]
         next_index = class_to_index[next_class]
-
+        if setup == [0, 0, 1]:
+            transition_matrix[old_index][current_index][next_index] += 1
+        if setup == [0, 1, 0]:
         # looks at the probability to get current wc given the old wc and next wc
-        transition_matrix[old_index][current_index][next_index] += 1
+            transition_matrix[old_index][next_index][current_index] += 1
+        if setup == [1, 0, 0]:
+            transition_matrix[current_index][next_index][old_index] += 1
     for i in range(mat_size):  # for some row
         for k in range(mat_size): # every row has another row in the "new" direction because 3d
             n = sum(transition_matrix[i][k])  # summing this row
@@ -70,16 +75,17 @@ def iterate_tm_2_order(word_classes, mixed):
     return transition_matrix
 
 
-def run_2_order(file, t_matrix_name, mixed):
-    word_classes = open_dict(file)
-    tm_2nd_order = iterate_tm_2_order(word_classes, mixed)
-    tm_2nd_order = tm_2nd_order.tolist()
-    with open(t_matrix_name, "w") as outfile:
-        json.dump(tm_2nd_order, outfile)
+def run_2_order(word_classes, t_matrix_name, setup, mixed):
+    if type(word_classes) != list:
+        word_classes = open_dict(word_classes)
+    tm_2nd_order = iterate_tm_2_order(word_classes, setup, mixed)
+    np.save(t_matrix_name, tm_2nd_order)  # Avoid json and .tolist() since they are slow
     return tm_2nd_order
 
 
-def iterate_tm_3_order(word_classes):
+def iterate_tm_3_order(word_classes,setup, mixed):
+    if mixed:
+        random.shuffle(word_classes)
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
     transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size))
@@ -93,9 +99,15 @@ def iterate_tm_3_order(word_classes):
         old_index = class_to_index[old_class]
         current_index = class_to_index[current_class]
         next_index = class_to_index[next_class]
+        if setup == [0, 0, 0, 1]:
+            transition_matrix[old_2_index][old_index][current_index][next_index] += 1
+        if setup == [0, 0, 1, 0]:
+            transition_matrix[old_2_index][old_index][next_index][current_index] += 1
+        if setup == [0, 1, 0, 0]:
+            transition_matrix[old_2_index][current_index][next_index][old_index] += 1
+        if setup == [1, 0, 0, 0]:
+            transition_matrix[old_index][current_index][next_index][old_2_index] += 1
 
-        # The calculation
-        transition_matrix[old_2_index][old_index][current_index][next_index] += 1
 
     for i in range(mat_size):  # for some row
         for k in range(mat_size): # every row has another row in the "new" direction because 3d
@@ -106,15 +118,16 @@ def iterate_tm_3_order(word_classes):
                         transition_matrix[i][k][p][j] = transition_matrix[i][k][p][j] / n  # normalizing
     return transition_matrix
 
-def run_3_order(file, t_matrix_name):
-    word_classes = open_dict(file)
-    tm_3rd_order = iterate_tm_3_order(word_classes)
-    tm_3rd_order = tm_3rd_order.tolist()
-    with open(t_matrix_name, "w") as outfile:
-        json.dump(tm_3rd_order, outfile)
+def run_3_order(word_classes, t_matrix_name,setup, mixed):
+    if type(word_classes) != list:
+        word_classes = open_dict(word_classes)
+    tm_3rd_order = iterate_tm_3_order(word_classes,setup, mixed)
+    np.save(t_matrix_name, tm_3rd_order)
     return tm_3rd_order
 
-def iterate_tm_4_order(word_classes, setup):
+def iterate_tm_4_order(word_classes, setup, mixed):
+    if mixed:
+        random.shuffle(word_classes)
     mat_size = max(class_to_index.values()) + 1
     # Creating an empty matrix
     transition_matrix = np.zeros((mat_size, mat_size, mat_size, mat_size, mat_size))
@@ -154,16 +167,12 @@ def iterate_tm_4_order(word_classes, setup):
                             transition_matrix[i][k][p][q][j] = transition_matrix[i][k][p][q][j] / n  # normalizing
     return transition_matrix
 
-def run_4_order(file, t_matrix_name, setup):
-    word_classes = open_dict(file)
-    tm_4rd_order = iterate_tm_4_order(word_classes, setup)
-    print("Here")
-    tm_4rd_order = tm_4rd_order.tolist()
-    print("there")
-    with open(t_matrix_name, "w") as outfile:
-        json.dump(tm_4rd_order, outfile)
-    print("exit")
-    return tm_4rd_order
+def run_4_order(word_classes, t_matrix_name, setup, mixed):
+    if type(word_classes) != list:
+        word_classes = open_dict(word_classes)
+    tm_4th_order = iterate_tm_4_order(word_classes, setup, mixed)
+    np.save(t_matrix_name, tm_4th_order)
+    return tm_4th_order
 
 def iterate_tm_5_order(word_classes, setup):
     mat_size = max(class_to_index.values()) + 1

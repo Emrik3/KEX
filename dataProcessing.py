@@ -3,6 +3,7 @@
 import json
 import requests
 import pandas as pd
+from googletrans import Translator, LANGUAGES
 
 
 """
@@ -37,7 +38,7 @@ def classify_data(text, lib, no_NA):
             try:
                 classlist.append(lib[word])
             except:
-                print(word)
+                #print(word)
                 classlist.append('NA')
                 NA_list.append('NA')
         #print(len(NA_list))
@@ -153,17 +154,75 @@ def test():
             k += 1
     #print("Number of words that could not me classified: " + str(k) + " out of " + str(len(classified)))
 
-def abstracts_to_word_classes(file, WC_dir, no_NA, segment):
+def translator(transl, text):
+  """returns the text twice translated, either on wordlevel transl="Single" or all together transl="Full" """
+  translator = Translator()
+  if transl == "Full":
+      #Går nog bra att ta bort allt och köra på koden som gäller för len(text)<500,
+      #hade såhär för att en annan översättare krävde max 500 bokstäver per översättning
+        print(len(text))
+        try:
+            text1 = text
+            newtext1 = translator.translate(text1, src='sv', dest='en').text
+            text1 = translator.translate(newtext1, src='en', dest='sv').text
+            text=text1
+        except:
+            print("error for text: ")
+            print(text)
+        return str(text)
+  elif transl == "Single":
+        translated_list = []
+        print(text)
+        words = text.split(' ')
+        counter =0
+        for word in words:
+            #print(word)
+            text1 = word
+            """ Typ att denna kod funkade tidigare men tror jag blivit bannad eller nåt pga för många överästtningar
+                        nu får jag direkt: AttributeError: 'Translator' object has no attribute 'raise_Exception
+                        update: funkade med vpn på så tror dom spärrat min ip adress ett tag. Denna run tar typ 1 timme
+                        då det tar typ 0.2 sekunder eller nåt att översätta ett enskilt ord'"""
+            if counter<20:
+                try:
+                    newtext1 = translator.translate(text1, src='sv', dest='en').text
+                    text1 = translator.translate(newtext1, src='en', dest='sv').text
+
+                    translated_list.append(text1.lower())
+                    #print(translated_list)
+                except:
+                    print("error caused at word: " + word)
+                    translated_list.append(word)
+                    counter+=1
+            else:
+                translated_list.append(word)
+        translated = ' '.join(translated_list)
+        print(translated)
+        return translated
+
+
+
+def abstracts_to_word_classes(file, WC_dir, no_NA, segment, transl):
     """Converts the text to word classes"""
     k = 0  # Counting amount of unclassified words
     classified_list = []  # [text, text, text..] (with text in word class form)
     word_class_list = []  # [all texts] (with text in word class form)
     dictionary_talbanken = open_dict('dictionaries/classdict.json')
     text_all = read_traning_csv(file)
+    counter =0
+    tot_len = 0
     for text in text_all:
+        counter+=1
+        tot_len += len(text)
         if check_english(text.split()):
             continue
         text = text_cleaner(text, no_dot=False)
+        if (transl or type(transl) == str):
+            print(counter)
+            print("out of")
+            print("total amount of characters processed: " + str(tot_len))
+            print(len(text_all))
+            text = translator(transl, text)
+            text = text_cleaner(text, no_dot=False)
         classified = classify_data(text, dictionary_talbanken, no_NA)
         for i in classified:
             if i == 'NA':
@@ -177,7 +236,6 @@ def abstracts_to_word_classes(file, WC_dir, no_NA, segment):
     #print("in percent " + str(100*k/len(word_class_list)))
         with open(WC_dir, "w") as outfile:
             json.dump(word_class_list, outfile)
-        #print(word_class_list)
         return word_class_list
     else:
         with open(WC_dir, "w") as outfile:
