@@ -303,7 +303,7 @@ def predict_big(order, setup):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
     if order ==1:
         TM_dir = TM_all_dir
-        grammar_pred_test = grammar_predictor_percentage_test
+        grammar_pred_test = predictor_with_endings
     elif order ==2:
         TM_dir = TM_all_2nd_dir
         grammar_pred_test = grammar_predictor_percentage_test2
@@ -320,7 +320,7 @@ def predict_big(order, setup):
         print("ERROR: Choose the order of markov chain as 1,2,3,4 or 5")
         return
     results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
-    organize_and_plot(results, order=order)
+    #organize_and_plot(results, order=order)
 
 def update_end_prob():
     text = read_traning_csv('Trainingdata/many_abstracts.csv')
@@ -343,17 +343,17 @@ def get_url():
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    update_TM(order=2, setup=[0, 1, 0])
+    update_TM(order=1, setup=[0, 1, 0])
     #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    #predict_big(order=4, setup=[0, 0, 1,0,0])
+    predict_big(order=1, setup=[0, 0, 1,0,0])
     #update_end_prob()
     #get_url()
-    metrics_test_translation(order=2, setup=[0, 1,0], type=WC_export_segment_fulltransl_dir) # Remember to update_TM() if using a new setup
-    metrics_test_translation(order=2, setup=[0, 1,0], type=wc_export_segment_swtransl_dir) # Remember to update_TM() if using a new setup
-    metrics_test_scramble(order=2, setup=[0, 1,0])
+    #metrics_test_translation(order=2, setup=[0, 1,0], type=WC_export_segment_fulltransl_dir) # Remember to update_TM() if using a new setup
+    #metrics_test_translation(order=2, setup=[0, 1,0], type=wc_export_segment_swtransl_dir) # Remember to update_TM() if using a new setup
+    #metrics_test_scramble(order=2, setup=[0, 1,0])
 
 
 

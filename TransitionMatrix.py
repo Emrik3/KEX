@@ -341,6 +341,11 @@ def ending_freq(text, ending_list):
     with open("dictionaries/ending_prob.json", "w") as outfile:
         outfile.write(json_object)
 
+def prob_ending_class(text, endinglist, classlist):
+    # Calculates the probability of a certian wordending to be a certian wordclass...
+    """Just count as above but for wordclasses at same time and then normalize"""
+    pass
+
 
 def emmision_matrix(file, t_matrix_name):
     """possibly to implement in the future"""
