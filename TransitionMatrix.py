@@ -1,8 +1,8 @@
 import json
 
 import numpy as np
-from dataProcessing import open_dict, read_traning_csv, read_translation_txt, text_cleaner, save_dict
-from choose_word_classes import class_to_index, ending_list
+from dataProcessing import open_dict, read_traning_csv, read_translation_txt, text_cleaner, save_dict, check_english
+from choose_word_classes import class_to_index, ending_list, ending_to_num
 import random
 
 
@@ -341,10 +341,36 @@ def ending_freq(text, ending_list):
     with open("dictionaries/ending_prob.json", "w") as outfile:
         outfile.write(json_object)
 
-def prob_ending_class(text, endinglist, classlist):
-    # Calculates the probability of a certian wordending to be a certian wordclass...
-    """Just count as above but for wordclasses at same time and then normalize"""
-    pass
+def prob_ending_class(giventext, word_class_dict):
+    # Calculates the probability of a certian wordending to be a certian wordclass
+    wcdict = open_dict(word_class_dict)
+    text = read_traning_csv(giventext)
+    res = []
+    i=0
+    textlist = []
+    for textt in text:
+        textt = text_cleaner(textt, no_dot=False)
+        sentences = textt.lower().split('. ')
+        for sentence in sentences:
+            words = sentence.split(' ')
+            textlist.append(words)
+
+
+    ending_matrix = np.zeros((len(ending_list), len(class_to_index.keys())))
+    for i in range(len(textlist)):
+        for j in range(len(textlist[i])):
+            if len(textlist[i][j]) >= 2 and textlist[i][j] in list(wcdict.keys()) and textlist[i][j][-2:] in ending_list:
+                ending_matrix[ending_to_num[textlist[i][j][-2:]]][class_to_index[wcdict[textlist[i][j]]]] += 1
+
+    for i in range(len(ending_list)): # for some row
+        n = sum(ending_matrix[i]) # summing the row
+        if n > 0:
+            for j in range(len(class_to_index.keys())):  # for element in the row
+                ending_matrix[i][j] = ending_matrix[i][j]/n # normalizing
+
+    np.save("wordclasslists/WCending", ending_matrix)
+        
+    return ending_matrix
 
 
 def emmision_matrix(file, t_matrix_name):
@@ -352,11 +378,12 @@ def emmision_matrix(file, t_matrix_name):
 
 
 if __name__ == "__main__":
+    print(prob_ending_class())
     #run_1_order('wordclasslists/WC_all.json', "transition_matrices/TM_all")
     #run_1_order('wordclasslists/WC_transl.json', "transition_matrices/TM_transl.json")
     #run_1_order('wordclasslists/WC_non_transl.json', 'transition_matrices/TM_non_transl.json')
     #run_2_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_2nd')
     #run_3_order('wordclasslists/WC_all.json', 'transition_matrices/TM_all_3rd')
     #run_1_order_future("wordclasslists/WC_all.json", "transition_matrices/TM_all_future")
-    text = read_translation_txt('Trainingdata/translated_sample.txt')
-    ending_freq(text, ending_list)
+    #text = read_translation_txt('Trainingdata/translated_sample.txt')
+    #ending_freq(text, ending_list)

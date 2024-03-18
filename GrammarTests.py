@@ -228,6 +228,7 @@ def grammar_predictor(A, classtext, textlist):
                 d[textlist[i][j]] = number_to_class[result[i][j]]
     return d
 
+
 def predictor_with_endings(A, classtext, textlist, setup):
     ending_prob = open_dict('dictionaries/ending_prob.json')
     temporary_list = []
@@ -258,7 +259,7 @@ def predictor_with_endings(A, classtext, textlist, setup):
     for i in range(len(result)):
         for j in range(1, len(result[i]) - 2):
             if result[i][j] == 0:
-                result[i][j] = A[i].index(max(A[i] * wordlist_ending_prob[i][j])) 
+                result[i][j] = np.where(max(A[i] * wordlist_ending_prob[i][j])) # This is wrong (Add )
                 print(textlist[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
                 d[textlist[i][j]] = number_to_class[result[i][j]]
     return d
