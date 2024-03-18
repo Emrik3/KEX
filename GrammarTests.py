@@ -675,3 +675,8 @@ def grammar_predictor_percentage_test6(A, classtext, textlist):
     pass
 
 
+def confusion_matrix(A, classnum):
+    # Creates a matrix of how many times a word is predicted and when it actually was that word and when it was wronglly predicted.
+    pass
+
+
