@@ -1,8 +1,9 @@
 from metrics import *
 from dataProcessing import open_dict, read_translation_txt, translations_to_word_classes, text_cleaner, read_traning_csv
-from choose_word_classes import number_to_class
+from choose_word_classes import number_to_class, ending_list, ending_to_num
 import random as rnd
 import copy
+import numpy as np
 
 
 def testinggrammar1d(text_to_test, WC_text_to_test, TM_all):
@@ -229,8 +230,48 @@ def grammar_predictor(A, classtext, textlist):
     return d
 
 
-def predictor_with_endings(A, classtext, textlist, setup):
-    pass
+def predictor_with_endings(A, classtext, textlist):
+    d = {}
+    classtextnum = []
+    wcend = np.load('wordclasslists/WCending.npy')
+    error = []
+    for i in range(len(classtext)):
+        classtextnum.append(class_to_index[classtext[i]])
+    particular_value = class_to_index['.']
+    result = []
+    result_text = []
+    temp2 = []
+    temp_list = []
+    for i in range(len(classtextnum)):
+        if classtextnum[i] == particular_value:
+            temp_list.append(classtextnum[i])
+            temp2.append(textlist[i])
+            result.append(temp_list)
+            result_text.append(temp2)
+            temp_list = []
+            temp2 = []
+        else:
+            temp_list.append(classtextnum[i])
+            temp2.append(textlist[i])
+    result.append(temp_list)
+    result_text.append(temp2)
+    # Create list equvalent with result but ony with last two letters
+    maxprob = np.zeros(len(A))
+    maxi = 0
+    for i in range(len(result)):
+        for j in range(1, len(result[i]) - 2):
+            if result[i][j] == 0:
+                if len(result_text[i][j]) >= 2:
+                    for l in range(len(A)):
+                        for k in range(len(A)):
+                            newmaxi = A[int(result[i][j])][l] * wcend[ending_to_num[result_text[i][j][-2:]]][l] # Check if this is taking correct value... from A
+                            if newmaxi > maxi:
+                                maxi = newmaxi
+                                maxl = l
+                    result[i][j] =  maxl
+                    print(result_text[i][j] + " predicted as " + str(number_to_class[result[i][j]]))
+                    d[result_text[i][j]] = number_to_class[result[i][j]]
+    return d
 
 def grammar_predictor_percentage_test(A, classtext, textlist, setup):
     """Does the same thing as grammar predictor but creates is own NA:s and ignores

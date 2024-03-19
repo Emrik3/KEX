@@ -56,6 +56,37 @@ def classify_data(text, lib, no_NA):
     return classlist
 
 
+def data_fixing(text, lib, no_NA):
+    # Input training data and dict of what word class a word is
+    # Returns a dict of the input data with matched word classes.
+    textlist = []
+    sentences = text.lower().split('. ')  #FIX: Last word in each sentence has a "."
+
+    NA_list = []
+    for sentence in sentences:
+        words = sentence.split(' ')
+        for word in words:
+            try:
+                a = lib[word]
+                textlist.append(word)
+            except:
+                #print(word)
+                textlist.append(word)
+                NA_list.append('NA')
+        #print(len(NA_list))
+        if no_NA:
+            if len(NA_list)>0:
+                #print(classlist)
+                #print(len(words))
+                for _ in range(len(words)): # Dont understand this!
+                    textlist.pop(-1)
+                NA_list = []
+            else:
+                textlist.append('.')
+        else:
+            textlist.append('.')
+    return textlist
+
 
 
 def save_dict(to_save):
@@ -242,6 +273,45 @@ def abstracts_to_word_classes(file, WC_dir, no_NA, segment, transl):
             json.dump(classified_list, outfile)
 
 
+def abstracts_data_fixing(file, WC_dir, no_NA, segment, transl):
+    """Converts the text to word classes"""
+    k = 0  # Counting amount of unclassified words
+    classified_list = []  # [text, text, text..] (with text in word class form)
+    word_class_list = []  # [all texts] (with text in word class form)
+    dictionary_talbanken = open_dict('dictionaries/classdict.json')
+    text_all = read_traning_csv(file)
+    counter =0
+    tot_len = 0
+    for text in text_all:
+        counter+=1
+        tot_len += len(text)
+        if check_english(text.split()):
+            continue
+        text = text_cleaner(text, no_dot=False)
+        if (transl or type(transl) == str):
+            print(counter)
+            print("out of")
+            print("total amount of characters processed: " + str(tot_len))
+            print(len(text_all))
+            text = translator(transl, text)
+            text = text_cleaner(text, no_dot=False)
+        classified = data_fixing(text, dictionary_talbanken, no_NA)
+        classified_list.append(classified)
+    
+    if not segment:
+        for sublist in classified_list:
+            for word_class in sublist:
+                word_class_list.append(word_class)
+    #print("Number of words that could not be classified: " + str(k) + " out of " + str(len(word_class_list)))
+    #print("in percent " + str(100*k/len(word_class_list)))
+        with open(WC_dir, "w") as outfile:
+            json.dump(word_class_list, outfile)
+        return word_class_list
+    else:
+        with open(WC_dir, "w") as outfile:
+            json.dump(classified_list, outfile)
+
+
 def translations_to_word_classes(file, filename, no_NA):
     # Takes a txt file and converts it to word classes
     dictionary_talbanken = open_dict('dictionaries/classdict.json')
@@ -284,8 +354,8 @@ if __name__ == "__main__":
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json')
-    translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json", False)
-
+    #translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json", False)
+    abstracts_data_fixing('Trainingdata/many_abstracts.csv', 'Trainingdata/abstracts_textlist', False, False, False)
     """
     TM_all = open_dict('transition_matrices/TM_all')
     maxlike(TM_all, sample)"""

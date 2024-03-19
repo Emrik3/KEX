@@ -332,6 +332,17 @@ def update_end_prob():
         fulltext += ' ' + abstract
     ending_freq(fulltext, ending_list)
 
+def create_end_wc_matrix():
+    textlist = open_dict('Trainingdata/abstracts_textlist')
+    wclist = open_dict('wordclasslists/WC_all.json')
+    prob_ending_class(textlist, wclist)
+
+
+def predict_ending():
+    textlist = open_dict('Trainingdata/abstracts_textlist')
+    wclist = open_dict('wordclasslists/WC_all.json')
+    A = open_dict('transition_matrices/TM_all.json')
+    predictor_with_endings(A, wclist, textlist)
 
 def get_url():
     # get URL
@@ -343,7 +354,7 @@ def get_url():
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    #update_TM(order=1, setup=[0, 1, 0])
+    update_TM(order=1, setup=[0, 1])
     #plot()
     #metrics()
     #evaluate_grammar()
@@ -355,13 +366,11 @@ def main():
     #metrics_test_translation(order=2, setup=[0, 1,0], type=WC_export_segment_fulltransl_dir) # Remember to update_TM() if using a new setup
     #metrics_test_translation(order=2, setup=[0, 1,0], type=wc_export_segment_swtransl_dir) # Remember to update_TM() if using a new setup
     #metrics_test_scramble(order=2, setup=[0, 1,0])
-
+    #create_end_wc_matrix()
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
-    """m = np.load('wordclasslists/WCending.npy')
-    for i in range(len(m)):
-        for j in range(len(m[i])):
-            if m[i][j] != 0:
-                print(m[i][j])"""
+    predict_ending()
+    
+    
 
 
 

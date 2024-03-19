@@ -341,26 +341,12 @@ def ending_freq(text, ending_list):
     with open("dictionaries/ending_prob.json", "w") as outfile:
         outfile.write(json_object)
 
-def prob_ending_class(giventext, word_class_dict):
+def prob_ending_class(textlist, wclist):
     # Calculates the probability of a certian wordending to be a certian wordclass
-    wcdict = open_dict(word_class_dict)
-    text = read_traning_csv(giventext)
-    res = []
-    i=0
-    textlist = []
-    for textt in text:
-        textt = text_cleaner(textt, no_dot=False)
-        sentences = textt.lower().split('. ')
-        for sentence in sentences:
-            words = sentence.split(' ')
-            textlist.append(words)
-
-
-    ending_matrix = np.zeros((len(ending_list), len(class_to_index.keys())))
+    ending_matrix = np.zeros((len(ending_list), max(class_to_index.values()) + 3))
     for i in range(len(textlist)):
-        for j in range(len(textlist[i])):
-            if len(textlist[i][j]) >= 2 and textlist[i][j] in list(wcdict.keys()) and textlist[i][j][-2:] in ending_list:
-                ending_matrix[ending_to_num[textlist[i][j][-2:]]][class_to_index[wcdict[textlist[i][j]]]] += 1
+        if len(textlist[i]) >= 2 and wclist[i] != 'NA' and  textlist[i][-2:] in ending_list:
+            ending_matrix[ending_to_num[textlist[i][-2:]]][class_to_index[wclist[i]]] += 1
 
     for i in range(len(ending_list)): # for some row
         n = sum(ending_matrix[i]) # summing the row
