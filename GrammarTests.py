@@ -257,11 +257,12 @@ def predictor_with_endings(A, classtext, textlist):
     result_text.append(temp2)
     # Create list equvalent with result but ony with last two letters
     maxprob = np.zeros(len(A))
-    maxi = 0
+    
     for i in range(len(result)):
         for j in range(1, len(result[i]) - 2):
             if result[i][j] == 0:
-                if len(result_text[i][j]) >= 2:
+                if len(result_text[i][j]) >= 2 and result_text[i][j][-2:] in list(ending_to_num.keys()):
+                    maxi = 0
                     for l in range(len(A)):
                         for k in range(len(A)):
                             newmaxi = A[int(result[i][j])][l] * wcend[ending_to_num[result_text[i][j][-2:]]][l] # Check if this is taking correct value... from A
