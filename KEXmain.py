@@ -299,9 +299,9 @@ def predict_NA():
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
-def predict_big(order, setup):
+def predict_big(order, setup, end):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
-    if order ==1:
+    if order ==1 and not end:
         TM_dir = TM_all_dir
         grammar_pred_test = grammar_predictor_percentage_test
     elif order ==2:
@@ -316,9 +316,10 @@ def predict_big(order, setup):
     elif order == 5:
         TM_dir = TM_all_5th_dir
         grammar_pred_test = grammar_predictor_percentage_test5
-    else:
-        print("ERROR: Choose the order of markov chain as 1,2,3,4 or 5")
-        return
+    elif order == 1 and end:
+        TM_dir = TM_all_dir
+        grammar_pred_test = grammar_predictor_percentage_test_ending
+        
     results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     organize_and_plot(results, order=order)
 
@@ -354,12 +355,12 @@ def get_url():
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    #update_TM(order=4, setup=[0, 0, 1,0,0])
+    #update_TM(order=1, setup=[0,1])
     #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    #predict_big(order=4, setup=[0, 0, 1,0,0])
+    predict_big(order=1, setup=[0,1], end=True)
     #update_end_prob()
     #prob_ending_class(export_dir, 'dictionaries/classdict.json')
     #get_url()
@@ -368,7 +369,7 @@ def main():
     #metrics_test_scramble(order=2, setup=[0, 1,0])
     #create_end_wc_matrix()
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
-    predict_ending()
+    #predict_ending()
     
     
 
