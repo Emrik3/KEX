@@ -354,12 +354,12 @@ def get_url():
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    update_TM(order=1, setup=[0, 1])
+    #update_TM(order=4, setup=[0, 0, 1,0,0])
     #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    #predict_big(order=1, setup=[0, 0, 1,0,0])
+    #predict_big(order=4, setup=[0, 0, 1,0,0])
     #update_end_prob()
     #prob_ending_class(export_dir, 'dictionaries/classdict.json')
     #get_url()

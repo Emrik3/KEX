@@ -25,11 +25,13 @@ def organize_and_plot(res, order):
     wrong_predicted_class = [] # When the model predicted wrong it predicted these wc
     wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
     corr_actual_class = [] # When the model predicted right it predicted these wc
-
+    confusionmatrix = np.zeros((len(class_to_index), len(class_to_index)))
+    print("res: " + str(len(res)))
     for elem in res:
         wrong_predicted_class.append(elem[0])
         wrong_actual_class.append(elem[1])
         corr_actual_class.append(elem[2])
+        confusionmatrix += elem[3]
     wrong_predicted_class = sum(wrong_predicted_class,[])
     wrong_actual_class = sum(wrong_actual_class,[])
     corr_actual_class = sum(corr_actual_class,[])
@@ -48,14 +50,25 @@ def organize_and_plot(res, order):
     correct_counts = {k: correct_counts[k] for k in sorted(correct_counts)}
     wrong_counts = {k: wrong_counts[k] for k in sorted(wrong_counts)}
 
-    print(total_occurrences)
-    print(correct_counts)
-    print(wrong_counts)
+    print("total: " + str(total_occurrences))
+    print("correct: " + str(correct_counts))
+    print("wrong: " + str(wrong_counts))
+    try:
+        non_guess = wrong_counts[0]
+    except:
+        non_guess = 0
+    tot_correct = sum(list(correct_counts.values()))
+    tot_tot = sum(list(total_occurrences.values()))
+    tot_incorrect = sum(list(total_occurrences.values()))
 
-
+    print("non_guess: "+ str(non_guess) + ", tot_correct: " + str(tot_correct) + ", total_total: " + str(tot_tot) + ", incorrect: " + str(tot_incorrect))
+    print("Right predictions out of total: " + (str(tot_correct/tot_tot)))
+    print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
+    transition_matrix_vis(confusionmatrix)
     plot_missed(correct_counts, wrong_counts, order)
     plot_found(correct_counts, total_occurrences, order)
 
+    
 def plot_missed(correct, incorrect, order):
     x_right = []
     x_left = []
