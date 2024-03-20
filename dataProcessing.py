@@ -91,7 +91,7 @@ def data_fixing(text, lib, no_NA):
 
 def save_dict(to_save):
     json_object = json.dumps(to_save, indent=4)
-    with open("dictionaries/classdict.json", "w") as outfile:
+    with open("dictionaries/WCendingtolookat.json", "w") as outfile:
         outfile.write(json_object)
 
 

@@ -304,23 +304,32 @@ def predict_big(order, setup, end):
     if order ==1 and not end:
         TM_dir = TM_all_dir
         grammar_pred_test = grammar_predictor_percentage_test
-    elif order ==2:
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
+    elif order ==2 and not end:
         TM_dir = TM_all_2nd_dir
         grammar_pred_test = grammar_predictor_percentage_test2
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     elif order == 3:
         TM_dir = TM_all_3rd_dir
         grammar_pred_test = grammar_predictor_percentage_test3
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     elif order == 4:
         TM_dir = TM_all_4th_dir
         grammar_pred_test = grammar_predictor_percentage_test4
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     elif order == 5:
         TM_dir = TM_all_5th_dir
         grammar_pred_test = grammar_predictor_percentage_test5
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     elif order == 1 and end:
         TM_dir = TM_all_dir
         grammar_pred_test = grammar_predictor_percentage_test_ending
+        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
+    elif order == 2 and end:
+        TM_dir = TM_all_2nd_dir
+        grammar_pred_test = grammar_predictor_percentage_test_ending2
+        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
         
-    results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     organize_and_plot(results, order=order)
 
 def update_end_prob():
@@ -343,7 +352,7 @@ def predict_ending():
     textlist = open_dict('Trainingdata/abstracts_textlist')
     wclist = open_dict('wordclasslists/WC_all.json')
     A = open_dict('transition_matrices/TM_all.json')
-    predictor_with_endings(A, wclist, textlist)
+    predictor_with_endings(A, wclist, textlist, [0,1])
 
 def get_url():
     # get URL
@@ -355,12 +364,12 @@ def get_url():
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    #update_TM(order=1, setup=[0,1])
+    #update_TM(order=2, setup=[0,1, 0])
     #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    predict_big(order=1, setup=[0,1], end=True)
+    predict_big(order=2, setup=[0,1,0], end=True)
     #update_end_prob()
     #prob_ending_class(export_dir, 'dictionaries/classdict.json')
     #get_url()
@@ -370,6 +379,8 @@ def main():
     #create_end_wc_matrix()
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
     #predict_ending()
+    #m = np.load('wordclasslists/WCending.npy')
+    #save_dict(m.tolist())
     
     
 

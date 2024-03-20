@@ -54,7 +54,7 @@ wc_export_segment_swtransl_dir = 'wordclasslists/WC_export_segment_swtransl'
 
 
 # Opening wordclasslists
-#WC_all = open_dict(WC_all_dir)
+WC_all = open_dict(WC_all_dir)
 #WC_transl = open_dict(WC_transl_dir)
 #WC_non_transl = open_dict(WC_non_transl_dir)
 WC_export = open_dict(WC_export_dir)
