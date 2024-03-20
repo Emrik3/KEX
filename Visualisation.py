@@ -14,11 +14,13 @@ def transition_matrix_vis(matrix):
     fig.colorbar(im)
     mat_size = max(class_to_index.values()) + 1
     ax.set_xticks(range(mat_size))
-    ax.set_yticks(range(mat_size))
+    ax.set_yticks(range(mat_size, 0, -1))
 
     keys_to_include = list(class_to_index.keys())[0:mat_size]
     ax.set_xticklabels(keys_to_include)
     ax.set_yticklabels(keys_to_include)
+    ax.tick_params(axis='both', which='major', labelsize=10) # Set fontsize on labels, this is hard to get right cause dont fit.
+    ax.tick_params(axis='both', which='minor', labelsize=8)
     plt.show()
 
 def organize_and_plot(res, order):
