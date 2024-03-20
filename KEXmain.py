@@ -299,10 +299,10 @@ def predict_NA():
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
-def predict_big(order, setup, end, l):
+def predict_big(order, setup, nletters):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
     # FIX THIS FUNCTION!!! AND FIX THE ORTHER FUNCTIONS THEAT THEY GO TO, GIVE GOOD NAMES AND SO ON AND MAYBE PUT THEM ALL TOGETHER IN SOME WAY...
-    if order == 1 and end and l == 1:
+    """if order == 1 and end and l == 1:
         TM_dir = TM_all_dir
         grammar_pred_test = grammar_predictor_percentage_test_ending11
         results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
@@ -333,7 +333,9 @@ def predict_big(order, setup, end, l):
     elif order == 2 and end:
         TM_dir = TM_all_2nd_dir
         grammar_pred_test = grammar_predictor_percentage_test_ending2
-        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
+        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)"""
+    
+    results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters)]
         
     organize_and_plot(results, order=order)
 
@@ -350,8 +352,9 @@ def update_end_prob():
 def create_end_wc_matrix():
     textlist = open_dict('Trainingdata/abstracts_textlist')
     wclist = open_dict('wordclasslists/WC_all.json')
-    prob_ending_class(textlist, wclist)
-    prob_ending2_class(textlist, wclist)
+    #prob_ending_class(textlist, wclist)
+    #prob_ending2_class(textlist, wclist)
+    prob_ending3_class(textlist, wclist)
 
 
 def predict_ending():
@@ -370,12 +373,12 @@ def get_url():
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    #update_TM(order=2, setup=[0,1, 0])
+    #update_TM(order=3, setup=[0, 0, 1, 0])
     #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    predict_big(order=1, setup=[0,1], end=True, l=1)
+    predict_big(order=3, setup=[0, 0, 1, 0], nletters=3) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #update_end_prob()
     #create_end_wc_matrix()
     #get_url()
