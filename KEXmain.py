@@ -299,9 +299,14 @@ def predict_NA():
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
-def predict_big(order, setup, end):
+def predict_big(order, setup, end, l):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
-    if order ==1 and not end:
+    # FIX THIS FUNCTION!!! AND FIX THE ORTHER FUNCTIONS THEAT THEY GO TO, GIVE GOOD NAMES AND SO ON AND MAYBE PUT THEM ALL TOGETHER IN SOME WAY...
+    if order == 1 and end and l == 1:
+        TM_dir = TM_all_dir
+        grammar_pred_test = grammar_predictor_percentage_test_ending11
+        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
+    elif order ==1 and not end:
         TM_dir = TM_all_dir
         grammar_pred_test = grammar_predictor_percentage_test
         results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
@@ -346,13 +351,14 @@ def create_end_wc_matrix():
     textlist = open_dict('Trainingdata/abstracts_textlist')
     wclist = open_dict('wordclasslists/WC_all.json')
     prob_ending_class(textlist, wclist)
+    prob_ending2_class(textlist, wclist)
 
 
 def predict_ending():
     textlist = open_dict('Trainingdata/abstracts_textlist')
     wclist = open_dict('wordclasslists/WC_all.json')
     A = open_dict('transition_matrices/TM_all.json')
-    predictor_with_endings(A, wclist, textlist, [0,1])
+    predictor_with_endings1(A, wclist, textlist, [0,1])
 
 def get_url():
     # get URL
@@ -369,9 +375,9 @@ def main():
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    predict_big(order=2, setup=[0,1,0], end=True)
+    predict_big(order=1, setup=[0,1], end=True, l=1)
     #update_end_prob()
-    #prob_ending_class(export_dir, 'dictionaries/classdict.json')
+    #create_end_wc_matrix()
     #get_url()
     #metrics_test_translation(order=2, setup=[0, 1,0], type=WC_export_segment_fulltransl_dir) # Remember to update_TM() if using a new setup
     #metrics_test_translation(order=2, setup=[0, 1,0], type=wc_export_segment_swtransl_dir) # Remember to update_TM() if using a new setup
