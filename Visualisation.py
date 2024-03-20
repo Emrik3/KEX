@@ -64,7 +64,7 @@ def organize_and_plot(res, order):
         confusionmatrix += elem[3]
     confusion_metrics(confusionmatrix)
 
-    """ wrong_predicted_class = sum(wrong_predicted_class,[])
+    wrong_predicted_class = sum(wrong_predicted_class,[])
     wrong_actual_class = sum(wrong_actual_class,[])
     corr_actual_class = sum(corr_actual_class,[])
 
@@ -98,7 +98,10 @@ def organize_and_plot(res, order):
     print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
     transition_matrix_vis(confusionmatrix)
     plot_missed(correct_counts, wrong_counts, order)
-    plot_found(correct_counts, total_occurrences, order)"""
+    plot_found(correct_counts, total_occurrences, order)
+
+
+    
 def confusion_metrics(matrix):
     """Calculates 5 metrics using the confusion matrix"""
     data = []

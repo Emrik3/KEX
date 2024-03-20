@@ -378,7 +378,7 @@ def main():
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    predict_big(order=3, setup=[0, 0, 1, 0], nletters=3) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
+    predict_big(order=1, setup=[0, 1], nletters=3) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #update_end_prob()
     #create_end_wc_matrix()
     #get_url()
@@ -389,7 +389,6 @@ def main():
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
     #predict_ending()
     #m = np.load('wordclasslists/WCending.npy')
-    #save_dict(m.tolist())
     
     
 
