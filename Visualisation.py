@@ -4,6 +4,9 @@ import json
 from TransitionMatrix import class_to_index
 from collections import Counter
 import numpy as np
+from choose_word_classes import number_to_class
+import pandas as pd
+
 
 
 def transition_matrix_vis(matrix):
@@ -22,7 +25,32 @@ def transition_matrix_vis(matrix):
     ax.tick_params(axis='both', which='major', labelsize=10) # Set fontsize on labels, this is hard to get right cause dont fit.
     ax.tick_params(axis='both', which='minor', labelsize=8)
     plt.show()
+def plot_table(data, columns, rows):
+    n_rows = len(data) # antal ordklasser
+    y_offset = np.zeros(len(columns))
+    cell_text = []
+    for row in range(n_rows):
+        y_offset = data[row]
+        cell_text.append([x for x in y_offset])
+    # Reverse text labels to display
+    cell_text.reverse()
 
+    # Add a table at the bottom of the axes
+    plt.table(cellText=cell_text, rowLabels=rows, colLabels=columns, loc='center')
+    plt.xticks([])
+    plt.yticks([])
+    plt.show()
+def plot_line_graph(data, columns, rows, offset):
+    # Get some pastel shades for the colors
+    n_rows = len(data)
+    index = np.arange(len(columns)) + 0.3
+    for row in range(n_rows):
+        plt.plot(index, data[row], label=str(number_to_class[row+offset]))
+    plt.xticks(np.arange(len(columns)),columns)
+    plt.legend()
+    plt.title('Metrics for each word class')
+
+    plt.show()
 def organize_and_plot(res, order):
     wrong_predicted_class = [] # When the model predicted wrong it predicted these wc
     wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
@@ -34,7 +62,9 @@ def organize_and_plot(res, order):
         wrong_actual_class.append(elem[1])
         corr_actual_class.append(elem[2])
         confusionmatrix += elem[3]
-    wrong_predicted_class = sum(wrong_predicted_class,[])
+    confusion_metrics(confusionmatrix)
+
+    """ wrong_predicted_class = sum(wrong_predicted_class,[])
     wrong_actual_class = sum(wrong_actual_class,[])
     corr_actual_class = sum(corr_actual_class,[])
 
@@ -68,7 +98,71 @@ def organize_and_plot(res, order):
     print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
     transition_matrix_vis(confusionmatrix)
     plot_missed(correct_counts, wrong_counts, order)
-    plot_found(correct_counts, total_occurrences, order)
+    plot_found(correct_counts, total_occurrences, order)"""
+def confusion_metrics(matrix):
+    """Calculates 5 metrics using the confusion matrix"""
+    data = []
+    for i in range(len(matrix)): # for some row
+        FN = [0] * len(class_to_index)
+        TP = [0] * len(class_to_index)
+        FP = [0] * len(class_to_index)
+        TN = [0] * len(class_to_index)
+        counter = 0
+        for j in range(len(matrix)): # for element in row
+            if i==j:
+                TP[i] += matrix[i][j] # diagonal elements give TP
+            else:
+                FN[i] += matrix[i][j] # sums every other element in the row
+                FP[i] += matrix[j][i] # sums every other element in the column
+            TN[i] = np.sum(matrix)-(TP[i] + FN[i] + FP[i]) # sum of all other values are true negatives
+        if (TP[i] + TN[i] + FP[i] + FN[i]) >0: #divide by zero check
+            Accuracy = round((TP[i] + TN[i]) / (TP[i] + TN[i] + FP[i] + FN[i]),3)
+            #print("Accuracy for word class " + str((number_to_class[i])) + "  : " + str(Accuracy*100) + "%")
+            counter+=1
+        else:
+            Accuracy = 0.0
+        if (TP[i] + FP[i])>0: #divide by zero check
+            Precision = round((TP[i]) / (TP[i] + FP[i]),3)
+            #print("Precision for word class " + str((number_to_class[i])) + "  : " + str(Precision*100) + "%")
+            counter +=1
+        else:
+            Precision = 0.0
+        if (TN[i] + FP[i])>0: #divide by zero check
+            Recall = round((TP[i]) / (TP[i] + FN[i]),3)
+            #print("Recall for word class " + str((number_to_class[i])) + "  : " + str(Recall*100))
+        else:
+            Recall = 0.0
+        if counter==2: #divide by zero check
+            F1_score = round((2*Precision*Recall)/(Precision+Recall),3)
+            #print("F1 score for word class " + str((number_to_class[i])) + "  : " + str(100 * F1_score) + "%")
+        else:
+            F1_score = 0.0
+        if (TN[i] + FP[i])>0 and TN[i]>0: #divide by zero check
+            Specificity = round((TN[i]) / (TN[i] + FP[i]), 3)
+            #print("Specificity for word class " + str((number_to_class[i])) + "  : " + str(100*Specificity) + "%")
+        else:
+            Specificity = 0.0
+        data.append([Accuracy, Precision, Recall, F1_score, Specificity])
+
+    columns = ('Accuracy', 'Precision', 'Recall', 'F1 score', 'Specificity')
+    wc_list = []
+    for wc in class_to_index.keys():
+        wc_list.append(wc)
+    rows = wc_list # y ticks for table
+    data.reverse()
+    print(data)
+    print(columns)
+    print(rows)
+
+
+
+    plot_table(data, columns, rows)
+    plot_line_graph(data[0:8], columns, rows[0:8], offset=0)
+    plot_line_graph(data[9:16], columns, rows[9:16], offset=9)
+    plot_line_graph(data[17:], columns, rows[17:], offset=17)
+
+
+
 
     
 def plot_missed(correct, incorrect, order):
