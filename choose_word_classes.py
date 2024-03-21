@@ -13,17 +13,17 @@ TM_all_3rd_dir = 'transition_matrices/TM_all3.npy'
 TM_transl_3rd_dir = 'transition_matrices/TM_transl_3rd.npy'
 TM_non_transl_3rd_dir = 'transition_matrices/TM_non_transl_3rd.npy'
 
-TM_all_4th_dir = 'transition_matrices/TM_all_4th.npy'
+TM_all_4th_dir = 'transition_matrices/TM_all4.npy'
 TM_transl_4th_dir = 'transition_matrices/TM_transl_4th.npy'
 TM_non_transl_4th_dir = 'transition_matrices/TM_non_transl_4th.npy'
 
 
-TM_all_5th_dir = 'transition_matrices/TM_all_5th.npy'
+TM_all_5th_dir = 'transition_matrices/TM_all5.npy'
 TM_transl_5th_dir = 'transition_matrices/TM_transl_5th.npy'
 TM_non_transl_5th_dir = 'transition_matrices/TM_non_transl_5th.npy'
 
 
-TM_all_6th_dir = 'transition_matrices/TM_all_6th.npy'
+TM_all_6th_dir = 'transition_matrices/TM_all6.npy'
 TM_transl_6th_dir = 'transition_matrices/TM_transl_6th.npy'
 TM_non_transl_6th_dir = 'transition_matrices/TM_non_transl_6th.npy'
 

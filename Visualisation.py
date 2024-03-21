@@ -42,16 +42,14 @@ def plot_table(data, columns, rows):
     plt.show()
 def plot_line_graph(data, columns, rows, offset):
     # Get some pastel shades for the colors
-    n_rows = len(data)
-    index = np.arange(len(columns)) + 0.3
-    for row in range(n_rows):
-        plt.plot(index, data[row], label=str(number_to_class[row+offset]))
+    index = np.arange(len(columns))
+    for row in range(len(rows)):
+        plt.plot(index, data[row+offset], label=str(number_to_class[row+offset]))
     plt.xticks(np.arange(len(columns)),columns)
     plt.legend()
     plt.title('Metrics for each word class')
-
     plt.show()
-def organize_and_plot(res, order):
+def organize_and_plot(res, order, setup, plot):
     wrong_predicted_class = [] # When the model predicted wrong it predicted these wc
     wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
     corr_actual_class = [] # When the model predicted right it predicted these wc
@@ -81,9 +79,9 @@ def organize_and_plot(res, order):
     correct_counts = {k: correct_counts[k] for k in sorted(correct_counts)}
     wrong_counts = {k: wrong_counts[k] for k in sorted(wrong_counts)}
 
-    print("total: " + str(total_occurrences))
-    print("correct: " + str(correct_counts))
-    print("wrong: " + str(wrong_counts))
+    #print("total: " + str(total_occurrences))
+    #print("correct: " + str(correct_counts))
+    #print("wrong: " + str(wrong_counts))
     try:
         non_guess = wrong_counts[0]
     except:
@@ -93,16 +91,16 @@ def organize_and_plot(res, order):
     tot_incorrect = sum(list(total_occurrences.values()))
 
     #print("non_guess: "+ str(non_guess) + ", tot_correct: " + str(tot_correct) + ", total_total: " + str(tot_tot) + ", incorrect: " + str(tot_incorrect))
-    #print("Right predictions out of total: " + (str(tot_correct/tot_tot)))
-    #print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
-    #confusion_metrics(confusionmatrix)
-    #transition_matrix_vis(confusionmatrix)
-    #plot_missed(correct_counts, wrong_counts, order)
-    #plot_found(correct_counts, total_occurrences, order)
+    if plot:
+        print("Right predictions to incorrect ratio, total: " + (str(tot_correct/tot_incorrect)))
+        print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
+        confusion_metrics(confusionmatrix,setup)
+        transition_matrix_vis(confusionmatrix)
+    #plot_missed(correct_counts, wrong_counts, total_occurrences, order, setup, 100*tot_correct/tot_tot)
     return tot_correct/tot_tot
 
     
-def confusion_metrics(matrix):
+def confusion_metrics(matrix,setup):
     """Calculates 5 metrics using the confusion matrix"""
     data = []
     for i in range(len(matrix)): # for some row
@@ -118,19 +116,19 @@ def confusion_metrics(matrix):
                 FN[i] += matrix[i][j] # sums every other element in the row
                 FP[i] += matrix[j][i] # sums every other element in the column
             TN[i] = np.sum(matrix)-(TP[i] + FN[i] + FP[i]) # sum of all other values are true negatives
-        if (TP[i] + TN[i] + FP[i] + FN[i]) >0: #divide by zero check
+        if (TP[i] + TN[i] + FP[i] + FN[i]) >0 and ((TP[i] + TN[i])) >0: #divide by zero check
             Accuracy = round((TP[i] + TN[i]) / (TP[i] + TN[i] + FP[i] + FN[i]),3)
             #print("Accuracy for word class " + str((number_to_class[i])) + "  : " + str(Accuracy*100) + "%")
             counter+=1
         else:
             Accuracy = 0.0
-        if (TP[i] + FP[i])>0: #divide by zero check
+        if (TP[i] + FP[i])>0 and TP[i]>0: #divide by zero check
             Precision = round((TP[i]) / (TP[i] + FP[i]),3)
             #print("Precision for word class " + str((number_to_class[i])) + "  : " + str(Precision*100) + "%")
             counter +=1
         else:
             Precision = 0.0
-        if (TN[i] + FP[i])>0: #divide by zero check
+        if (TN[i] + FP[i])>0 and TP[i]>0: #divide by zero check
             Recall = round((TP[i]) / (TP[i] + FN[i]),3)
             #print("Recall for word class " + str((number_to_class[i])) + "  : " + str(Recall*100))
         else:
@@ -157,67 +155,93 @@ def confusion_metrics(matrix):
     print(columns)
     print(rows)
 
-
-
     plot_table(data, columns, rows)
-    plot_line_graph(data[0:8], columns, rows[0:8], offset=0)
-    plot_line_graph(data[9:16], columns, rows[9:16], offset=9)
-    plot_line_graph(data[17:], columns, rows[17:], offset=17)
+    data.reverse()
+    plot_line_graph(data, columns, rows[0:5], offset=1)
+    plot_confusion_metric_bar([item[3] for item in data],[item[1] for item in data],[item[2] for item in data],rows, setup) #Accuracy, Precision Recall
+   # plot_confusion_metric_bar([item[3] for item in data],[item[4] for item in data],None,rows, setup) #F1, specificity
 
+    #plot_confusion_metric_bar([item[3] for item in data], rows, "F1 score") #F1 score
+    #plot_confusion_metric_bar([item[4] for item in data], rows, "Specificity") # Specificity
 
-
-
-    
-def plot_missed(correct, incorrect, order):
+def plot_missed(correct, incorrect, total, order, setup, perc):
     x_right = []
     x_left = []
     x = []
     for x_values in correct.keys():
-        x_right.append((x_values+0.15))
+        x.append((x_values))
     for x_values in incorrect.keys():
-        x_left.append(x_values-0.15)
-        x.append(x_values)
-    print(x_left)
-    print(x_right)
-    print(incorrect.values())
-    print(correct.values())
-    plt.bar(x_left, list(incorrect.values()), 0.3, label='Incorrect')
-    plt.bar(x_right, list(correct.values()), 0.3, label='Correct')
-    plt.title('Correct vs Incorrect Predictions by Markov Chain Order: ' + str(order)) 
+        x_right.append(x_values+0.2)
+    for x_values in total.keys():
+        x_left.append(x_values-0.2)
+    plt.figure(figsize=(10,6))
+    plt.bar(x_right, list(incorrect.values()), 0.2, label='Incorrect prediction')
+    plt.bar(x, list(correct.values()), 0.2, label='Correct prediction')
+    plt.bar(x_left, list(total.values()), 0.2, label='Total in data')
+    plt.title('Predictions with setup: ' + str(setup) + ' order: ' + str(order) + ',in total ' + str(perc) + '% correct')
     plt.xlabel("Word class")
     plt.ylabel("Predicted word classes")
     plt.xticks(x)
     plt.legend()
-    print("hej")
     plt.show()
 
-def plot_found(correct, total_occurrences, order):
+
+def plot_confusion_metric_bar(accuracy, precision, recall,rows, setup):
+    x = []
     x_right = []
     x_left = []
-    x = []
-    for x_values in correct.keys():
-        x_right.append((x_values+0.15))
-    for x_values in total_occurrences.keys():
-        x_left.append(x_values-0.15)
+    number_wc = []
+    counter=0
+    for i in rows:
+        number_wc.append(counter)
+        counter +=1
+    for x_values in number_wc:
+        x_right.append((x_values + 0.2))
+        x_left.append(x_values - 0.2)
         x.append(x_values)
-    plt.bar(x_left, total_occurrences.values(), 0.3, label='Total amount')
-    plt.bar(x_right, correct.values(), 0.3, label='Correctly identified by model')
-    plt.title('Correct Identification vs Total by Markov Chain Order: ' + str(order))
-    plt.xlabel("Word class")
-    plt.ylabel("Word classes in data")
-    plt.xticks(x)
+    plt.figure(figsize=(16, 6))
+    if not recall:
+        plt.bar(x_right, accuracy, 0.2, label='F1-score')
+        plt.bar(x, precision, 0.2, label='Specificity')
+        plt.title("Metrics from confusion matrix with " + str(setup) + " and order " + str(len(setup) - 1))
+        plt.ylabel("F1-score, Specificity")
+    else:
+        plt.bar(x_right, accuracy, 0.2, label='F1 score')
+        plt.bar(x_left, precision, 0.2, label='Precision')
+        plt.bar(x, recall, 0.2, label='Recall')
+        plt.title("Metrics from confusion matrix with " + str(setup) + " and order " + str(len(setup)-1))
+        plt.ylabel("F1 score, precision and recall")
 
+    plt.xlabel("Word classes")
+    plt.xticks(x)
     plt.legend()
     plt.show()
 
 def plot_weights(weights, percentage_list, setup, nletters):
+    #Getting weight with max to draw the line
+    xmax = 0
+    ymax = 0
+    for i in range(len(percentage_list)):
+        percentage_list[i] *= 100
+        if percentage_list[i]> ymax:
+            ymax=percentage_list[i]
+            xmax=weights[i]
+
     plt.figure()
     plt.plot(weights, percentage_list, marker='o')
-    plt.xlabel('Weights 0 means only last letter, 1 means only wc', fontsize=15)
-    plt.ylabel('Right predictions out of total', fontsize=15)
+    plt.axvline(xmax, color='r', linestyle='--')
+    plt.xlabel('Weight', fontsize=15)
+    plt.ylabel('Right predictions out of total %', fontsize=15)
     plt.title('Setup = ' + str(setup) + ' Order ' + str(len(setup)-1) + ', ' + str(nletters) +' letters')
+    plt.grid()
     plt.show()
-
+def plot_fourier(freq, transform,wc):
+    plt.figure()
+    plt.plot(freq, abs(transform)) # blir komplext om man inte tar abs men jag vet inte kanske ska va så
+    plt.xlabel('frequency')
+    plt.ylabel('signal')
+    plt.title('fourier transform for wc ' + str(number_to_class[wc]))
+    plt.show()
 if __name__ == "__main__":
     pass
 

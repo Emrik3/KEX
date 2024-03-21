@@ -419,7 +419,7 @@ def ending_calculation(result, nletters, A, num, result_text, letternum, pos, wc
                         a = a[int(result[i][j + pos[b]])]
                         b += 1
                     for l in range(len(A)):
-                        newmaxi = a[int(result[i][j + pos[-1]])][l]**weight * wcend[letternum[result_text[i][j][-nletters:]]][l]**(1-weight)  # Check if this is taking correct value... from
+                        newmaxi = (a[int(result[i][j + pos[-1]])][l])**weight * (wcend[letternum[result_text[i][j][-nletters:]]][l])**(1-weight)  # Check if this is taking correct value... from
                         if newmaxi > maxi:
                             maxi = newmaxi
                             maxl = l
@@ -435,6 +435,7 @@ def ending_calculation(result, nletters, A, num, result_text, letternum, pos, wc
                         wrong_actual_class.append(copy_result[i][j])
     return wrong_predicted_class, wrong_actual_class, correct_predicted_class, confusion_matrix
 def no_ending_calculation(result, A, num, pos, copy_result):
+    """Tror vi kan ta bort denna funktion då det blir samma som att sätta weights = [1] och nletter=vadsomhelst"""
     correct_counter = 0
     correct_predicted_class = []
     wrong_predicted_class = []
@@ -489,6 +490,28 @@ def assign_setup(setup):
         pos = [-1, 1, 2]
     elif setup == [1, 0, 0, 0]:
         pos = [1, 2, 3]
+    elif setup == [0,0,0,0,1]:
+        pos = [-4,-3,-2,-1]
+    elif setup == [0,0,0,1,0]:
+        pos = [-3,-2,-1,1]
+    elif setup == [0,0,1,0,0]:
+        pos = [-2,-1,1,2]
+    elif setup == [0,1,0,0,0]:
+        pos = [-1,1,2,3]
+    elif setup == [1, 0, 0, 0, 0]:
+        pos = [1, 2, 3,4]
+    elif setup == [0, 0,0,0,0,1]:
+        pos = [-5,-4,-3,-2,-1]
+    elif setup == [0, 0,0,0,1,0]:
+        pos = [-4,-3,-2,-1,1]
+    elif setup == [0, 0,0,1,0,0]:
+        pos = [-3,-2,-1,1,2]
+    elif setup == [0, 0,1,0,0,0]:
+        pos = [-2,-1,1,2,3]
+    elif setup == [0, 1, 0, 0, 0, 0]:
+        pos = [-1,1, 2, 3,4]
+    elif setup == [1, 0, 0, 0, 0, 0]:
+        pos = [1, 2, 3, 4,5]
     else:
         print("Error in setup config")
         return
