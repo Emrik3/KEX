@@ -56,13 +56,12 @@ def organize_and_plot(res, order):
     wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
     corr_actual_class = [] # When the model predicted right it predicted these wc
     confusionmatrix = np.zeros((len(class_to_index), len(class_to_index)))
-    print("res: " + str(len(res)))
+    #print("res: " + str(len(res)))
     for elem in res:
         wrong_predicted_class.append(elem[0])
         wrong_actual_class.append(elem[1])
         corr_actual_class.append(elem[2])
         confusionmatrix += elem[3]
-    confusion_metrics(confusionmatrix)
 
     wrong_predicted_class = sum(wrong_predicted_class,[])
     wrong_actual_class = sum(wrong_actual_class,[])
@@ -93,13 +92,14 @@ def organize_and_plot(res, order):
     tot_tot = sum(list(total_occurrences.values()))
     tot_incorrect = sum(list(total_occurrences.values()))
 
-    print("non_guess: "+ str(non_guess) + ", tot_correct: " + str(tot_correct) + ", total_total: " + str(tot_tot) + ", incorrect: " + str(tot_incorrect))
-    print("Right predictions out of total: " + (str(tot_correct/tot_tot)))
-    print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
-    transition_matrix_vis(confusionmatrix)
-    plot_missed(correct_counts, wrong_counts, order)
-    plot_found(correct_counts, total_occurrences, order)
-
+    #print("non_guess: "+ str(non_guess) + ", tot_correct: " + str(tot_correct) + ", total_total: " + str(tot_tot) + ", incorrect: " + str(tot_incorrect))
+    #print("Right predictions out of total: " + (str(tot_correct/tot_tot)))
+    #print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
+    #confusion_metrics(confusionmatrix)
+    #transition_matrix_vis(confusionmatrix)
+    #plot_missed(correct_counts, wrong_counts, order)
+    #plot_found(correct_counts, total_occurrences, order)
+    return tot_correct/tot_tot
 
     
 def confusion_metrics(matrix):
@@ -210,6 +210,13 @@ def plot_found(correct, total_occurrences, order):
     plt.legend()
     plt.show()
 
+def plot_weights(weights, percentage_list, setup, nletters):
+    plt.figure()
+    plt.plot(weights, percentage_list, marker='o')
+    plt.xlabel('Weights 0 means only last letter, 1 means only wc', fontsize=15)
+    plt.ylabel('Right predictions out of total', fontsize=15)
+    plt.title('Setup = ' + str(setup) + ' Order ' + str(len(setup)-1) + ', ' + str(nletters) +' letters')
+    plt.show()
 
 if __name__ == "__main__":
     pass

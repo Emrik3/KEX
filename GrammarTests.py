@@ -399,11 +399,101 @@ def confusion_matrix():
 
 
 
+def ending_calculation(result, nletters, A, num, result_text, letternum, pos, wcend, copy_result, weight):
+    correct_counter = 0
+    correct_predicted_class = []
+    wrong_predicted_class = []
+    wrong_actual_class = []
+    maxl = 0
+    mat_size = max(class_to_index.values()) + 1
+    confusion_matrix = np.zeros((mat_size, mat_size))
+    for i in range(len(result)):
+        for j in range(0, len(result[i]) - num):
+            if result[i][j] == -1:  # creates -1 which doesn't exist in class to index and treats this as NA(0) was treated before
+                if len(result_text[i][j]) >= nletters and result_text[i][j][-nletters:] in list(letternum.keys()):
+                    maxi = 0
+                    b = 0
+                    a = A
 
+                    while isinstance(a[0][0], np.ndarray):
+                        a = a[int(result[i][j + pos[b]])]
+                        b += 1
+                    for l in range(len(A)):
+                        newmaxi = a[int(result[i][j + pos[-1]])][l]**weight * wcend[letternum[result_text[i][j][-nletters:]]][l]**(1-weight)  # Check if this is taking correct value... from
+                        if newmaxi > maxi:
+                            maxi = newmaxi
+                            maxl = l
+                    result[i][j] = maxl
 
+                    confusion_matrix[copy_result[i][j]][result[i][j]] += 1.0
+                    if result[i][j] == copy_result[i][j]:  # If the prediction was correct
+                        correct_counter += 1
+                        correct_predicted_class.append(copy_result[i][j])  # Doesn't matter if copy or not since they are the same
+                    else:
 
+                        wrong_predicted_class.append(result[i][j])
+                        wrong_actual_class.append(copy_result[i][j])
+    return wrong_predicted_class, wrong_actual_class, correct_predicted_class, confusion_matrix
+def no_ending_calculation(result, A, num, pos, copy_result):
+    correct_counter = 0
+    correct_predicted_class = []
+    wrong_predicted_class = []
+    wrong_actual_class = []
+    maxl = 0
+    mat_size = max(class_to_index.values()) + 1
+    confusion_matrix = np.zeros((mat_size, mat_size))
+    for i in range(len(result)):
+        for j in range(0, len(result[i]) - num):
+            if result[i][j] == -1:  # creates -1 which doesn't exist in class to index and treats this as NA(0) was treated before
+                maxi = 0
+                b = 0
+                a = copy.deepcopy(A)
+                while isinstance(a[0][0], np.ndarray):
+                    a = a[int(result[i][j + pos[b]])]
+                    b += 1
+                for l in range(len(A)):
+                    newmaxi = a[int(result[i][j + pos[-1]])][l]
 
-def grammar_predictor_main(classtext, textlist, setup, order, nletters):
+                    if newmaxi > maxi:
+                        maxi = newmaxi
+                        maxl = l
+                result[i][j] = maxl
+
+                confusion_matrix[copy_result[i][j]][result[i][j]] += 1.0
+                if result[i][j] == copy_result[i][j]:  # If the prediction was correct
+                    correct_counter += 1
+                    correct_predicted_class.append(
+                        copy_result[i][j])  # Doesn't matter if copy or not since they are the same
+                else:
+
+                    wrong_predicted_class.append(result[i][j])
+                    wrong_actual_class.append(copy_result[i][j])
+    return wrong_predicted_class, wrong_actual_class, correct_predicted_class, confusion_matrix
+
+def assign_setup(setup):
+    if setup == [0,0,1]:
+        pos = [-2,-1]
+    elif setup == [0,1,0]:
+        pos = [-1,1]
+    elif setup == [1,0,0]:
+        pos = [1,2]
+    elif setup == [1,0]:
+        pos = [1]
+    elif setup == [0,1]:
+        pos = [-1]
+    elif setup == [0,0,0,1]:
+        pos = [-3,-2,-1]
+    elif setup == [0,0,1,0]:
+        pos = [-2, -1, 1]
+    elif setup == [0,1,0,0]:
+        pos = [-1, 1, 2]
+    elif setup == [1, 0, 0, 0]:
+        pos = [1, 2, 3]
+    else:
+        print("Error in setup config")
+        return
+    return pos
+def grammar_predictor_main(classtext, textlist, setup, order, nletters, weight):
     """Does the same thing as grammar predictor but creates is own NA:s and ignores
     spots where NA exists. The old result is saved and compared to the prediction."""
     A = np.load('transition_matrices/TM_all' + str(order) + '.npy')
@@ -427,11 +517,10 @@ def grammar_predictor_main(classtext, textlist, setup, order, nletters):
         else:
             num += 1
     classtextnum = []
-    wcend = np.load('wordclasslists/WCending' + str(nletters) + '.npy')
     error = []
     for i in range(len(classtext)):
         classtextnum.append(class_to_index[classtext[i]])
-
+    wcend = np.load('wordclasslists/WCending' + str(nletters) + '.npy')
     particular_value = class_to_index['.']
     result = []
     result_text = []
@@ -451,29 +540,7 @@ def grammar_predictor_main(classtext, textlist, setup, order, nletters):
     result.append(temp_list)
     result_text.append(temp2)
     copy_result = copy.deepcopy(result)
-
-    if setup == [0,0,1]:
-        pos = [-2,-1]
-    elif setup == [0,1,0]:
-        pos = [-1,1]
-    elif setup == [1,0,0]:
-        pos = [1,2]
-    elif setup == [1,0]:
-        pos = [1]
-    elif setup == [0,1]:
-        pos = [-1]
-    elif setup == [0,0,0,1]:
-        pos = [-3,-2,-1]
-    elif setup == [0,0,1,0]:
-        pos = [-2, -1, 1]
-    elif setup == [0,1,0,0]:
-        pos = [-1, 1, 2]
-    elif setup == [1, 0, 0, 0]:
-        pos = [1, 2, 3]
-    else:
-        print("Error in setup config")
-        return
-
+    pos = assign_setup(setup)
     tot_counter = 0
     for i in range(len(result)):
         for j in range(len(result[i])-num):
@@ -486,70 +553,12 @@ def grammar_predictor_main(classtext, textlist, setup, order, nletters):
                     if k == len(pos):
                         result[i][j] = -1  # sets this word to NA
                         tot_counter += 1
-              
-    
-    correct_counter = 0
-    correct_predicted_class = []
-    wrong_predicted_class = []
-    wrong_actual_class = []
-    maxl = 0
-    mat_size = max(class_to_index.values()) + 1
-    confusion_matrix = np.zeros((mat_size, mat_size))
     #aa = np.array(A) # using np array so we can do as in 5th order since it is faster
     #maxprob = np.argmax(aa, -1)
     if ending:
-        for i in range(len(result)):
-            for j in range(0, len(result[i]) - num):
-                if result[i][j] == -1: # creates -1 which doesn't exist in class to index and treats this as NA(0) was treated before
-                    if len(result_text[i][j]) >= nletters and result_text[i][j][-nletters:] in list(letternum.keys()):
-                        maxi = 0
-                        b = 0
-                        a = A
-                        
-                        while isinstance(a[0][0], np.ndarray):
-                            a = a[int(result[i][j + pos[b]])]
-                            b += 1
-                        for l in range(len(A)):
-                            newmaxi = a[int(result[i][j + pos[-1]])][l] * wcend[letternum[result_text[i][j][-nletters:]]][l] # Check if this is taking correct value... from 
-                            if newmaxi > maxi:
-                                maxi = newmaxi
-                                maxl = l
-                        result[i][j] =  maxl
-
-                        confusion_matrix[copy_result[i][j]][result[i][j]] += 1.0
-                        if result[i][j] == copy_result[i][j]: #If the prediction was correct
-                            correct_counter += 1
-                            correct_predicted_class.append(copy_result[i][j]) #Doesn't matter if copy or not since they are the same
-                        else:
-                            
-                            wrong_predicted_class.append(result[i][j])
-                            wrong_actual_class.append(copy_result[i][j])
+        return ending_calculation(result, nletters, A, num, result_text, letternum, pos, wcend, copy_result, weight)
     else:
-        for i in range(len(result)):
-            for j in range(0, len(result[i]) - num):
-                if result[i][j] == -1: # creates -1 which doesn't exist in class to index and treats this as NA(0) was treated before
-                    maxi = 0
-                    b = 0
-                    a = copy.deepcopy(A)
-                    while isinstance(a[0][0], np.ndarray):
-                        a = a[int(result[i][j + pos[b]])]
-                        b += 1
-                    for l in range(len(A)):
-                        newmaxi = a[int(result[i][j + pos[-1]])][l]
-                        
-                        if newmaxi > maxi:
-                            maxi = newmaxi
-                            maxl = l
-                    result[i][j] =  maxl
-
-                    confusion_matrix[copy_result[i][j]][result[i][j]] += 1.0
-                    if result[i][j] == copy_result[i][j]: #If the prediction was correct
-                        correct_counter += 1
-                        correct_predicted_class.append(copy_result[i][j]) #Doesn't matter if copy or not since they are the same
-                    else:
-                        
-                        wrong_predicted_class.append(result[i][j])
-                        wrong_actual_class.append(copy_result[i][j])
+        """This is now redundant since setting weight = [1] removes influence of the last letters"""
+        return no_ending_calculation(result, A, num, pos, copy_result)
     #print("amount of words classfied correctly: " + str(correct_counter) + "of " + str(tot_counter))
     #print("in percent: " + str(100 * correct_counter / tot_counter) + "%")
-    return wrong_predicted_class, wrong_actual_class, correct_predicted_class, confusion_matrix

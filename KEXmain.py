@@ -299,7 +299,7 @@ def predict_NA():
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
-def predict_big(order, setup, nletters):
+def predict_big(order, setup, nletters, weights):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
     # FIX THIS FUNCTION!!! AND FIX THE ORTHER FUNCTIONS THEAT THEY GO TO, GIVE GOOD NAMES AND SO ON AND MAYBE PUT THEM ALL TOGETHER IN SOME WAY...
     """if order == 1 and end and l == 1:
@@ -334,11 +334,13 @@ def predict_big(order, setup, nletters):
         TM_dir = TM_all_2nd_dir
         grammar_pred_test = grammar_predictor_percentage_test_ending2
         results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)"""
-    
-    results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters)]
-        
-    organize_and_plot(results, order=order)
-
+    percentage_list = []
+    for weight in (weights):
+        print(weight)
+        results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters, weight=weight)]
+        percentage = organize_and_plot(results, order=order)
+        percentage_list.append(percentage)
+    plot_weights(weights, percentage_list, setup, nletters)
 def update_end_prob():
     text = read_traning_csv('Trainingdata/many_abstracts.csv')
     fulltext = ""
@@ -373,12 +375,14 @@ def get_url():
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    #update_TM(order=3, setup=[0, 0, 1, 0])
+    update_TM(order=1, setup=[0, 1])
     #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    predict_big(order=1, setup=[0, 1], nletters=3) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
+    predict_big(order=1, setup=[0, 1], nletters=3, weights = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
+    #predict_big(order=1, setup=[0, 1], nletters=3, weights = [1]) # Samma som nletters=0
+
     #update_end_prob()
     #create_end_wc_matrix()
     #get_url()
