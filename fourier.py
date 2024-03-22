@@ -12,6 +12,7 @@ def fourier_test(WC):
         signal_list[class_to_index[wc]][counter] += 1 # adds a 1 where wc occurs
         counter += 1
     n=2 #word class to look at
+    #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
     fourier = fft(signal_list[n]) #fourier transform of [0,1,0,0,0,1,0,0] where 1 is occurance of wordclass n
     frequency = np.fft.fftfreq(len(signal_list[n]), d=1)
     return frequency, fourier, n
