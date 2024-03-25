@@ -39,6 +39,8 @@ WC_export_segment_fulltransl_dir = 'wordclasslists/WC_export_segment_notransl' #
 wc_export_segment_swtransl_dir = 'wordclasslists/WC_export_segment_swtransl'
 WC_all_segment_dir = 'wordclasslists/WC_all_segment'
 
+WC_1990_dir ='wordclasslists/WC1990'
+t1990_dir = 'Trainingdata/newtestfile1990to1998.csv'
 
 # Opening transition matrices
 #TM_all = np.load(TM_all_dir)
