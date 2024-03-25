@@ -38,7 +38,7 @@ def update_TM(setup):
 def update_WC():
     """Translates web-scraped csv files to word classes"""
     #abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False, transl=False)
-
+    abstracts_to_word_classes(Training_data_dir ,WC_all_segment_dir, no_NA=False, segment=True, transl=False)
 
     """Translates txt file to word classes"""
     #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
@@ -377,8 +377,15 @@ def get_url():
     print(soup.prettify())
 
 def fourier_run():
-    freq, fourier, wc = fourier_test(WC_export_segment[0])
-    plot_fourier(freq, fourier, wc)
+    xf, yf, n = fourier_test(np.load(TM_all_dir), WC_export_segment)
+    xf1, yf1, m = fourier_test(np.load(TM_all_dir), WC_export_segment_fulltransl)
+    print(n, m)
+    plot_fourier([xf, xf1], [yf, yf1], n)
+
+def test_fourier_no_compare():
+    xf, yf, n = fourier_test_no_smooth(np.load(TM_all_dir), WC_all)
+    print(n)
+    plot_fourier1(xf, yf, n)
 
 def main():
     """Uses the finished model to extract results"""
@@ -399,7 +406,7 @@ def main():
     """1. Predict Word Classes"""
     #predict_big(setup=setup, nletters=3, weights = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1], plot=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #predict_big(setup=setup, nletters=1, weights = [1], plot=True) # Samma som nletters=0
-    predict_big(setup=setup, nletters=2, weights = [0.5], plot=True) # Samma som utan weight
+    #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True) # Samma som utan weight
 
     """2. Testing the grammar of translation software"""
     #metrics_test_translation(setup=setup, type=WC_export_segment_fulltransl_dir, n=100) # Remember to update_TM() if using a new setup
@@ -408,6 +415,7 @@ def main():
 
     """3. Fourier transform to find patterns in text (to be further implemented)"""
     #fourier_run()
+    test_fourier_no_compare()
     
 
 

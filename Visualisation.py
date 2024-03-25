@@ -235,12 +235,30 @@ def plot_weights(weights, percentage_list, setup, nletters):
     plt.title('Setup = ' + str(setup) + ' Order ' + str(len(setup)-1) + ', ' + str(nletters) +' letters')
     plt.grid()
     plt.show()
-def plot_fourier(freq, transform,wc):
-    plt.figure()
-    plt.plot(freq, abs(transform)) # blir komplext om man inte tar abs men jag vet inte kanske ska va så
+
+
+def plot_fourier1(xf, yf, n):
+    N = len(yf)
+    # sample spacing
+    plt.semilogy(xf, np.abs(yf[0:N//2]))
+    plt.semilogy(xf, np.abs(yf[0:N//2]))
+    plt.grid()
+    plt.legend(['Non Translated', 'Translated full'])
     plt.xlabel('frequency')
     plt.ylabel('signal')
-    plt.title('fourier transform for wc ' + str(number_to_class[wc]))
+    plt.title('fourier transform for ' + str(n) + ' abstracts')
+    plt.show()
+
+def plot_fourier(xf, yf, n):
+    N = len(yf[0])
+    # sample spacing
+    plt.semilogy(xf[0], np.abs(yf[0][0:N//2]))
+    plt.semilogy(xf[1], np.abs(yf[1][0:N//2]))
+    plt.grid()
+    plt.legend(['Non Translated', 'Translated full'])
+    plt.xlabel('frequency')
+    plt.ylabel('signal')
+    plt.title('fourier transform for ' + str(n) + ' abstracts')
     plt.show()
 if __name__ == "__main__":
     pass
