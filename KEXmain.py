@@ -37,8 +37,8 @@ def update_TM(setup):
 
 def update_WC():
     """Translates web-scraped csv files to word classes"""
-    #abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False, transl=False)
-    abstracts_to_word_classes(Training_data_dir ,WC_all_segment_dir, no_NA=False, segment=True, transl=False)
+    abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False, transl=False)
+    abstracts_to_word_classes(t1990_dir, WC_1990_dir, no_NA=False, segment=True, transl=False) 
 
     """Translates txt file to word classes"""
     #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
@@ -392,8 +392,8 @@ def test_fourier_no_compare():
     xf, yf, n = fourier_test_no_smooth(np.load(TM_all_dir), WC_all)
     print(n)
     plot_fourier1(xf, yf, n)
-    freq, fourier, wc = fourier_test(WC_export_segment[0])
-    plot_fourier(freq, fourier, wc)
+    
+
 def predict_many_F1():
     nletters_list = [3]#[-1, 0, 1, 2]
     F1_list = []
@@ -444,6 +444,17 @@ def predict_many_F1():
 
     plot_F1(F1_list, letter_list)
 
+def test_pearson():
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    print("First and second half of all abstracts compared:")
+    print((pearson_corr_coeff(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with full 1990 file")
+    print((pearson_corr_coeff(np.abs(Y3), np.abs(Y4))))
+
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
@@ -459,12 +470,12 @@ def main():
     #predict_ending()
     #m = np.load('wordclasslists/WCending.npy')
     setup = [0,1]
-    update_TM(setup=setup)
+    #update_TM(setup=setup)
     """1. Predict Word Classes"""
     #predict_big(setup=setup, nletters=3, weights = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1], plot=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #predict_big(setup=setup, nletters=1, weights = [1], plot=True) # Samma som nletters=0
     #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True) # Samma som utan weight
-    predict_big(setup=setup, nletters=1, weights = [0, 0.01, 0.3, 0.4,0.5,0.6, 0.99, 1], plot=False, convex=False, F1_test=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
+    #predict_big(setup=setup, nletters=1, weights = [0, 0.01, 0.3, 0.4,0.5,0.6, 0.99, 1], plot=False, convex=False, F1_test=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #predict_many_F1()
     #predict_big(setup=setup, nletters=1, weights = [1], plot=True, convex=False, F1_test=False) # Samma som nletters=0
     #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True, convex=True, F1_test=False) # Samma som utan weight
@@ -476,8 +487,9 @@ def main():
 
     """3. Fourier transform to find patterns in text (to be further implemented)"""
     #fourier_run()
-    test_fourier_no_compare()
-    
+    #test_fourier_no_compare()
+    test_pearson()
+    #update_WC()
 
 
 

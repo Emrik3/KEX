@@ -6,7 +6,30 @@ import numpy as np
 def fourier_test(A, WClist):
     n = 0
     yftot = []
-    nwords = 100
+    nwords = 10
+    for WC in WClist:
+        if len(WC) >= nwords:
+            clist = cross_entropy_sequence(A, WC[0:nwords])
+            #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
+            yf = fft(clist) 
+            N = len(yf)
+            # sample spacing
+            T = 1.0 / 800.0
+            xf = fftfreq(N, T)[:N//2]
+            if n == 0:
+                yftot = np.array(yf) # Take abs here or just in the end?
+                n+=1
+            elif not np.isinf(np.abs(yf[0])):
+                yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
+                n+=1
+    print(n)
+    yftot = yftot * (1 / n)
+    return xf, yftot, n
+
+def fourier_test_for_1990(A, WClist):
+    n = 0
+    yftot = []
+    nwords = 10
     for WC in WClist:
         if len(WC) >= nwords:
             clist = cross_entropy_sequence(A, WC[0:nwords])
@@ -53,3 +76,9 @@ def cross_entropy_sequence(A, WClist):
     for i in range(1, len(WClist)):
         clist.append(-np.log(A[class_to_index[WClist[i]]][class_to_index[WClist[i-1]]] + 10**-20))
     return clist
+
+
+def pearson_corr_coeff(X, Y):
+    np.cov(X, Y) / (np.std(X) * np.std(Y))
+    return np.corrcoef(X, Y)
+    
