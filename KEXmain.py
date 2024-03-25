@@ -8,11 +8,12 @@ from bs4 import BeautifulSoup
 from choose_word_classes import *
 from sympy import *
 import copy
+from fourier import *
 
 
-
-def update_TM(order, setup):
+def update_TM(setup):
     """Updates Markov chains"""
+    order = len(setup)-1
     if order == 1:
         func = run_1_order
         TM_dir = TM_all_dir
@@ -66,7 +67,8 @@ def metrics():
     running_metrics2(TM_all_3rd, TM_transl_3rd)
     print("Should be low")
     running_metrics2(TM_all_3rd, TM_non_transl_3rd)
-def metrics_test_translation(order, setup, type):
+def metrics_test_translation(setup, type, n):
+    order = len(setup)-1
     # For running test using a translation
     prog = 0
     counter_1norm = 0
@@ -82,9 +84,9 @@ def metrics_test_translation(order, setup, type):
     other_metrics = [0]*6
     if order == 1:
         func = run_1_order
-        metric_fun = running_metrics
+        metric_fun = running_metrics2
         TM_big_dir = TM_all_dir
-        TM_org_dir = TM_transl_non_dir
+        TM_org_dir = TM_non_transl_dir
         TM_trnsl_dir = TM_transl_dir
     elif order == 2:
         func = run_2_order
@@ -115,7 +117,7 @@ def metrics_test_translation(order, setup, type):
         return
     WC = open_dict(type)
     for i in range(len(WC_export_segment)):
-        if prog<17: # Set to 17 if using single word translation, otherwise anything over 54
+        if prog<n: # Set to 17 if using single word translation, otherwise anything over 54
             abstract_org = WC_export_segment[i]
             abstract_tnsl = WC[i]  # full<->sw to change test
             prog +=1
@@ -172,7 +174,8 @@ def metrics_test_translation(order, setup, type):
     print("Kullback: " + str(other_metrics[5] / (prog)))
 
     print("Setup = " + str(setup))
-def metrics_test_scramble(order, setup):
+def metrics_test_scramble(setup):
+    order = len(setup)-1
     #For running tests with only scrambled word order
     counter_1norm = 0
     counter_2norm = 0
@@ -183,11 +186,11 @@ def metrics_test_scramble(order, setup):
     counter_singularv = 0
     counter_wassenstein = 0
     other_metrics = [0]*6
-    n=2
+    n=5
     prog=0
     if order == 1:
         func = run_1_order
-        metric_fun = running_metrics
+        metric_fun = running_metrics2
         TM_big_dir = TM_all_dir
         TM_org_dir = TM_non_transl_dir
         TM_trnsl_dir = TM_transl_dir
@@ -253,7 +256,7 @@ def metrics_test_scramble(order, setup):
                     counter_kullback +=1
                 if normal[6] < transl[6]:
                     counter_singularv +=1
-                if normal[7] > transl[7]:
+                if normal[7] < transl[7]:
                     counter_wassenstein +=1
 
     print("correct percentage 1-norm: " + str(counter_1norm / (n*prog) * 100) + "%")
@@ -299,29 +302,49 @@ def predict_NA():
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
-def predict_big(order, setup):
+def predict_big(setup, nletters, weights, plot):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
-    if order ==1:
+    # FIX THIS FUNCTION!!! AND FIX THE ORTHER FUNCTIONS THEAT THEY GO TO, GIVE GOOD NAMES AND SO ON AND MAYBE PUT THEM ALL TOGETHER IN SOME WAY...
+    """if order == 1 and end and l == 1:
+        TM_dir = TM_all_dir
+        grammar_pred_test = grammar_predictor_percentage_test_ending11
+        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
+    elif order ==1 and not end:
         TM_dir = TM_all_dir
         grammar_pred_test = grammar_predictor_percentage_test
-    elif order ==2:
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
+    elif order ==2 and not end:
         TM_dir = TM_all_2nd_dir
         grammar_pred_test = grammar_predictor_percentage_test2
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     elif order == 3:
         TM_dir = TM_all_3rd_dir
         grammar_pred_test = grammar_predictor_percentage_test3
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     elif order == 4:
         TM_dir = TM_all_4th_dir
         grammar_pred_test = grammar_predictor_percentage_test4
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
     elif order == 5:
         TM_dir = TM_all_5th_dir
         grammar_pred_test = grammar_predictor_percentage_test5
-    else:
-        print("ERROR: Choose the order of markov chain as 1,2,3,4 or 5")
-        return
-    results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
-    organize_and_plot(results, order=order)
-
+        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
+    elif order == 1 and end:
+        TM_dir = TM_all_dir
+        grammar_pred_test = grammar_predictor_percentage_test_ending
+        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
+    elif order == 2 and end:
+        TM_dir = TM_all_2nd_dir
+        grammar_pred_test = grammar_predictor_percentage_test_ending2
+        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)"""
+    order = len(setup)-1
+    percentage_list = []
+    for weight in (weights):
+        print("weight" + str(weight))
+        results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters, weight=weight)]
+        percentage = organize_and_plot(results, order=order, setup=setup, plot=plot)
+        percentage_list.append(percentage)
+    plot_weights(weights, percentage_list, setup, nletters)
 def update_end_prob():
     text = read_traning_csv('Trainingdata/many_abstracts.csv')
     fulltext = ""
@@ -335,14 +358,16 @@ def update_end_prob():
 def create_end_wc_matrix():
     textlist = open_dict('Trainingdata/abstracts_textlist')
     wclist = open_dict('wordclasslists/WC_all.json')
-    prob_ending_class(textlist, wclist)
+    #prob_ending_class(textlist, wclist)
+    #prob_ending2_class(textlist, wclist)
+    prob_ending3_class(textlist, wclist)
 
 
 def predict_ending():
     textlist = open_dict('Trainingdata/abstracts_textlist')
     wclist = open_dict('wordclasslists/WC_all.json')
     A = open_dict('transition_matrices/TM_all.json')
-    predictor_with_endings(A, wclist, textlist)
+    predictor_with_endings1(A, wclist, textlist, [0,1])
 
 def get_url():
     # get URL
@@ -351,25 +376,38 @@ def get_url():
     # display scraped data
     print(soup.prettify())
 
+def fourier_run():
+    freq, fourier, wc = fourier_test(WC_export_segment[0])
+    plot_fourier(freq, fourier, wc)
+
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    update_TM(order=1, setup=[0, 1])
     #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
-    #predict_big(order=1, setup=[0, 0, 1,0,0])
     #update_end_prob()
-    #prob_ending_class(export_dir, 'dictionaries/classdict.json')
+    #create_end_wc_matrix()
     #get_url()
-    #metrics_test_translation(order=2, setup=[0, 1,0], type=WC_export_segment_fulltransl_dir) # Remember to update_TM() if using a new setup
-    #metrics_test_translation(order=2, setup=[0, 1,0], type=wc_export_segment_swtransl_dir) # Remember to update_TM() if using a new setup
-    #metrics_test_scramble(order=2, setup=[0, 1,0])
     #create_end_wc_matrix()
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
-    predict_ending()
-    
+    #predict_ending()
+    #m = np.load('wordclasslists/WCending.npy')
+    #setup = [0,1,0]
+    #update_TM(setup=setup)
+    """1. Predict Word Classes"""
+    #predict_big(setup=setup, nletters=3, weights = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1], plot=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
+    #predict_big(setup=setup, nletters=1, weights = [1], plot=True) # Samma som nletters=0
+    predict_big(setup=setup, nletters=2, weights = [0.5], plot=True) # Samma som utan weight
+
+    """2. Testing the grammar of translation software"""
+    #metrics_test_translation(setup=setup, type=WC_export_segment_fulltransl_dir, n=100) # Remember to update_TM() if using a new setup
+    #metrics_test_translation(setup=setup, type=wc_export_segment_swtransl_dir, n=17) # Remember to update_TM() if using a new setup
+    #metrics_test_scramble(setup=setup)
+
+    """3. Fourier transform to find patterns in text (to be further implemented)"""
+    #fourier_run()
     
 
 

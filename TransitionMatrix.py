@@ -2,7 +2,7 @@ import json
 
 import numpy as np
 from dataProcessing import open_dict, read_traning_csv, read_translation_txt, text_cleaner, save_dict, check_english
-from choose_word_classes import class_to_index, ending_list, ending_to_num
+from choose_word_classes import class_to_index, ending_list, ending_to_num, create_ending_list3
 import random
 
 
@@ -343,6 +343,26 @@ def ending_freq(text, ending_list):
 
 def prob_ending_class(textlist, wclist):
     # Calculates the probability of a certian wordending to be a certian wordclass
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'å', 'ä', 'ö']
+    letternum = {key: range(len(letters))[i] for i, key in enumerate(letters)}
+    ending_matrix = np.zeros((len(letters), max(class_to_index.values()) + 3))
+    for i in range(len(textlist)):
+        if len(textlist[i]) >= 1 and wclist[i] != 'NA' and  textlist[i][-1] in letters:
+            ending_matrix[letternum[textlist[i][-1]]][class_to_index[wclist[i]]] += 1
+
+    for i in range(len(letters)): # for some row
+        n = sum(ending_matrix[i]) # summing the row
+        if n > 0:
+            for j in range(len(class_to_index.keys())):  # for element in the row
+                ending_matrix[i][j] = ending_matrix[i][j]/n # normalizing
+
+    np.save("wordclasslists/WCending1", ending_matrix)
+    print(ending_matrix)
+
+    return ending_matrix
+
+def prob_ending2_class(textlist, wclist):
+    # Calculates the probability of a certian wordending to be a certian wordclass
     ending_matrix = np.zeros((len(ending_list), max(class_to_index.values()) + 3))
     for i in range(len(textlist)):
         if len(textlist[i]) >= 2 and wclist[i] != 'NA' and  textlist[i][-2:] in ending_list:
@@ -354,9 +374,31 @@ def prob_ending_class(textlist, wclist):
             for j in range(len(class_to_index.keys())):  # for element in the row
                 ending_matrix[i][j] = ending_matrix[i][j]/n # normalizing
 
-    np.save("wordclasslists/WCending", ending_matrix)
+    np.save("wordclasslists/WCending2", ending_matrix)
         
     return ending_matrix
+
+
+def prob_ending3_class(textlist, wclist):
+    # Calculates the probability of a certian wordending to be a certian wordclass
+    ending_list = create_ending_list3()
+    ending_to_num = {key: range(len(ending_list))[i] for i, key in enumerate(ending_list)}
+    ending_matrix = np.zeros((len(ending_list), max(class_to_index.values()) + 3))
+    for i in range(len(textlist)):
+        if len(textlist[i]) >= 3 and wclist[i] != 'NA' and  textlist[i][-3:] in ending_list:
+            ending_matrix[ending_to_num[textlist[i][-3:]]][class_to_index[wclist[i]]] += 1
+
+    for i in range(len(ending_list)): # for some row
+        n = sum(ending_matrix[i]) # summing the row
+        if n > 0:
+            for j in range(len(class_to_index.keys())):  # for element in the row
+                ending_matrix[i][j] = ending_matrix[i][j]/n # normalizing
+
+    np.save("wordclasslists/WCending3", ending_matrix)
+        
+    return ending_matrix
+
+
 
 
 def emmision_matrix(file, t_matrix_name):

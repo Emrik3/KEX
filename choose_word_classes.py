@@ -1,29 +1,29 @@
 from dataProcessing import open_dict
 import numpy as np
 # File locations
-TM_all_dir = 'transition_matrices/TM_all.npy'
+TM_all_dir = 'transition_matrices/TM_all1.npy'
 TM_transl_dir = 'transition_matrices/TM_transl.npy'
 TM_non_transl_dir = 'transition_matrices/TM_non_transl.npy'
 
-TM_all_2nd_dir = 'transition_matrices/TM_all_2nd.npy'
+TM_all_2nd_dir = 'transition_matrices/TM_all2.npy'
 TM_transl_2nd_dir = 'transition_matrices/TM_transl_2nd.npy'
 TM_non_transl_2nd_dir = 'transition_matrices/TM_non_transl_2nd.npy'
 
-TM_all_3rd_dir = 'transition_matrices/TM_all_3rd.npy'
+TM_all_3rd_dir = 'transition_matrices/TM_all3.npy'
 TM_transl_3rd_dir = 'transition_matrices/TM_transl_3rd.npy'
 TM_non_transl_3rd_dir = 'transition_matrices/TM_non_transl_3rd.npy'
 
-TM_all_4th_dir = 'transition_matrices/TM_all_4th.npy'
+TM_all_4th_dir = 'transition_matrices/TM_all4.npy'
 TM_transl_4th_dir = 'transition_matrices/TM_transl_4th.npy'
 TM_non_transl_4th_dir = 'transition_matrices/TM_non_transl_4th.npy'
 
 
-TM_all_5th_dir = 'transition_matrices/TM_all_5th.npy'
+TM_all_5th_dir = 'transition_matrices/TM_all5.npy'
 TM_transl_5th_dir = 'transition_matrices/TM_transl_5th.npy'
 TM_non_transl_5th_dir = 'transition_matrices/TM_non_transl_5th.npy'
 
 
-TM_all_6th_dir = 'transition_matrices/TM_all_6th.npy'
+TM_all_6th_dir = 'transition_matrices/TM_all6.npy'
 TM_transl_6th_dir = 'transition_matrices/TM_transl_6th.npy'
 TM_non_transl_6th_dir = 'transition_matrices/TM_non_transl_6th.npy'
 
@@ -54,7 +54,7 @@ wc_export_segment_swtransl_dir = 'wordclasslists/WC_export_segment_swtransl'
 
 
 # Opening wordclasslists
-#WC_all = open_dict(WC_all_dir)
+WC_all = open_dict(WC_all_dir)
 #WC_transl = open_dict(WC_transl_dir)
 #WC_non_transl = open_dict(WC_non_transl_dir)
 WC_export = open_dict(WC_export_dir)
@@ -238,7 +238,7 @@ number_to_class_small = {
 
 
 
-def create_ending_list():
+def create_ending_list2():
     letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Å', 'Ä', 'Ö']
     ending_list = []
     for letter1 in letters:
@@ -247,13 +247,23 @@ def create_ending_list():
 
     return ending_list
 
-ending_list = create_ending_list()
+def create_ending_list3():
+    letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Å', 'Ä', 'Ö']
+    ending_list = []
+    for letter1 in letters:
+        for letter2 in letters:
+            for letter3 in letters:
+                ending_list.append(letter1.lower() + letter2.lower() + letter3.lower())
+    return ending_list
+
+ending_list = create_ending_list2()
 
 ending_to_num = {key: range(len(ending_list))[i] for i, key in enumerate(ending_list)}
 
 
 if __name__ == '__main__':
-    ending_list = create_ending_list()
+    #ending_list = create_ending_list()
 
-    ending_to_num = {key: range(len(ending_list))[i] for i, key in enumerate(ending_list)}
-    print(ending_to_num)
+    #ending_to_num = {key: range(len(ending_list))[i] for i, key in enumerate(ending_list)}
+    #print(ending_to_num)
+    pass
