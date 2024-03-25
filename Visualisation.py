@@ -13,6 +13,7 @@ def transition_matrix_vis(matrix):
     """Generates heat map of transition matrix """
     fig = plt.figure(figsize=(10,10))
     ax = fig.add_subplot(111)
+
     im = ax.imshow(np.flipud(matrix), cmap='viridis', interpolation='nearest')
     fig.colorbar(im)
     mat_size = max(class_to_index.values()) + 1
@@ -96,6 +97,7 @@ def organize_and_plot(res, order, setup, plot):
         print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
         confusion_metrics(confusionmatrix,setup)
         transition_matrix_vis(confusionmatrix)
+
     #plot_missed(correct_counts, wrong_counts, total_occurrences, order, setup, 100*tot_correct/tot_tot)
     return tot_correct/tot_tot
 
@@ -163,6 +165,48 @@ def confusion_metrics(matrix,setup):
 
     #plot_confusion_metric_bar([item[3] for item in data], rows, "F1 score") #F1 score
     #plot_confusion_metric_bar([item[4] for item in data], rows, "Specificity") # Specificity
+def getF1(res):
+    """Calculates 5 metrics using the confusion matrix"""
+    confusionmatrix = np.zeros((len(class_to_index), len(class_to_index)))
+    #print("res: " + str(len(res)))
+    for elem in res:
+        confusionmatrix += elem[3]
+    data = 0
+    matrix = confusionmatrix
+    for i in range(len(matrix)):  # for some row
+        FN = [0] * len(class_to_index)
+        TP = [0] * len(class_to_index)
+        FP = [0] * len(class_to_index)
+        TN = [0] * len(class_to_index)
+        counter = 0
+        f1_0counter=0
+        for j in range(len(matrix)):  # for element in row
+            if i == j:
+                TP[i] += matrix[i][j]  # diagonal elements give TP
+            else:
+                FN[i] += matrix[i][j]  # sums every other element in the row
+                FP[i] += matrix[j][i]  # sums every other element in the column
+            TN[i] = np.sum(matrix) - (TP[i] + FN[i] + FP[i])  # sum of all other values are true negatives
+        if (TP[i] + FP[i]) > 0 and TP[i] > 0:  # divide by zero check
+            Precision = round((TP[i]) / (TP[i] + FP[i]), 3)
+            # print("Precision for word class " + str((number_to_class[i])) + "  : " + str(Precision*100) + "%")
+            counter+=1
+        else:
+            Precision = 0.0
+        if (TN[i] + FP[i]) > 0 and TP[i] > 0:  # divide by zero check
+            Recall = round((TP[i]) / (TP[i] + FN[i]), 3)
+            # print("Recall for word class " + str((number_to_class[i])) + "  : " + str(Recall*100))
+        else:
+            Recall = 0.0
+        if counter == 1:  # divide by zero check
+            F1_score = round((2 * Precision * Recall) / (Precision + Recall), 3)
+            # print("F1 score for word class " + str((number_to_class[i])) + "  : " + str(100 * F1_score) + "%")
+        else:
+            F1_score = 1.0
+            f1_0counter += 1
+        data += F1_score
+    print("sum of F1: " + str(data))
+    return data
 
 def plot_missed(correct, incorrect, total, order, setup, perc):
     x_right = []
@@ -217,7 +261,7 @@ def plot_confusion_metric_bar(accuracy, precision, recall,rows, setup):
     plt.legend()
     plt.show()
 
-def plot_weights(weights, percentage_list, setup, nletters):
+def plot_weights(weights, percentage_list, setup, nletters, convex):
     #Getting weight with max to draw the line
     xmax = 0
     ymax = 0
@@ -232,7 +276,10 @@ def plot_weights(weights, percentage_list, setup, nletters):
     plt.axvline(xmax, color='r', linestyle='--')
     plt.xlabel('Weight', fontsize=15)
     plt.ylabel('Right predictions out of total %', fontsize=15)
-    plt.title('Setup = ' + str(setup) + ' Order ' + str(len(setup)-1) + ', ' + str(nletters) +' letters')
+    if convex:
+        plt.title('Setup = ' + str(setup) + ' Order ' + str(len(setup) - 1) + ', ' + str(nletters) + ' letters, using:P_wc+P_letter ')
+    else:
+        plt.title('Setup = ' + str(setup) + ' Order ' + str(len(setup)-1) + ', ' + str(nletters) +' letters, using:P_wc*P_letter')
     plt.grid()
     plt.show()
 
@@ -260,6 +307,33 @@ def plot_fourier(xf, yf, n):
     plt.ylabel('signal')
     plt.title('fourier transform for ' + str(n) + ' abstracts')
     plt.show()
+def plot_F1(F1_list, letter_list):
+    print(F1_list)
+    x = []
+    pure_F1_list = []
+    counter=0
+    setups = []
+    print(letter_list)
+    for elem in (F1_list):
+        pure_F1_list.append(elem[0])
+        x.append(counter)
+        #setups.append(str(elem[1]) + str(', l='+str(letter_list[counter])))
+        setups.append(str(elem[1]))
+
+        counter+=1
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    plt.plot(x, pure_F1_list)
+    plt.xlabel('Setup')
+    ax.set_xticks(range(counter))
+    ax.set_xticklabels(setups)
+    plt.ylabel('F1 Score')
+    plt.title('F1 score for different orders and setup, letter' + str(letter_list[0]))
+    plt.legend()
+    plt.grid()
+    plt.show()
+
 if __name__ == "__main__":
     pass
 

@@ -2,11 +2,8 @@
 /user_input.txt
 /WC_input.json
 /.idea
-/transition_matrices/TM_all_4th.npy
-/transition_matrices/TM_all1
-/transition_matrices/TM_all1.npy
-/transition_matrices/TM_all2
-/transition_matrices/TM_all2.npy
-/transition_matrices/TM_all3
-/transition_matrices/TM_all3.npy
 /wordclasslists/WCending3.npy
+/transition_matrices
+/kexbilder
+/.DS_Store
+/Trainingdata

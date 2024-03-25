@@ -399,7 +399,7 @@ def confusion_matrix():
 
 
 
-def ending_calculation(result, nletters, A, num, result_text, letternum, pos, wcend, copy_result, weight):
+def ending_calculation(result, nletters, A, num, result_text, letternum, pos, wcend, copy_result, weight, convex):
     correct_counter = 0
     correct_predicted_class = []
     wrong_predicted_class = []
@@ -419,7 +419,11 @@ def ending_calculation(result, nletters, A, num, result_text, letternum, pos, wc
                         a = a[int(result[i][j + pos[b]])]
                         b += 1
                     for l in range(len(A)):
-                        newmaxi = (a[int(result[i][j + pos[-1]])][l])**weight * (wcend[letternum[result_text[i][j][-nletters:]]][l])**(1-weight)  # Check if this is taking correct value... from
+                        if not convex:
+                            newmaxi = (a[int(result[i][j + pos[-1]])][l])**weight * (wcend[letternum[result_text[i][j][-nletters:]]][l])**(1-weight)  # Check if this is taking correct value... from
+                        elif convex:
+                            newmaxi = (a[int(result[i][j + pos[-1]])][l])*weight + (wcend[letternum[result_text[i][j][-nletters:]]][l])*(1-weight)  # Check if this is taking correct value... from
+
                         if newmaxi > maxi:
                             maxi = newmaxi
                             maxl = l
@@ -516,7 +520,7 @@ def assign_setup(setup):
         print("Error in setup config")
         return
     return pos
-def grammar_predictor_main(classtext, textlist, setup, order, nletters, weight):
+def grammar_predictor_main(classtext, textlist, setup, order, nletters, weight, convex):
     """Does the same thing as grammar predictor but creates is own NA:s and ignores
     spots where NA exists. The old result is saved and compared to the prediction."""
     A = np.load('transition_matrices/TM_all' + str(order) + '.npy')
@@ -579,7 +583,7 @@ def grammar_predictor_main(classtext, textlist, setup, order, nletters, weight):
     #aa = np.array(A) # using np array so we can do as in 5th order since it is faster
     #maxprob = np.argmax(aa, -1)
     if ending:
-        return ending_calculation(result, nletters, A, num, result_text, letternum, pos, wcend, copy_result, weight)
+        return ending_calculation(result, nletters, A, num, result_text, letternum, pos, wcend, copy_result, weight, convex)
     else:
         """This is now redundant since setting weight = [1] removes influence of the last letters"""
         return no_ending_calculation(result, A, num, pos, copy_result)
