@@ -37,6 +37,7 @@ WC_export_segment_dir = 'wordclasslists/WC_export_segment'
 WC_export_segment_fulltransl_dir = 'wordclasslists/WC_export_segment_notransl' #Not wrong directory
 #Note that swtransl_dir only works for the first 17 abstracts, after that it is approx= WC_export_segment_dir
 wc_export_segment_swtransl_dir = 'wordclasslists/WC_export_segment_swtransl'
+WC_all_segment_dir = 'wordclasslists/WC_all_segment'
 
 
 # Opening transition matrices
@@ -59,7 +60,8 @@ WC_all = open_dict(WC_all_dir)
 #WC_non_transl = open_dict(WC_non_transl_dir)
 WC_export = open_dict(WC_export_dir)
 WC_export_segment = open_dict(WC_export_segment_dir)
-#WC_export_segment_fulltransl = open_dict(WC_export_segment_fulltransl_dir)
+WC_all_segment = open_dict(WC_all_segment_dir)
+WC_export_segment_fulltransl = open_dict(WC_export_segment_fulltransl_dir)
 #WC_export_segment_swtransl = open_dict(wc_export_segment_swtransl_dir)
 
 # text to analyse

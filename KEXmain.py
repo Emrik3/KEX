@@ -38,7 +38,7 @@ def update_TM(setup):
 def update_WC():
     """Translates web-scraped csv files to word classes"""
     #abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False, transl=False)
-
+    abstracts_to_word_classes(Training_data_dir ,WC_all_segment_dir, no_NA=False, segment=True, transl=False)
 
     """Translates txt file to word classes"""
     #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
@@ -302,7 +302,7 @@ def predict_NA():
     #predict(TM_all_3rd, translated_sample_dir, WC_transl, grammar_predictor3)
     #predict((Matrix(TM_all)*(Matrix(TM_all_future).T)).tolist(), translated_sample_dir, WC_transl, grammar_predictor)
 
-def predict_big(setup, nletters, weights, plot):
+def predict_big(setup, nletters, weights, plot, convex, F1_test):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
     # FIX THIS FUNCTION!!! AND FIX THE ORTHER FUNCTIONS THEAT THEY GO TO, GIVE GOOD NAMES AND SO ON AND MAYBE PUT THEM ALL TOGETHER IN SOME WAY...
     """if order == 1 and end and l == 1:
@@ -341,10 +341,16 @@ def predict_big(setup, nletters, weights, plot):
     percentage_list = []
     for weight in (weights):
         print("weight" + str(weight))
-        results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters, weight=weight)]
-        percentage = organize_and_plot(results, order=order, setup=setup, plot=plot)
-        percentage_list.append(percentage)
-    plot_weights(weights, percentage_list, setup, nletters)
+        results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters, weight=weight, convex=convex)]
+        if not F1_test:
+            percentage = organize_and_plot(results, order=order, setup=setup, plot=plot)
+            percentage_list.append(percentage)
+    if F1_test:
+        return getF1(results)
+    else:
+        plot_weights(weights, percentage_list, setup, nletters, convex)
+
+
 def update_end_prob():
     text = read_traning_csv('Trainingdata/many_abstracts.csv')
     fulltext = ""
@@ -377,8 +383,66 @@ def get_url():
     print(soup.prettify())
 
 def fourier_run():
+    xf, yf, n = fourier_test(np.load(TM_all_dir), WC_export_segment)
+    xf1, yf1, m = fourier_test(np.load(TM_all_dir), WC_export_segment_fulltransl)
+    print(n, m)
+    plot_fourier([xf, xf1], [yf, yf1], n)
+
+def test_fourier_no_compare():
+    xf, yf, n = fourier_test_no_smooth(np.load(TM_all_dir), WC_all)
+    print(n)
+    plot_fourier1(xf, yf, n)
     freq, fourier, wc = fourier_test(WC_export_segment[0])
     plot_fourier(freq, fourier, wc)
+def predict_many_F1():
+    nletters_list = [3]#[-1, 0, 1, 2]
+    F1_list = []
+    letter_list = []
+    for nletters in nletters_list:
+        org_letter = nletters
+        weight =[0.5]
+        if nletters ==0:
+            weight = [1]
+            nletters=1
+        if nletters == -1:
+            weight = [1]
+            nletters=1
+        setup = [0,1]
+        update_TM(setup=setup)
+        F1_list.append((predict_big(setup=setup, nletters=nletters, weights = weight, plot=False, convex=False, F1_test=True), setup))
+        letter_list.append(org_letter)
+
+        setup = [1,0]
+        update_TM(setup=setup)
+        F1_list.append((predict_big(setup=setup, nletters=nletters, weights = weight, plot=False, convex=False, F1_test=True), setup))
+        letter_list.append(org_letter)
+
+        setup = [0, 0, 1]
+        update_TM(setup=setup)
+        F1_list.append((predict_big(setup=setup, nletters=nletters, weights=weight, plot=False, convex=False, F1_test=True), setup))
+        letter_list.append(org_letter)
+
+        setup = [0, 1,0]
+        update_TM(setup=setup)
+        F1_list.append((predict_big(setup=setup, nletters=nletters, weights=weight, plot=False, convex=False, F1_test=True), setup))
+        letter_list.append(org_letter)
+
+        setup = [0,0,1,0]
+        update_TM(setup=setup)
+        F1_list.append((predict_big(setup=setup, nletters=nletters, weights=weight, plot=False, convex=False, F1_test=True), setup))
+        letter_list.append(org_letter)
+
+        setup = [0, 0, 1,0, 0]
+        update_TM(setup=setup)
+        F1_list.append((predict_big(setup=setup, nletters=nletters, weights=weight, plot=False, convex=False, F1_test=True), setup))
+        letter_list.append(org_letter)
+
+        setup = [0, 0,0,1, 0]
+        update_TM(setup=setup)
+        F1_list.append((predict_big(setup=setup, nletters=nletters, weights=weight, plot=False, convex=False, F1_test=True), setup))
+        letter_list.append(org_letter)
+
+    plot_F1(F1_list, letter_list)
 
 def main():
     """Uses the finished model to extract results"""
@@ -394,12 +458,16 @@ def main():
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
     #predict_ending()
     #m = np.load('wordclasslists/WCending.npy')
-    #setup = [0,1,0]
-    #update_TM(setup=setup)
+    setup = [0,1]
+    update_TM(setup=setup)
     """1. Predict Word Classes"""
     #predict_big(setup=setup, nletters=3, weights = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1], plot=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #predict_big(setup=setup, nletters=1, weights = [1], plot=True) # Samma som nletters=0
-    predict_big(setup=setup, nletters=2, weights = [0.5], plot=True) # Samma som utan weight
+    #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True) # Samma som utan weight
+    predict_big(setup=setup, nletters=1, weights = [0, 0.01, 0.3, 0.4,0.5,0.6, 0.99, 1], plot=False, convex=False, F1_test=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
+    #predict_many_F1()
+    #predict_big(setup=setup, nletters=1, weights = [1], plot=True, convex=False, F1_test=False) # Samma som nletters=0
+    #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True, convex=True, F1_test=False) # Samma som utan weight
 
     """2. Testing the grammar of translation software"""
     #metrics_test_translation(setup=setup, type=WC_export_segment_fulltransl_dir, n=100) # Remember to update_TM() if using a new setup
@@ -408,6 +476,7 @@ def main():
 
     """3. Fourier transform to find patterns in text (to be further implemented)"""
     #fourier_run()
+    test_fourier_no_compare()
     
 
 
