@@ -350,7 +350,7 @@ if __name__ == "__main__":
     # save_dict(fl)
     
     """Translates web-scraped csv files to word classes"""
-    #abstracts_to_word_classes('Trainingdata/many_abstracts.csv', False)
+    abstracts_to_word_classes('Trainingdata/newtestfile1990to1998.csv', False)
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json')

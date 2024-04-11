@@ -445,10 +445,10 @@ def predict_many_F1():
     plot_F1(F1_list, letter_list)
 
 def test_pearson():
-    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
-    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y1, n = fourier_test(np.load(TM_all_2nd_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_2nd_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_2nd_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_2nd_dir), WC_all_segment)
     print("First and second half of all abstracts compared:")
     print((pearson_corr_coeff(np.abs(Y1), np.abs(Y2))))
     print()
