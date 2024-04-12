@@ -464,6 +464,7 @@ def test_pearson():
 
 
 def test_spearman():
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
     xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
     xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
     xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
@@ -480,6 +481,69 @@ def test_spearman():
     print()
     print("Shuffled")
     print((spearman_corr_coeff(np.abs(Y5), np.abs(Y6))))
+
+
+def test_sam():
+    # No work
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print("SPEARMAN")
+    print()
+    print("First and second half of all abstracts compared:")
+    print((spec_ang_map(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with full 1990 file")
+    print((spec_ang_map(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((spec_ang_map(np.abs(Y5), np.abs(Y6))))
+
+
+def test_dist_corr():
+    # Very bad
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print("Distance Corr")
+    print()
+    print("First and second half of all abstracts compared:")
+    print((dist_corr(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with full 1990 file")
+    print((dist_corr(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((dist_corr(np.abs(Y5), np.abs(Y6))))
+
+
+def test_any(corr):
+    # Anything
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print(str(corr))
+    print()
+    print("First and second half of all abstracts compared:")
+    print((corr(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with full 1990 file")
+    print((corr(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((corr(np.abs(Y5), np.abs(Y6))))
 
 
 def main():
@@ -516,8 +580,16 @@ def main():
     #fourier_run()
     #test_fourier_no_compare()
     #test_pearson()
-    test_spearman()
+    #test_spearman()
+    #test_sam() # No work
+    #test_dist_corr()
     #update_WC()
+
+    # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes
+    # Best: kendalltau, weightedtau (Hyperbolic weighing)
+    # Bad: somersd
+    test_any(scipy.stats.kendalltau)
+    # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
 
 
 

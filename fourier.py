@@ -4,11 +4,13 @@ import numpy as np
 from metrics import tensorfrobnorm
 import scipy
 import random
+import torch
+#from torchmetrics.image import SpectralAngleMapper
 
 def fourier_test(A, WClist):
     n = 0
     yftot = []
-    nwords = 100
+    nwords = 20
     for WC in WClist:
         if len(WC) >= nwords:
             clist = cross_entropy_sequence(A, WC[0:nwords])
@@ -24,6 +26,7 @@ def fourier_test(A, WClist):
             elif not np.isinf(yf[0].any()):
                 yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
                 n+=1
+    print(n)
     yftot = yftot * (1 / n)
     return xf, yftot, n
 
@@ -35,7 +38,7 @@ def fourier_test_for_1990(A, WClist):
     at further work"""
     n = 0
     yftot = []
-    nwords = 100
+    nwords = 20
     for WC in WClist:
         if len(WC) >= nwords:
             clist = cross_entropy_sequence(A, WC[0:nwords])
@@ -59,7 +62,7 @@ def fourier_test_for_1990(A, WClist):
 def fouriertest_shuffla(A, WClist):
     n = 0
     yftot = []
-    nwords = 100
+    nwords = 20
     for WC in WClist:
         if len(WC) >= nwords:
             ll = WC[0:nwords]
@@ -146,6 +149,19 @@ def pearson_corr_coeff(X, Y):
 def spearman_corr_coeff(X, Y):
     # Gives same bad result, because too few input things... 
     return scipy.stats.spearmanr(X, Y)
+
+def spec_ang_map(X, Y):
+    pass
+    # Not working
+    #sam = SpectralAngleMapper()
+    #return sam(X, Y)
+
+def dist_corr(X, Y):
+    return scipy.stats.somersd(X, Y)
+
+# What works: scipy.stats.kendalltau(X, Y), scipy.stats.somersd(X, Y), see: https://docs.scipy.org/doc/scipy/reference/stats.html
+
+# I think that the 1990 file is not going to work, but shuffled is good. 
 
 
 def AUC(X, Y):
