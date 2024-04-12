@@ -2,7 +2,8 @@ from scipy.fft import fft, fftfreq
 from choose_word_classes import class_to_index
 import numpy as np
 from metrics import tensorfrobnorm
-
+import scipy
+import random
 
 def fourier_test(A, WClist):
     n = 0
@@ -10,7 +11,7 @@ def fourier_test(A, WClist):
     nwords = 100
     for WC in WClist:
         if len(WC) >= nwords:
-            clist = cross_entropy_sequence_mult2(A, WC[0:nwords])
+            clist = cross_entropy_sequence(A, WC[0:nwords])
             #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
             yf = fft(clist) 
             N = len(yf)
@@ -37,7 +38,7 @@ def fourier_test_for_1990(A, WClist):
     nwords = 100
     for WC in WClist:
         if len(WC) >= nwords:
-            clist = cross_entropy_sequence_mult2(A, WC[0:nwords])
+            clist = cross_entropy_sequence(A, WC[0:nwords])
             #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
             yf = fft(clist) 
             N = len(yf)
@@ -54,11 +55,37 @@ def fourier_test_for_1990(A, WClist):
     yftot = yftot * (1 / n)
     return xf, yftot, n
 
+
+def fouriertest_shuffla(A, WClist):
+    n = 0
+    yftot = []
+    nwords = 100
+    for WC in WClist:
+        if len(WC) >= nwords:
+            ll = WC[0:nwords]
+            random.shuffle(ll)
+            clist = cross_entropy_sequence(A, ll)
+            #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
+            yf = fft(clist) 
+            N = len(yf)
+            # sample spacing
+            T = 1.0 / 800.0
+            xf = fftfreq(N, T)[:N//2]
+            if n == 0:
+                yftot = np.array(yf) # Take abs here or just in the end?
+                n+=1
+            elif not np.isinf(yf[0].any()):
+                yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
+                n+=1
+    yftot = yftot * (1 / n)
+    return xf, yftot, n
+
+
 def fourier_test_no_smooth(A, WClist):
     n = 0
     yftot = []
     for i in range(100, int(len(WClist)/1000)):
-        clist = cross_entropy_sequence_mult2(A, WClist[i-100:i])
+        clist = cross_entropy_sequence(A, WClist[i-100:i])
         #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
         yf = fft(clist) 
         N = len(yf)
@@ -109,8 +136,19 @@ def cross_entropy_sequence_mult2(A, WClist):
     return clist
 
 
+
 def pearson_corr_coeff(X, Y):
     #return np.cov(X, Y) / (np.std(X) * np.std(Y))
     #return np.corrcoef(X, Y) # This is wrong function?
     return (np.mean(np.multiply(X, Y)) - np.mean(X)*np.mean(Y)) / (np.std(X)*np.std(Y))
+
+
+def spearman_corr_coeff(X, Y):
+    # Gives same bad result, because too few input things... 
+    return scipy.stats.spearmanr(X, Y)
+
+
+def AUC(X, Y):
+    # Area under curve.
+    pass
     

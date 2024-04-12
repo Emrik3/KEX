@@ -445,15 +445,42 @@ def predict_many_F1():
     plot_F1(F1_list, letter_list)
 
 def test_pearson():
-    xf, Y1, n = fourier_test(np.load(TM_all_2nd_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y2, n = fourier_test(np.load(TM_all_2nd_dir), WC_all_segment[len(WC_all_segment)//2:])
-    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_2nd_dir), open_dict(WC_1990_dir))
-    xf, Y4, n = fourier_test(np.load(TM_all_2nd_dir), WC_all_segment)
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print("PEARSON")
+    print()
     print("First and second half of all abstracts compared:")
     print((pearson_corr_coeff(np.abs(Y1), np.abs(Y2))))
     print()
     print("All abstracts compared with full 1990 file")
     print((pearson_corr_coeff(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((pearson_corr_coeff(np.abs(Y5), np.abs(Y6))))
+
+
+def test_spearman():
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print("SPEARMAN")
+    print()
+    print("First and second half of all abstracts compared:")
+    print((spearman_corr_coeff(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with full 1990 file")
+    print((spearman_corr_coeff(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((spearman_corr_coeff(np.abs(Y5), np.abs(Y6))))
+
 
 def main():
     """Uses the finished model to extract results"""
@@ -488,7 +515,8 @@ def main():
     """3. Fourier transform to find patterns in text (to be further implemented)"""
     #fourier_run()
     #test_fourier_no_compare()
-    test_pearson()
+    #test_pearson()
+    test_spearman()
     #update_WC()
 
 
