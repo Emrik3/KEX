@@ -539,6 +539,8 @@ def test_any(corr):
     xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
     xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), open_dict(bible_WC_dir)) # This gives very different values, sometimes they are very large... Prob not working as it should
     xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir))
+    xf, Y7, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y8, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir), stop_at_val=True)
     print(str(corr))
     print()
     print("First and second half of abstracts compared:")
@@ -552,6 +554,9 @@ def test_any(corr):
     print()
     print("Shuffled bible")
     print((corr(np.abs(Y5), np.abs(Y6))))
+    print()
+    print("1990 and bible")
+    print((corr(np.abs(Y7), np.abs(Y8))))
 
 
 
@@ -600,9 +605,9 @@ def main():
     # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes
     # Best: kendalltau, weightedtau (Hyperbolic weighing)
     # Bad: somersd
-    test_any(scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
+    #test_any(scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
     # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
-
+    plot_freq(WC_all)
 
 
 if __name__ == '__main__':

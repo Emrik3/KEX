@@ -335,6 +335,16 @@ def plot_F1(F1_list, letter_list):
     plt.grid()
     plt.show()
 
+
+def plot_freq(WClist):
+    count = pd.Series(WClist).value_counts()
+    plt.plot(count) # Could also be semilogy here.
+    plt.ylabel('Number of occurences')
+    plt.xlabel('Word class')
+    plt.show()
+
+
+
 if __name__ == "__main__":
     pass
 
