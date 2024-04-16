@@ -91,7 +91,7 @@ def data_fixing(text, lib, no_NA):
 
 def save_dict(to_save):
     json_object = json.dumps(to_save, indent=4)
-    with open("dictionaries/WCendingtolookat.json", "w") as outfile:
+    with open("Trainingdata/fixedbiblesegment.json", "w") as outfile:
         outfile.write(json_object)
 
 
@@ -324,6 +324,7 @@ def translations_to_word_classes(file, filename, no_NA):
             k += 1
     print("Number of words that could not be classified: " + str(k) + " out of " + str(len(classified)))
     print("in percent " + str(100 * k / len(classified)))
+    outfile = 'dictionaries/classbible.json'
     with open(filename, "w") as outfile:
         json.dump(classified, outfile)
     return classified
@@ -344,18 +345,25 @@ def unique_word_classes():
     return unique_codes
 
 
+def fixing_the_bible():
+    bible = read_translation_txt('Trainingdata/bibeln.txt')
+    bible = text_cleaner(bible, False)
+    save_dict(bible)
+
+
 if __name__ == "__main__":
     """For joining new files to the large word to word-class dictionary"""
     # fl = joindicts()
     # save_dict(fl)
     
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes('Trainingdata/newtestfile1990to1998.csv', False)
+    #abstracts_to_word_classes('Trainingdata/newtestfile1990to1998.csv', False)
+    fixing_the_bible()
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json')
     #translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json", False)
-    abstracts_data_fixing('Trainingdata/many_abstracts.csv', 'Trainingdata/abstracts_textlist', False, False, False)
+    #abstracts_data_fixing('Trainingdata/many_abstracts.csv', 'Trainingdata/abstracts_textlist', False, False, False)
     """
     TM_all = open_dict('transition_matrices/TM_all')
     maxlike(TM_all, sample)"""

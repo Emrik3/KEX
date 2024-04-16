@@ -8,6 +8,7 @@ import torch
 #from torchmetrics.image import SpectralAngleMapper
 
 def fourier_test(A, WClist):
+    # Need to test these so that I know what is going on, changing the n_values variables is weird...
     n = 0
     yftot = []
     nwords = 20
@@ -30,7 +31,7 @@ def fourier_test(A, WClist):
     yftot = yftot * (1 / n)
     return xf, yftot, n
 
-def fourier_test_for_1990(A, WClist):
+def fourier_test_for_bible(A, WClist, stop_at_val=False):
     # This is what need to be done in all these files and with the WC list inputed into them!
     """More words are needed for each run, it works if we run full abstracts and avrage of those but also need to avrage
     over the newspaper, this is quite hard to do. maybe leave til the end, if we need to start writing about this we start
@@ -39,9 +40,17 @@ def fourier_test_for_1990(A, WClist):
     n = 0
     yftot = []
     nwords = 20
-    for WC in WClist:
-        if len(WC) >= nwords:
-            clist = cross_entropy_sequence(A, WC[0:nwords])
+    WC_long = []
+    k = 0
+    for i in range(len(WClist)):
+        WC_long.append(WClist[i])
+        k += 1
+        if WClist[i] == '.':
+            k = 0
+            WC_long = []
+        if k == nwords:
+            #print(WC_long)
+            clist = cross_entropy_sequence(A, WC_long)
             #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
             yf = fft(clist) 
             N = len(yf)
@@ -54,10 +63,54 @@ def fourier_test_for_1990(A, WClist):
             elif not np.isinf(yf[0].all()):
                 yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
                 n+=1
+            if stop_at_val and n == 4008:
+                yftot = yftot * (1 / n)
+                print(n)
+                return xf, yftot, n
     print(n)
     yftot = yftot * (1 / n)
     return xf, yftot, n
 
+def fourier_test_shuffle_bible(A, WClist, stop_at_val=False):
+    # This is what need to be done in all these files and with the WC list inputed into them!
+    """More words are needed for each run, it works if we run full abstracts and avrage of those but also need to avrage
+    over the newspaper, this is quite hard to do. maybe leave til the end, if we need to start writing about this we start
+    by saying what we have done and then if we don't have tome to fix we say that what we did, did not work and leave it 
+    at further work"""
+    n = 0
+    yftot = []
+    nwords = 20
+    WC_long = []
+    k = 0
+    random.shuffle(WClist)
+    for i in range(len(WClist)):
+        WC_long.append(WClist[i])
+        k += 1
+        if WClist[i] == '.':
+            k = 0
+            WC_long = []
+        if k == nwords:
+            #print(WC_long)
+            
+            clist = cross_entropy_sequence(A, WC_long)
+            #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
+            yf = fft(clist) 
+            N = len(yf)
+            # sample spacing
+            T = 1.0 / 800.0
+            xf = fftfreq(N, T)[:N//2]
+            if n == 0:
+                yftot = np.array(yf) # Take abs here or just in the end?
+                n+=1
+            elif not np.isinf(yf[0].all()):
+                yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
+                n+=1
+            if stop_at_val and n == 4008:
+                yftot = yftot * (1 / n)
+                return xf, yftot, n
+    print(n)
+    yftot = yftot * (1 / n)
+    return xf, yftot, n
 
 def fouriertest_shuffla(A, WClist):
     n = 0
@@ -81,6 +134,7 @@ def fouriertest_shuffla(A, WClist):
                 yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
                 n+=1
     yftot = yftot * (1 / n)
+    print(n)
     return xf, yftot, n
 
 

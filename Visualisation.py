@@ -50,6 +50,7 @@ def plot_line_graph(data, columns, rows, offset):
     plt.legend()
     plt.title('Metrics for each word class')
     plt.show()
+    
 def organize_and_plot(res, order, setup, plot):
     wrong_predicted_class = [] # When the model predicted wrong it predicted these wc
     wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
