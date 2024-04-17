@@ -609,6 +609,8 @@ def main():
     # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
     plot_freq(WC_all)
 
+    # TODO: Find a plt.style.use('seaborn-v0_8-whitegrid') and use it for all plots.
+
 
 if __name__ == '__main__':
     main()

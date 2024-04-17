@@ -338,6 +338,7 @@ def plot_F1(F1_list, letter_list):
 
 def plot_freq(WClist):
     count = pd.Series(WClist).value_counts()
+    plt.style.use('seaborn-v0_8-whitegrid') # Find best style and use for all plots.
     plt.plot(count) # Could also be semilogy here.
     plt.ylabel('Number of occurences')
     plt.xlabel('Word class')
