@@ -94,6 +94,7 @@ def organize_and_plot(res, order, setup, plot):
     wrong_actual_class = sum(wrong_actual_class,[])
     corr_actual_class = sum(corr_actual_class,[])
 
+
     # new list with all the wc that appeared in the test text
     all_actual_classes = wrong_actual_class + corr_actual_class
 
@@ -126,6 +127,11 @@ def organize_and_plot(res, order, setup, plot):
         confusion_metrics(confusionmatrix,setup)
         transition_matrix_vis(confusionmatrix)
 
+
+    np.save('results/plotdatapredict_correct_counts' + str(setup) + '.npy', correct_counts)
+    np.save('results/plotdatapredict_wrong_counts' + str(setup) + '.npy', wrong_counts)
+    np.save('results/plotdatapredict_total_occurrences' + str(setup) + '.npy', total_occurrences)
+    np.save('results/plotdatapredict_confusion_matrix' + str(setup) + '.npy', confusionmatrix)
     #plot_missed(correct_counts, wrong_counts, total_occurrences, order, setup, 100*tot_correct/tot_tot)
     return tot_correct/tot_tot
 

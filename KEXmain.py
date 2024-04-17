@@ -305,39 +305,6 @@ def predict_NA():
 
 def predict_big(setup, nletters, weights, plot, convex, F1_test):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
-    # FIX THIS FUNCTION!!! AND FIX THE ORTHER FUNCTIONS THEAT THEY GO TO, GIVE GOOD NAMES AND SO ON AND MAYBE PUT THEM ALL TOGETHER IN SOME WAY...
-    """if order == 1 and end and l == 1:
-        TM_dir = TM_all_dir
-        grammar_pred_test = grammar_predictor_percentage_test_ending11
-        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
-    elif order ==1 and not end:
-        TM_dir = TM_all_dir
-        grammar_pred_test = grammar_predictor_percentage_test
-        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
-    elif order ==2 and not end:
-        TM_dir = TM_all_2nd_dir
-        grammar_pred_test = grammar_predictor_percentage_test2
-        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
-    elif order == 3:
-        TM_dir = TM_all_3rd_dir
-        grammar_pred_test = grammar_predictor_percentage_test3
-        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
-    elif order == 4:
-        TM_dir = TM_all_4th_dir
-        grammar_pred_test = grammar_predictor_percentage_test4
-        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
-    elif order == 5:
-        TM_dir = TM_all_5th_dir
-        grammar_pred_test = grammar_predictor_percentage_test5
-        results = predict_csv(np.load(TM_dir), export_dir, WC_export, grammar_pred_test, setup)
-    elif order == 1 and end:
-        TM_dir = TM_all_dir
-        grammar_pred_test = grammar_predictor_percentage_test_ending
-        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)
-    elif order == 2 and end:
-        TM_dir = TM_all_2nd_dir
-        grammar_pred_test = grammar_predictor_percentage_test_ending2
-        results = predict_csv_end(np.load(TM_dir), export_dir, WC_all, grammar_pred_test, setup)"""
     order = len(setup)-1
     percentage_list = []
     for weight in (weights):
@@ -350,6 +317,19 @@ def predict_big(setup, nletters, weights, plot, convex, F1_test):
         return getF1(results)
     else:
         plot_weights(weights, percentage_list, setup, nletters, convex)
+
+def predict_big_data(setup, nletters, weights, plot, convex, F1_test):
+    """Plots the results of predicting words in export_dir for some order of Markov chain"""
+    
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1]]
+    for setup in setuplist:
+        update_TM(setup=setup)
+        order = len(setup)-1
+        for weight in (weights):
+            print("setup: " + str(setup))
+            results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters, weight=weight, convex=convex)]
+            percentage = organize_and_plot(results, order=order, setup=setup, plot=plot)
 
 
 def update_end_prob():
@@ -560,11 +540,10 @@ def test_any(corr):
 
 
 
-
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    plot()
+    #plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
@@ -575,16 +554,17 @@ def main():
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
     #predict_ending()
     #m = np.load('wordclasslists/WCending.npy')
-    setup = [0,1]
+    #setup = [0,1]
     #update_TM(setup=setup)
     """1. Predict Word Classes"""
     #predict_big(setup=setup, nletters=3, weights = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1], plot=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
-    #predict_big(setup=setup, nletters=1, weights = [1], plot=True) # Samma som nletters=0
+    #predict_big(setup=setup, nletters=1, weights = [1], plot=False, convex=False, F1_test=False) # Samma som nletters=0
     #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True) # Samma som utan weight
     #predict_big(setup=setup, nletters=1, weights = [0, 0.01, 0.3, 0.4,0.5,0.6, 0.99, 1], plot=False, convex=False, F1_test=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #predict_many_F1()
     #predict_big(setup=setup, nletters=1, weights = [1], plot=True, convex=False, F1_test=False) # Samma som nletters=0
     #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True, convex=True, F1_test=False) # Samma som utan weight
+    predict_big_data(setup=None, nletters=1, weights = [1], plot=False, convex=False, F1_test=False)
 
     """2. Testing the grammar of translation software"""
     #metrics_test_translation(setup=setup, type=WC_export_segment_fulltransl_dir, n=100) # Remember to update_TM() if using a new setup
@@ -599,6 +579,7 @@ def main():
     #test_sam() # No work
     #test_dist_corr()
     #update_WC()
+
 
 
 

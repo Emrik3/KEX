@@ -438,6 +438,8 @@ def ending_calculation(result, nletters, A, num, result_text, letternum, pos, wc
                         wrong_predicted_class.append(result[i][j])
                         wrong_actual_class.append(copy_result[i][j])
     return wrong_predicted_class, wrong_actual_class, correct_predicted_class, confusion_matrix
+
+
 def no_ending_calculation(result, A, num, pos, copy_result):
     """Tror vi kan ta bort denna funktion då det blir samma som att sätta weights = [1] och nletter=vadsomhelst"""
     correct_counter = 0
@@ -474,6 +476,7 @@ def no_ending_calculation(result, A, num, pos, copy_result):
                     wrong_predicted_class.append(result[i][j])
                     wrong_actual_class.append(copy_result[i][j])
     return wrong_predicted_class, wrong_actual_class, correct_predicted_class, confusion_matrix
+
 
 def assign_setup(setup):
     if setup == [0,0,1]:
@@ -520,6 +523,8 @@ def assign_setup(setup):
         print("Error in setup config")
         return
     return pos
+
+
 def grammar_predictor_main(classtext, textlist, setup, order, nletters, weight, convex):
     """Does the same thing as grammar predictor but creates is own NA:s and ignores
     spots where NA exists. The old result is saved and compared to the prediction."""
@@ -536,18 +541,19 @@ def grammar_predictor_main(classtext, textlist, setup, order, nletters, weight, 
     elif nletters == 3:
         letters = create_ending_list3()
         letternum = {key: range(len(letters))[i] for i, key in enumerate(letters)}
-    num = 0
+    num = order
     textlist = open_dict('Trainingdata/abstracts_textlist')
     for i in setup:
         if i == 1:
             break
         else:
-            num += 1
+            num -= 1
     classtextnum = []
     error = []
     for i in range(len(classtext)):
         classtextnum.append(class_to_index[classtext[i]])
-    wcend = np.load('wordclasslists/WCending' + str(nletters) + '.npy')
+    if ending:
+        wcend = np.load('wordclasslists/WCending' + str(nletters) + '.npy')
     particular_value = class_to_index['.']
     result = []
     result_text = []
@@ -570,7 +576,7 @@ def grammar_predictor_main(classtext, textlist, setup, order, nletters, weight, 
     pos = assign_setup(setup)
     tot_counter = 0
     for i in range(len(result)):
-        for j in range(len(result[i])-num):
+        for j in range(order-num, len(result[i])-num):
             if rnd.randint(1, 10) == 10:  # every 1 out of 10 words
                 if result[i][j] not in [0, particular_value, 24]:
                     k = 0
