@@ -37,12 +37,13 @@ def update_TM(setup):
 
 def update_WC():
     """Translates web-scraped csv files to word classes"""
-    abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False, transl=False)
-    abstracts_to_word_classes(t1990_dir, WC_1990_dir, no_NA=False, segment=True, transl=False) 
+    #abstracts_to_word_classes(Training_data_dir,WC_all_dir, no_NA=False, segment=False, transl=False)
+    #abstracts_to_word_classes(t1990_dir, WC_1990_dir, no_NA=False, segment=True, transl=False) 
 
     """Translates txt file to word classes"""
     #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
     #translations_to_word_classes(translated_sample_dir, WC_transl_dir, no_NA = False)
+    translations_to_word_classes('dictionaries/fixedbible.json', 'dictionaries/fixedbible.json', no_NA=False)
 
     """WC, with different lists for each abstract"""
     #abstracts_to_word_classes(export_dir, WC_export_segment_dir, no_NA=False, segment=True)
@@ -52,9 +53,9 @@ def update_WC():
 
 def plot():
     """Plots a 2D transition Matrix"""
-    #transition_matrix_vis(TM_all)
+    transition_matrix_vis(np.load(TM_all_dir))
     #transition_matrix_vis(TM_transl)
-    transition_matrix_vis(TM_non_transl)
+    #transition_matrix_vis(TM_non_transl)
 
 def metrics():
     """Calculates the basic metrics"""
@@ -449,16 +450,121 @@ def test_pearson():
     xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
     xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
     xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print("PEARSON")
+    print()
     print("First and second half of all abstracts compared:")
     print((pearson_corr_coeff(np.abs(Y1), np.abs(Y2))))
     print()
     print("All abstracts compared with full 1990 file")
     print((pearson_corr_coeff(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((pearson_corr_coeff(np.abs(Y5), np.abs(Y6))))
+
+
+def test_spearman():
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print("SPEARMAN")
+    print()
+    print("First and second half of all abstracts compared:")
+    print((spearman_corr_coeff(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with full 1990 file")
+    print((spearman_corr_coeff(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((spearman_corr_coeff(np.abs(Y5), np.abs(Y6))))
+
+
+def test_sam():
+    # No work
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print("SPEARMAN")
+    print()
+    print("First and second half of all abstracts compared:")
+    print((spec_ang_map(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with full 1990 file")
+    print((spec_ang_map(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((spec_ang_map(np.abs(Y5), np.abs(Y6))))
+
+
+def test_dist_corr():
+    # Very bad
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    print("Distance Corr")
+    print()
+    print("First and second half of all abstracts compared:")
+    print((dist_corr(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with full 1990 file")
+    print((dist_corr(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled")
+    print((dist_corr(np.abs(Y5), np.abs(Y6))))
+
+
+def test_any(corr):
+    # Anything
+    # Need more text the p-value is too large! 
+    """More text maybe, p-value very large for shuffled kendall tau..."""
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    xf, Y01, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
+    xf, Y02, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
+    xf, Y1, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir)[0:len(open_dict(bible_WC_dir))//2])
+    xf, Y2, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir)[len(open_dict(bible_WC_dir))//2:])
+    xf, Y3, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir), stop_at_val=True) # Many NA in the bible, stop at val is to have as many avrages as abstracts, has to do with p-value, idk why...
+    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
+    xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), open_dict(bible_WC_dir)) # This gives very different values, sometimes they are very large... Prob not working as it should
+    xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir))
+    xf, Y7, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
+    xf, Y8, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir), stop_at_val=True)
+    print(str(corr))
+    print()
+    print("First and second half of abstracts compared:")
+    print((corr(np.abs(Y01), np.abs(Y02))))
+    print()
+    print("First and second half of bible compared:")
+    print((corr(np.abs(Y1), np.abs(Y2))))
+    print()
+    print("All abstracts compared with the bible")
+    print((corr(np.abs(Y3), np.abs(Y4))))
+    print()
+    print("Shuffled bible")
+    print((corr(np.abs(Y5), np.abs(Y6))))
+    print()
+    print("1990 and bible")
+    print((corr(np.abs(Y7), np.abs(Y8))))
+
+
+
 
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    #plot()
+    plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
@@ -488,9 +594,24 @@ def main():
     """3. Fourier transform to find patterns in text (to be further implemented)"""
     #fourier_run()
     #test_fourier_no_compare()
-    test_pearson()
+    #test_pearson()
+    #test_spearman()
+    #test_sam() # No work
+    #test_dist_corr()
     #update_WC()
 
+
+
+    # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes
+    # Best: kendalltau, weightedtau (Hyperbolic weighing)
+    # Bad: somersd
+    #test_any(scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
+    # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
+    #plot_freq(WC_all)
+
+    # TODO: Är allt rätt innan vi gör plottarna!!!!!
+    # TODO: Find a plt.style.use('seaborn-v0_8-whitegrid') and use it for all plots.
+    # TODO: make grph like 6.2.3 in joars text.
 
 
 if __name__ == '__main__':

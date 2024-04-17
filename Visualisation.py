@@ -6,17 +6,16 @@ from collections import Counter
 import numpy as np
 from choose_word_classes import number_to_class
 import pandas as pd
+import seaborn as sns
 
 
-
-def transition_matrix_vis(matrix):
-    """Generates heat map of transition matrix """
-    fig = plt.figure(figsize=(10,10))
+"""
+fig = plt.figure(figsize=(10,10))
     ax = fig.add_subplot(111)
 
     im = ax.imshow(np.flipud(matrix), cmap='viridis', interpolation='nearest')
     fig.colorbar(im)
-    mat_size = max(class_to_index.values()) + 1
+mat_size = max(class_to_index.values()) + 1
     ax.set_xticks(range(mat_size))
     ax.set_yticks(range(mat_size, 0, -1))
 
@@ -24,8 +23,33 @@ def transition_matrix_vis(matrix):
     ax.set_xticklabels(keys_to_include)
     ax.set_yticklabels(keys_to_include)
     ax.tick_params(axis='both', which='major', labelsize=10) # Set fontsize on labels, this is hard to get right cause dont fit.
-    ax.tick_params(axis='both', which='minor', labelsize=8)
+    ax.tick_params(axis='both', which='minor', labelsize=8)"""
+
+def transition_matrix_vis(matrix):
+    """Generates heat map of transition matrix """
+    df = pd.DataFrame(matrix)
+
+    x = range(df.shape[1])
+    y = range(df.shape[0])
+
+    X, Y = np.meshgrid(x, y)
+    fig, ax = plt.subplots(figsize=(10,10))
+    # Plot the bubbles
+    plt.grid(linestyle='--', color='black')
+    ax.scatter(X, Y, s=df.values*1000, color='black')  # Multiply by 1000 to make bubbles more visible
+    plt.xticks(range(df.shape[1]), range(df.shape[1]))
+    plt.yticks(range(df.shape[0]), range(df.shape[0]))
+    mat_size = max(class_to_index.values()) + 1
+    keys_to_include = list(class_to_index.keys())[0:mat_size]
+    ax.set_xticklabels(keys_to_include, rotation=45, fontsize=20)
+    ax.set_yticklabels(keys_to_include, fontsize=20)
+    plt.xlabel('Next Word Class', fontsize=25)
+    plt.ylabel('Current Word Class', fontsize=25)    
+    plt.title('Pre-trained Transition Matrix', fontsize=25)
     plt.show()
+    
+
+
 def plot_table(data, columns, rows):
     n_rows = len(data) # antal ordklasser
     y_offset = np.zeros(len(columns))
@@ -41,6 +65,8 @@ def plot_table(data, columns, rows):
     plt.xticks([])
     plt.yticks([])
     plt.show()
+
+
 def plot_line_graph(data, columns, rows, offset):
     # Get some pastel shades for the colors
     index = np.arange(len(columns))
@@ -50,6 +76,8 @@ def plot_line_graph(data, columns, rows, offset):
     plt.legend()
     plt.title('Metrics for each word class')
     plt.show()
+    
+
 def organize_and_plot(res, order, setup, plot):
     wrong_predicted_class = [] # When the model predicted wrong it predicted these wc
     wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
@@ -333,6 +361,33 @@ def plot_F1(F1_list, letter_list):
     plt.legend()
     plt.grid()
     plt.show()
+
+
+def plot_freq(WClist):
+    # DO this for bible as well.
+    count = pd.Series(WClist).value_counts()
+    fig, ax = plt.subplots(figsize=(10,10))
+    plt.style.use('seaborn-v0_8-whitegrid') # Find best style and use for all plots.
+    
+    sns.set_style("whitegrid")
+    blue, = sns.color_palette("muted", 1)
+    ax.plot(count, color=blue) # Could also be semilogy here.
+    ax.fill_between(count.index, 0, count.values, alpha=.3)
+    plt.ylabel('Number of Occurences', fontsize=25)
+    plt.xlabel('Word Class',  fontsize=25)
+    plt.title('Number of Occurences of Word Classes in Training Data',  fontsize=25)
+    plt.grid()
+    mat_size = max(class_to_index.values()) + 1
+    keys_to_include = list(class_to_index.keys())[0:mat_size]
+    plt.xticks(count.index, count.index, fontsize=20)
+    plt.yticks(range(0,210000,25000), range(0,210000,25000), fontsize=20)
+    plt.ylim(0,200000)
+    plt.xlim('NN', 'MID')
+    ax.set_xticklabels(count.index, rotation=45, fontsize=20)
+    #ax.set_yticklabels(fontsize=20)
+    plt.show()
+
+
 
 if __name__ == "__main__":
     pass

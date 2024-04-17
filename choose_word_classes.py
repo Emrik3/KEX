@@ -41,6 +41,7 @@ WC_all_segment_dir = 'wordclasslists/WC_all_segment'
 
 WC_1990_dir ='wordclasslists/WC1990'
 t1990_dir = 'Trainingdata/newtestfile1990to1998.csv'
+bible_WC_dir = 'dictionaries/fixedbible.json'
 
 # Opening transition matrices
 #TM_all = np.load(TM_all_dir)
