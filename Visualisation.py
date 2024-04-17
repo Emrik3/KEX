@@ -7,6 +7,7 @@ import numpy as np
 from choose_word_classes import number_to_class
 import pandas as pd
 import seaborn as sns
+from dataProcessing import save_dict
 
 
 """
@@ -128,10 +129,10 @@ def organize_and_plot(res, order, setup, plot):
         transition_matrix_vis(confusionmatrix)
 
 
-    np.save('results/plotdatapredict_correct_counts' + str(setup) + '.npy', correct_counts)
-    np.save('results/plotdatapredict_wrong_counts' + str(setup) + '.npy', wrong_counts)
-    np.save('results/plotdatapredict_total_occurrences' + str(setup) + '.npy', total_occurrences)
-    np.save('results/plotdatapredict_confusion_matrix' + str(setup) + '.npy', confusionmatrix)
+    save_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json', correct_counts)
+    save_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json', wrong_counts)
+    save_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json', total_occurrences)
+    #np.save('results/plotdatapredict_confusion_matrix' + str(setup) + '.npy', confusionmatrix)
     #plot_missed(correct_counts, wrong_counts, total_occurrences, order, setup, 100*tot_correct/tot_tot)
     return tot_correct/tot_tot
 
@@ -263,6 +264,31 @@ def plot_missed(correct, incorrect, total, order, setup, perc):
     plt.legend()
     plt.show()
 
+
+def plot_all_missed(correct, incorrect, total, ordr, setup, ax, bottom):
+    x = []
+    xi = []
+    xv = []
+    for x_values in correct.keys():
+        x.append((x_values))
+    for x_values in incorrect.keys():
+        xi.append((x_values))
+    for x_values in total.keys():
+        xv.append((x_values))
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    colors = ['black', 'silver', 'navy', 'indigo', 'plum', 'purple', 'red', 'green', 'yellow', 'lavenderblush', 'greenyellow', 'lightgreen', 'chocolate', 'salmon']
+    color_dict = {}
+    for i in range(len(setuplist)):
+        color_dict[str(setuplist[i])] = colors[i]
+    
+    #plt.plot(xi, list(incorrect.values()), label='Incorrect prediction for ' + str(setup))
+    print(bottom)
+    ax.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)], bottom=bottom)
+    bottom += np.array(list(correct.values()))
+    return bottom
+    #plt.plot(xv, list(total.values()), label='Total in data for ' + str(setup))
+    
 
 def plot_confusion_metric_bar(accuracy, precision, recall,rows, setup):
     x = []

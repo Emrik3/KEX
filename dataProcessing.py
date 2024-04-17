@@ -89,9 +89,9 @@ def data_fixing(text, lib, no_NA):
 
 
 
-def save_dict(to_save):
+def save_dict(filename, to_save):
     json_object = json.dumps(to_save, indent=4)
-    with open("Trainingdata/fixedbiblesegment.json", "w") as outfile:
+    with open(filename, "w") as outfile:
         outfile.write(json_object)
 
 
@@ -358,12 +358,12 @@ if __name__ == "__main__":
     
     """Translates web-scraped csv files to word classes"""
     #abstracts_to_word_classes('Trainingdata/newtestfile1990to1998.csv', False)
-    fixing_the_bible()
+    #fixing_the_bible()
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json')
     #translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json", False)
-    #abstracts_data_fixing('Trainingdata/many_abstracts.csv', 'Trainingdata/abstracts_textlist', False, False, False)
+    abstracts_data_fixing('Trainingdata/many_abstracts.csv', 'Trainingdata/abstracts_textlist', False, False, False)
     """
     TM_all = open_dict('transition_matrices/TM_all')
     maxlike(TM_all, sample)"""

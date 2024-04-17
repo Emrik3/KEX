@@ -538,7 +538,50 @@ def test_any(corr):
     print("1990 and bible")
     print((corr(np.abs(Y7), np.abs(Y8))))
 
+def plot_all():
+    fig, ax = plt.subplots(figsize=(10,6))
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    bottom = np.zeros(len(class_to_index.keys()))
+    for setup in setuplist:
+        ordr = len(setup)-1
+        correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
+        incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
+        total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
+        bottom = plot_all_missed(correct, incorrect, total, ordr, setup, ax, bottom)
+    plt.title('Predictions with setup')
+    plt.xlabel("Word class")
+    plt.ylabel("Predicted word classes")
+    plt.xticks(range(len(class_to_index.keys())))
+    ax.set_xticklabels(class_to_index.keys()) # Probably wrong, NA should not be there.
+    plt.legend()
+    plt.show()
 
+def fix_data_plot():
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    sz = len(class_to_index.keys())
+    for setup in setuplist:
+        ordr = len(setup)-1
+        correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
+        incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
+        total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
+        for cl in range(len(class_to_index.keys())):
+            try:
+                a = correct[str(cl)]
+            except:
+                correct[str(cl)] = 0
+            try:
+                a = incorrect[str(cl)]
+            except:
+                incorrect[str(cl)] = 0
+            try:
+                a = total[str(cl)]
+            except:
+                total[str(cl)] = 0
+        save_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json', correct)
+        save_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json', incorrect)
+        save_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json', total)
 
 def main():
     """Uses the finished model to extract results"""
@@ -564,7 +607,7 @@ def main():
     #predict_many_F1()
     #predict_big(setup=setup, nletters=1, weights = [1], plot=True, convex=False, F1_test=False) # Samma som nletters=0
     #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True, convex=True, F1_test=False) # Samma som utan weight
-    predict_big_data(setup=None, nletters=1, weights = [1], plot=False, convex=False, F1_test=False)
+    #predict_big_data(setup=None, nletters=1, weights = [1], plot=False, convex=False, F1_test=False)
 
     """2. Testing the grammar of translation software"""
     #metrics_test_translation(setup=setup, type=WC_export_segment_fulltransl_dir, n=100) # Remember to update_TM() if using a new setup
@@ -579,8 +622,8 @@ def main():
     #test_sam() # No work
     #test_dist_corr()
     #update_WC()
-
-
+    #fix_data_plot()
+    plot_all()
 
 
     # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes
