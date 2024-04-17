@@ -53,9 +53,9 @@ def update_WC():
 
 def plot():
     """Plots a 2D transition Matrix"""
-    #transition_matrix_vis(TM_all)
+    transition_matrix_vis(np.load(TM_all_dir))
     #transition_matrix_vis(TM_transl)
-    transition_matrix_vis(TM_non_transl)
+    #transition_matrix_vis(TM_non_transl)
 
 def metrics():
     """Calculates the basic metrics"""
@@ -564,7 +564,7 @@ def test_any(corr):
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
-    #plot()
+    plot()
     #metrics()
     #evaluate_grammar()
     #predict_NA()
@@ -607,9 +607,11 @@ def main():
     # Bad: somersd
     #test_any(scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
     # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
-    plot_freq(WC_all)
+    #plot_freq(WC_all)
 
+    # TODO: Är allt rätt innan vi gör plottarna!!!!!
     # TODO: Find a plt.style.use('seaborn-v0_8-whitegrid') and use it for all plots.
+    # TODO: make grph like 6.2.3 in joars text.
 
 
 if __name__ == '__main__':
