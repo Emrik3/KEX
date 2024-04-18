@@ -68,6 +68,8 @@ def metrics():
     running_metrics2(TM_all_3rd, TM_transl_3rd)
     print("Should be low")
     running_metrics2(TM_all_3rd, TM_non_transl_3rd)
+
+
 def metrics_test_translation(setup, type, n):
     order = len(setup)-1
     # For running test using a translation
@@ -175,6 +177,8 @@ def metrics_test_translation(setup, type, n):
     print("Kullback: " + str(other_metrics[5] / (prog)))
 
     print("Setup = " + str(setup))
+
+
 def metrics_test_scramble(setup):
     order = len(setup)-1
     #For running tests with only scrambled word order
@@ -230,7 +234,7 @@ def metrics_test_scramble(setup):
                 prog +=1
                 copy_abs = copy.deepcopy(abstract) #use copy_abs for both and change mixed for the second to True if a scramble test
                 # then use abstract org
-                func(copy_abs, TM_non_transl_dir,setup, mixed=False)
+                func(copy_abs, TM_org_dir ,setup, mixed=False)
                 func(copy_abs, TM_trnsl_dir, setup, mixed=True)
                 transl = metric_fun(np.load(TM_big_dir), np.load(TM_trnsl_dir))
                 normal = metric_fun(np.load(TM_big_dir), np.load(TM_org_dir))
@@ -376,7 +380,7 @@ def test_fourier_no_compare():
     
 
 def predict_many_F1():
-    nletters_list = [3]#[-1, 0, 1, 2]
+    nletters_list = [3] #[-1, 0, 1, 2]
     F1_list = []
     letter_list = []
     for nletters in nletters_list:
@@ -392,7 +396,7 @@ def predict_many_F1():
         update_TM(setup=setup)
         F1_list.append((predict_big(setup=setup, nletters=nletters, weights = weight, plot=False, convex=False, F1_test=True), setup))
         letter_list.append(org_letter)
-
+        
         setup = [1,0]
         update_TM(setup=setup)
         F1_list.append((predict_big(setup=setup, nletters=nletters, weights = weight, plot=False, convex=False, F1_test=True), setup))
@@ -418,7 +422,7 @@ def predict_many_F1():
         F1_list.append((predict_big(setup=setup, nletters=nletters, weights=weight, plot=False, convex=False, F1_test=True), setup))
         letter_list.append(org_letter)
 
-        setup = [0, 0,0,1, 0]
+        setup = [0, 0, 0, 1, 0]
         update_TM(setup=setup)
         F1_list.append((predict_big(setup=setup, nletters=nletters, weights=weight, plot=False, convex=False, F1_test=True), setup))
         letter_list.append(org_letter)
@@ -506,55 +510,177 @@ def test_dist_corr():
     print((dist_corr(np.abs(Y5), np.abs(Y6))))
 
 
-def test_any(corr):
+def test_any(corr, corr2):
     # Anything
     # Need more text the p-value is too large! 
     """More text maybe, p-value very large for shuffled kendall tau..."""
     # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
-    xf, Y01, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y02, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    xf, Y1, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir)[0:len(open_dict(bible_WC_dir))//2])
-    xf, Y2, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir)[len(open_dict(bible_WC_dir))//2:])
-    xf, Y3, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir), stop_at_val=True) # Many NA in the bible, stop at val is to have as many avrages as abstracts, has to do with p-value, idk why...
-    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
-    xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), open_dict(bible_WC_dir)) # This gives very different values, sometimes they are very large... Prob not working as it should
-    xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir))
-    xf, Y7, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
-    xf, Y8, n = fourier_test_for_bible(np.load(TM_all_dir), open_dict(bible_WC_dir), stop_at_val=True)
+    xf, Y01, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)[0:len(WC_all)//2])
+    xf, Y02, n = fourier_test_for_bible(np.load(TM_all_dir), WC_all[len(WC_all)//2:])
+
+    xf, Y1, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))[0:len(open_dict(bible_WC_dir))//2])
+    xf, Y2, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))[len(open_dict(bible_WC_dir))//2:])
+
+    xf, Y3, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # Many NA in the bible, stop at val is to have as many avrages as abstracts, has to do with p-value, idk why...
+    xf, Y4, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all))
+
+    xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # This gives very different values, sometimes they are very large... Prob not working as it should
+    xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+
+    xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)) # This gives very different values, sometimes they are very large... Prob not working as it should
+    xf, Y10, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+
+    xf, Y7, n = fourier_test_for_1990(np.load(TM_all_dir), copy.deepcopy(open_dict(WC_1990_dir)))
+    xf, Y8, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
     print(str(corr))
     print()
     print("First and second half of abstracts compared:")
-    print((corr(np.abs(Y01), np.abs(Y02))))
+    print((corr(np.abs(Y01), np.abs(Y02))[0]+corr2(np.abs(Y01), np.abs(Y02))[0]))
     print()
     print("First and second half of bible compared:")
-    print((corr(np.abs(Y1), np.abs(Y2))))
+    print((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]))
     print()
     print("All abstracts compared with the bible")
-    print((corr(np.abs(Y3), np.abs(Y4))))
+    print((corr(np.abs(Y3), np.abs(Y4))[0])+(corr2(np.abs(Y3), np.abs(Y4))[0]))
     print()
-    print("Shuffled bible")
-    print((corr(np.abs(Y5), np.abs(Y6))))
+    print("Shuffled bible compared with bible")
+    print((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y5), np.abs(Y6))[0]))
+    print()
+    print("Shuffled abstracts compared with bible")
+    print((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]))
     print()
     print("1990 and bible")
-    print((corr(np.abs(Y7), np.abs(Y8))))
+    print((corr(np.abs(Y7), np.abs(Y8))[0])+(corr2(np.abs(Y7), np.abs(Y8))[0]))
 
-def plot_all():
-    fig, ax = plt.subplots(figsize=(10,6))
-    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
-                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+
+def shuffle_avg(corr, corr2):
+    avg_bib = []
+    avg_abs = []
+    for i in range(100):
+        print(str(i) + "%")
+        xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)) # This gives very different values, sometimes they are very large... Prob not working as it should
+        xf, Y10, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+        avg_abs.append((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]))
+
+        xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # This gives very different values, sometimes they are very large... Prob not working as it should
+        xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+        avg_bib.append((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]))
+
+    print("Avrage for abstracts")
+    print(sum(avg_abs)/100)
+    print()
+    print("Avrage for bible")
+    print(sum(avg_bib)/100)
+
+
+
+def plot_all_subfigs():
+    count = pd.Series(open_dict(WC_all_dir)).value_counts()
+    k = 1
+    fig, ax = plt.subplots(figsize=(10,10))
+    setuplist1 = [[0,1], [1,0]]
+    setuplist2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    setuplist3 = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] 
+    setuplist4 = [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
     bottom = np.zeros(len(class_to_index.keys()))
-    for setup in setuplist:
+    bottom2 = np.zeros(len(class_to_index.keys()))
+    plt.title('Predictions with setup', fontsize=25)
+    for setup in setuplist4:
         ordr = len(setup)-1
         correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
         incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
+        correct_perc = {}
         total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
-        bottom = plot_all_missed(correct, incorrect, total, ordr, setup, ax, bottom)
-    plt.title('Predictions with setup')
-    plt.xlabel("Word class")
-    plt.ylabel("Predicted word classes")
-    plt.xticks(range(len(class_to_index.keys())))
-    ax.set_xticklabels(class_to_index.keys()) # Probably wrong, NA should not be there.
+        
+        for key in total.keys():
+            try:
+                correct_perc[key] = correct[key] / total[key]
+            except:
+                correct_perc[key] = 0
+        bottom, bottom2, k = plot_all_missed_subfigs(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2, k)
+        plt.xlabel("Word class", fontsize=20)
+        plt.ylabel("Predicted word classes", fontsize=20)
+        plt.xticks(range(1,len(class_to_index.keys())), list(class_to_index.keys())[1:], rotation=45, fontsize=15)
+        plt.yticks(fontsize=20)
+        #plt.set_xticklabels(list(class_to_index.keys())[1:], fontsize=20, rotation=45) # Probably wrong, NA should not be there.
+        #ax.set_yscale('log') # This for bar log plot
+        plt.grid(linestyle='--', color='black')
+        plt.legend()
+    
+    
+    plt.show()
+
+def plot_all():
+    count = pd.Series(open_dict(WC_all_dir)).value_counts()
+    k = 1
+    fig, ax = plt.subplots(figsize=(10,10))
+    setuplist1 = [[0,1], [1,0]]
+    setuplist2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    setuplist3 = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] 
+    setuplist4 = [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    bottom = np.zeros(len(class_to_index.keys()))
+    bottom2 = np.zeros(len(class_to_index.keys()))
+    plt.title('Predictions with setup', fontsize=25)
+    for setup in setuplist4:
+        ordr = len(setup)-1
+        correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
+        incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
+        correct_perc = {}
+        total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
+        
+        for key in total.keys():
+            try:
+                correct_perc[key] = correct[key] / total[key]
+            except:
+                correct_perc[key] = 0
+        bottom, bottom2= plot_all_missed(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2)
+    plt.xlabel("Word class", fontsize=20)
+    plt.ylabel("Predicted word classes", fontsize=20)
+    plt.xticks(range(1,len(class_to_index.keys())), list(class_to_index.keys())[1:], rotation=45, fontsize=15)
+    plt.yticks(fontsize=20)
+    #plt.set_xticklabels(list(class_to_index.keys())[1:], fontsize=20, rotation=45) # Probably wrong, NA should not be there.
+    #ax.set_yscale('log') # This for bar log plot
+    plt.grid(linestyle='--', color='black')
     plt.legend()
+    
+    
+    plt.show()
+
+
+def plot_all_subfigs_weights():
+    count = pd.Series(open_dict(WC_all_dir)).value_counts()
+    k = 1
+    fig, ax = plt.subplots(figsize=(10,10))
+    setuplist1 = [[0,1], [1,0]]
+    setuplist2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+    setuplist3 = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] 
+    setuplist4 = [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    bottom = np.zeros(len(class_to_index.keys()))
+    bottom2 = np.zeros(len(class_to_index.keys()))
+    plt.title('Predictions with setup', fontsize=25)
+    for setup in setuplist4:
+        ordr = len(setup)-1
+        correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
+        incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
+        correct_perc = {}
+        total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
+        
+        for key in total.keys():
+            try:
+                correct_perc[key] = correct[key] / total[key]
+            except:
+                correct_perc[key] = 0
+        bottom, bottom2, k = plot_all_missed_subfigs(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2, k)
+        plt.xlabel("Word class", fontsize=20)
+        plt.ylabel("Predicted word classes", fontsize=20)
+        plt.xticks(range(1,len(class_to_index.keys())), list(class_to_index.keys())[1:], rotation=45, fontsize=15)
+        plt.yticks(fontsize=20)
+        #plt.set_xticklabels(list(class_to_index.keys())[1:], fontsize=20, rotation=45) # Probably wrong, NA should not be there.
+        #ax.set_yscale('log') # This for bar log plot
+        plt.grid(linestyle='--', color='black')
+        plt.legend()
+    
+    
     plt.show()
 
 def fix_data_plot():
@@ -597,8 +723,8 @@ def main():
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
     #predict_ending()
     #m = np.load('wordclasslists/WCending.npy')
-    #setup = [0,1]
-    #update_TM(setup=setup)
+    setup = [0,1,0]
+    update_TM(setup=setup)
     """1. Predict Word Classes"""
     #predict_big(setup=setup, nletters=3, weights = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1], plot=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #predict_big(setup=setup, nletters=1, weights = [1], plot=False, convex=False, F1_test=False) # Samma som nletters=0
@@ -612,7 +738,7 @@ def main():
     """2. Testing the grammar of translation software"""
     #metrics_test_translation(setup=setup, type=WC_export_segment_fulltransl_dir, n=100) # Remember to update_TM() if using a new setup
     #metrics_test_translation(setup=setup, type=wc_export_segment_swtransl_dir, n=17) # Remember to update_TM() if using a new setup
-    #metrics_test_scramble(setup=setup)
+    metrics_test_scramble(setup=setup)
 
     """3. Fourier transform to find patterns in text (to be further implemented)"""
     #fourier_run()
@@ -623,13 +749,15 @@ def main():
     #test_dist_corr()
     #update_WC()
     #fix_data_plot()
-    plot_all()
+    #plot_all()
+    #plot_all_subfigs()
 
 
     # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes
     # Best: kendalltau, weightedtau (Hyperbolic weighing)
     # Bad: somersd
-    #test_any(scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
+    #shuffle_avg(scipy.stats.spearmanr, scipy.stats.kendalltau)
+    #test_any(scipy.stats.spearmanr, scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
     # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
     #plot_freq(WC_all)
 

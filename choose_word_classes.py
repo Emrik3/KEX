@@ -241,6 +241,8 @@ number_to_class_small = {
     6: "Determinerare"
 }
 
+index_to_class = dict([(value, key) for key, value in class_to_index.items()])
+
 
 
 def create_ending_list2():

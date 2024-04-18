@@ -75,7 +75,7 @@ def tensorfrobnorm(A):
 
 def crossentropy(A,B):
     #https://en.wikipedia.org/wiki/Cross-entropy
-    return -np.sum(A * np.log(B+10**(-10))) #the same as the likelyhood method? kolla joars
+    return -np.sum(A * np.log(B+10**(-10))) 
 
 def Kullback_Leibler(A, B):
     #https://en.wikipedia.org/wiki/Kullback–Leibler_divergence

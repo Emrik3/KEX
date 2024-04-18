@@ -119,7 +119,7 @@ def organize_and_plot(res, order, setup, plot):
         non_guess = 0
     tot_correct = sum(list(correct_counts.values()))
     tot_tot = sum(list(total_occurrences.values()))
-    tot_incorrect = sum(list(total_occurrences.values()))
+    tot_incorrect = sum(list(total_occurrences.values())) #????? TODO
 
     #print("non_guess: "+ str(non_guess) + ", tot_correct: " + str(tot_correct) + ", total_total: " + str(tot_tot) + ", incorrect: " + str(tot_incorrect))
     if plot:
@@ -237,11 +237,11 @@ def getF1(res):
             F1_score = round((2 * Precision * Recall) / (Precision + Recall), 3)
             # print("F1 score for word class " + str((number_to_class[i])) + "  : " + str(100 * F1_score) + "%")
         else:
-            F1_score = 1.0
+            F1_score = 0.0
             f1_0counter += 1
         data += F1_score
-    print("sum of F1: " + str(data))
-    return data
+    print("sum of F1: " + str(data/len(matrix)))
+    return data/len(matrix)
 
 def plot_missed(correct, incorrect, total, order, setup, perc):
     x_right = []
@@ -265,28 +265,106 @@ def plot_missed(correct, incorrect, total, order, setup, perc):
     plt.show()
 
 
-def plot_all_missed(correct, incorrect, total, ordr, setup, ax, bottom):
+def plot_all_missed_beside(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2):
     x = []
     xi = []
     xv = []
     for x_values in correct.keys():
-        x.append((x_values))
+        x.append((int(x_values)-0.2))
     for x_values in incorrect.keys():
         xi.append((x_values))
     for x_values in total.keys():
-        xv.append((x_values))
+        xv.append((int(x_values)+0.2))
     setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
                  [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
     colors = ['black', 'silver', 'navy', 'indigo', 'plum', 'purple', 'red', 'green', 'yellow', 'lavenderblush', 'greenyellow', 'lightgreen', 'chocolate', 'salmon']
     color_dict = {}
     for i in range(len(setuplist)):
         color_dict[str(setuplist[i])] = colors[i]
-    
+    print(correct.keys())
     #plt.plot(xi, list(incorrect.values()), label='Incorrect prediction for ' + str(setup))
-    print(bottom)
-    ax.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)], bottom=bottom)
+    ax.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)], bottom=bottom) #Maybe do percent instead, or do total at least, 
+    ax.bar(xv, list(total.values()), 0.2, label='Total number of times predicted?? for ' + str(setup), color=color_dict[str(setup)], bottom=bottom2)
     bottom += np.array(list(correct.values()))
-    return bottom
+    bottom2 += np.array(list(total.values()))
+    return bottom, bottom2
+    #plt.plot(xv, list(total.values()), label='Total in data for ' + str(setup))
+
+
+def plot_all_missed(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2):
+    x = []
+    xi = []
+    xv = []
+    for x_values in correct.keys():
+        x.append((int(x_values)-0.2))
+    for x_values in incorrect.keys():
+        xi.append((x_values))
+    for x_values in total.keys():
+        xv.append((int(x_values)+0.2))
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    colors = ['red', 'green', 'red', 'green', 'orange', 'red', 'green', 'orange', 'yellow', 'red', 'green', 'orange', 'yellow', 'black']
+    color_dict = {}
+    for i in range(len(setuplist)):
+        color_dict[str(setuplist[i])] = colors[i]
+    #plt.plot(xi, list(incorrect.values()), label='Incorrect prediction for ' + str(setup))
+    ax.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)], bottom=bottom, edgecolor='black') #Maybe do percent instead, or do total at least, 
+    ax.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=color_dict[str(setup)], bottom=bottom2, hatch='//', edgecolor='black')
+    bottom += np.array(list(correct.values()))
+    bottom2 += np.array(list(total.values()))
+    return bottom, bottom2
+    #plt.plot(xv, list(total.values()), label='Total in data for ' + str(setup))
+
+def plot_all_missed_subfigs(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2, k):
+    x = []
+    xi = []
+    xv = []
+    print(len(setup),1,k)
+    plt.subplot(len(setup),1,k)
+    for x_values in correct.keys():
+        x.append((int(x_values)-0.2))
+    for x_values in incorrect.keys():
+        xi.append((x_values))
+    for x_values in total.keys():
+        xv.append((int(x_values)+0.2))
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    colors = ['red', 'green', 'red', 'green', 'orange', 'red', 'green', 'orange', 'yellow', 'red', 'green', 'orange', 'yellow', 'black']
+    color_dict = {}
+    for i in range(len(setuplist)):
+        color_dict[str(setuplist[i])] = colors[i]
+    #plt.plot(xi, list(incorrect.values()), label='Incorrect prediction for ' + str(setup))
+    plt.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)], edgecolor='black') #Maybe do percent instead, or do total at least, 
+    plt.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=color_dict[str(setup)], hatch='//', edgecolor='black')
+    bottom += np.array(list(correct.values()))
+    bottom2 += np.array(list(total.values()))
+    k += 1
+    return bottom, bottom2, k
+    #plt.plot(xv, list(total.values()), label='Total in data for ' + str(setup))
+
+def plot_all_missed_bubble(corr_perc, correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2):
+    x = []
+    xi = []
+    xv = []
+    for x_values in correct.keys():
+        x.append((int(x_values)))
+    for x_values in incorrect.keys():
+        xi.append((x_values))
+    for x_values in total.keys():
+        xv.append((int(x_values)))
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    colors = ['black', 'silver', 'navy', 'indigo', 'plum', 'purple', 'red', 'green', 'yellow', 'lavenderblush', 'greenyellow', 'lightgreen', 'chocolate', 'salmon']
+    color_dict = {}
+    for i in range(len(setuplist)):
+        color_dict[str(setuplist[i])] = colors[i]
+    #plt.plot(xi, list(incorrect.values()), label='Incorrect prediction for ' + str(setup))
+    X, Y = np.meshgrid(x, list(correct.values()))
+    ax.scatter(x, list(correct.values()), s=np.array(list(corr_perc.values()))*1000, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)]) #Maybe do percent instead, or do total at least, 
+    #ax.bar(xv, list(total.values()), 0.2, label='Total number of times predicted?? for ' + str(setup), color=color_dict[str(setup)], bottom=bottom2)
+    bottom += np.array(list(correct.values()))
+    bottom2 += np.array(list(total.values()))
+    return bottom, bottom2
     #plt.plot(xv, list(total.values()), label='Total in data for ' + str(setup))
     
 
@@ -367,6 +445,8 @@ def plot_fourier(xf, yf, n):
     plt.ylabel('signal')
     plt.title('fourier transform for ' + str(n) + ' abstracts')
     plt.show()
+
+
 def plot_F1(F1_list, letter_list):
     print(F1_list)
     x = []
@@ -384,10 +464,12 @@ def plot_F1(F1_list, letter_list):
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
+    save_dict('results/f1predict3lettermanysetup.json', F1_list)
+    save_dict('results/xpredict3lettermanysetup.json', x)
     plt.plot(x, pure_F1_list)
     plt.xlabel('Setup')
     ax.set_xticks(range(counter))
-    ax.set_xticklabels(setups)
+    ax.set_xticklabels(setups, rotation=45)
     plt.ylabel('F1 Score')
     plt.title('F1 score for different orders and setup, letter' + str(letter_list[0]))
     plt.legend()

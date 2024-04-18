@@ -5,6 +5,7 @@ from metrics import tensorfrobnorm
 import scipy
 import random
 import torch
+import copy
 #from torchmetrics.image import SpectralAngleMapper
 
 def fourier_test(A, WClist):
@@ -67,7 +68,7 @@ def fourier_test_for_bible(A, WClist, stop_at_val=False):
                 yftot = yftot * (1 / n)
                 print(n)
                 return xf, yftot, n
-    print(n)
+    
     yftot = yftot * (1 / n)
     return xf, yftot, n
 
@@ -82,11 +83,12 @@ def fourier_test_shuffle_bible(A, WClist, stop_at_val=False):
     nwords = 20
     WC_long = []
     k = 0
-    random.shuffle(WClist)
-    for i in range(len(WClist)):
-        WC_long.append(WClist[i])
+    ll = copy.deepcopy(WClist)
+    random.shuffle(ll)
+    for i in range(len(ll)):
+        WC_long.append(ll[i])
         k += 1
-        if WClist[i] == '.':
+        if ll[i] == '.':
             k = 0
             WC_long = []
         if k == nwords:
@@ -108,8 +110,8 @@ def fourier_test_shuffle_bible(A, WClist, stop_at_val=False):
             if stop_at_val and n == 4008:
                 yftot = yftot * (1 / n)
                 return xf, yftot, n
-    print(n)
     yftot = yftot * (1 / n)
+    
     return xf, yftot, n
 
 def fourier_test_for_1990(A, WClist):
@@ -144,10 +146,10 @@ def fouriertest_shuffla(A, WClist):
     n = 0
     yftot = []
     nwords = 20
-    for WC in WClist:
+    ll = WClist
+    random.shuffle(ll)
+    for WC in ll:
         if len(WC) >= nwords:
-            ll = WC[0:nwords]
-            random.shuffle(ll)
             clist = cross_entropy_sequence(A, ll)
             #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
             yf = fft(clist) 
@@ -200,10 +202,11 @@ def cross_entropy_sequence_mult(A, WClist):
     llist = []
     for i in range(1, len(WClist)):
         if i==1:
-            llist.append(A[class_to_index[WClist[i]]][class_to_index[WClist[i-1]]] + 10**-30)
+            llist.append(A[class_to_index[WClist[i]]][class_to_index[WClist[i-1]]] + 10**-100)
         else:
-            llist.append(A[class_to_index[WClist[i]]][class_to_index[WClist[i-1]]] * llist[i-2]  + 10**-30)
+            llist.append(A[class_to_index[WClist[i]]][class_to_index[WClist[i-1]]] * llist[i-2] + 10**-100)
         clist.append(-np.log(llist[i-1]))
+    #print(llist)
     return clist
 
 # Make test for shuffled thing, and use cross_entropy_sequence_mult, this is kind of good but if this would be done with multiple orders it might be better.
