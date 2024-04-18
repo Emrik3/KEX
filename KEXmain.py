@@ -585,7 +585,7 @@ def plot_all_subfigs():
     bottom = np.zeros(len(class_to_index.keys()))
     bottom2 = np.zeros(len(class_to_index.keys()))
     plt.title('Predictions with setup', fontsize=25)
-    for setup in setuplist4:
+    for setup in setuplist2:
         ordr = len(setup)-1
         correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
         incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
@@ -621,7 +621,7 @@ def plot_all():
     bottom = np.zeros(len(class_to_index.keys()))
     bottom2 = np.zeros(len(class_to_index.keys()))
     plt.title('Predictions with setup', fontsize=25)
-    for setup in setuplist4:
+    for setup in setuplist2:
         ordr = len(setup)-1
         correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
         incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
@@ -641,7 +641,7 @@ def plot_all():
     #plt.set_xticklabels(list(class_to_index.keys())[1:], fontsize=20, rotation=45) # Probably wrong, NA should not be there.
     #ax.set_yscale('log') # This for bar log plot
     plt.grid(linestyle='--', color='black')
-    plt.legend()
+    plt.legend(prop={'size': 15})
     
     
     plt.show()
@@ -724,7 +724,7 @@ def main():
     #predict_ending()
     #m = np.load('wordclasslists/WCending.npy')
     setup = [0,1,0]
-    update_TM(setup=setup)
+    #update_TM(setup=setup)
     """1. Predict Word Classes"""
     #predict_big(setup=setup, nletters=3, weights = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1], plot=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #predict_big(setup=setup, nletters=1, weights = [1], plot=False, convex=False, F1_test=False) # Samma som nletters=0
@@ -738,7 +738,7 @@ def main():
     """2. Testing the grammar of translation software"""
     #metrics_test_translation(setup=setup, type=WC_export_segment_fulltransl_dir, n=100) # Remember to update_TM() if using a new setup
     #metrics_test_translation(setup=setup, type=wc_export_segment_swtransl_dir, n=17) # Remember to update_TM() if using a new setup
-    metrics_test_scramble(setup=setup)
+    #metrics_test_scramble(setup=setup)
 
     """3. Fourier transform to find patterns in text (to be further implemented)"""
     #fourier_run()
@@ -749,8 +749,8 @@ def main():
     #test_dist_corr()
     #update_WC()
     #fix_data_plot()
-    #plot_all()
-    #plot_all_subfigs()
+    plot_all()
+    plot_all_subfigs()
 
 
     # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes

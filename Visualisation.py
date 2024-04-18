@@ -303,13 +303,13 @@ def plot_all_missed(correct, incorrect, total, ordr, setup, ax, count, bottom, b
         xv.append((int(x_values)+0.2))
     setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
                  [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
-    colors = ['red', 'green', 'red', 'green', 'orange', 'red', 'green', 'orange', 'yellow', 'red', 'green', 'orange', 'yellow', 'black']
+    colors = ['darksalmon', 'darkkhaki', 'darksalmon', 'darkkhaki', 'orange', 'darksalmon', 'darkkhaki', 'orange', 'moccasin', 'darksalmon', 'darkkhaki', 'orange', 'moccasin', 'goldenrod']
     color_dict = {}
     for i in range(len(setuplist)):
         color_dict[str(setuplist[i])] = colors[i]
     #plt.plot(xi, list(incorrect.values()), label='Incorrect prediction for ' + str(setup))
     ax.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)], bottom=bottom, edgecolor='black') #Maybe do percent instead, or do total at least, 
-    ax.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=color_dict[str(setup)], bottom=bottom2, hatch='//', edgecolor='black')
+    ax.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=color_dict[str(setup)], bottom=bottom2, hatch='///', edgecolor='black')
     bottom += np.array(list(correct.values()))
     bottom2 += np.array(list(total.values()))
     return bottom, bottom2
@@ -329,7 +329,7 @@ def plot_all_missed_subfigs(correct, incorrect, total, ordr, setup, ax, count, b
         xv.append((int(x_values)+0.2))
     setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
                  [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
-    colors = ['red', 'green', 'red', 'green', 'orange', 'red', 'green', 'orange', 'yellow', 'red', 'green', 'orange', 'yellow', 'black']
+    colors = ['darksalmon', 'darkkhaki', 'darksalmon', 'darkkhaki', 'orange', 'darksalmon', 'darkkhaki', 'orange', 'moccasin', 'darksalmon', 'darkkhaki', 'orange', 'moccasin', 'goldenrod']
     color_dict = {}
     for i in range(len(setuplist)):
         color_dict[str(setuplist[i])] = colors[i]
