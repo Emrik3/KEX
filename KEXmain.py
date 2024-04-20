@@ -862,7 +862,7 @@ def main():
     # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes
     # Best: kendalltau, weightedtau (Hyperbolic weighing)
     # Bad: somersd
-    test_any4(scipy.stats.spearmanr, scipy.stats.spearmanr, scipy.stats.pearsonr, spec_ang_map)
+    test_any4(scipy.stats.pearsonr, scipy.stats.spearmanr, scipy.stats.kendalltau, spec_ang_map)
     #test_any(spec_ang_map, 1)
     #shuffle_avg(scipy.stats.spearmanr, scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
     # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
