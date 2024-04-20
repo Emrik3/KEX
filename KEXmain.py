@@ -11,6 +11,7 @@ import copy
 from fourier import *
 
 
+
 def update_TM(setup):
     """Updates Markov chains"""
     order = len(setup)-1
@@ -510,6 +511,49 @@ def test_dist_corr():
     print((dist_corr(np.abs(Y5), np.abs(Y6))))
 
 
+def test_any4(corr, corr2, corr3, corr4):
+    # Anything
+    # Need more text the p-value is too large! 
+    """More text maybe, p-value very large for shuffled kendall tau..."""
+    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    xf, Y01, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)[0:len(WC_all)//2])
+    xf, Y02, n = fourier_test_for_bible(np.load(TM_all_dir), WC_all[len(WC_all)//2:])
+
+
+    xf, Y1, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))[0:len(open_dict(bible_WC_dir))//2])
+    xf, Y2, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))[len(open_dict(bible_WC_dir))//2:])
+
+    xf, Y3, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # Many NA in the bible, stop at val is to have as many avrages as abstracts, has to do with p-value, idk why...
+    xf, Y4, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all))
+
+    xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # This gives very different values, sometimes they are very large... Prob not working as it should
+    xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+
+    xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)) # This gives very different values, sometimes they are very large... Prob not working as it should
+    xf, Y10, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+
+    xf, Y7, n = fourier_test_for_1990(np.load(TM_all_dir), copy.deepcopy(open_dict(WC_1990_dir)))
+    xf, Y8, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+    
+    print("First and second half of abstracts compared:")
+    print(corr(np.abs(Y01), np.abs(Y02))[0] + corr2(np.abs(Y01), np.abs(Y02))[0] + corr3(np.abs(Y01), np.abs(Y02))[0] + corr4(np.abs(Y01), np.abs(Y02))[0])
+    print()
+    print("First and second half of bible compared:")
+    print((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0] + corr4(np.abs(Y1), np.abs(Y2))[0])
+    print()
+    print("All abstracts compared with the bible")
+    print(corr(np.abs(Y3), np.abs(Y4))[0]+corr2(np.abs(Y3), np.abs(Y4))[0] + corr3(np.abs(Y3), np.abs(Y4))[0] + corr4(np.abs(Y3), np.abs(Y4))[0])
+    print()
+    print("Shuffled bible compared with bible")
+    print((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y5), np.abs(Y6))[0]) + corr3(np.abs(Y5), np.abs(Y6))[0] + corr4(np.abs(Y5), np.abs(Y6))[0])
+    print()
+    print("Shuffled abstracts compared with bible")
+    print((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]) + corr3(np.abs(Y9), np.abs(Y10))[0] + corr4(np.abs(Y9), np.abs(Y10))[0])
+    print()
+    print("1990 and bible")
+    print((corr(np.abs(Y7), np.abs(Y8))[0])+(corr2(np.abs(Y7), np.abs(Y8))[0]) + corr3(np.abs(Y7), np.abs(Y8))[0] +corr4(np.abs(Y7), np.abs(Y8))[0])
+
+
 def test_any(corr, corr2):
     # Anything
     # Need more text the p-value is too large! 
@@ -535,22 +579,22 @@ def test_any(corr, corr2):
     print(str(corr))
     print()
     print("First and second half of abstracts compared:")
-    print((corr(np.abs(Y01), np.abs(Y02))[0]+corr2(np.abs(Y01), np.abs(Y02))[0]))
+    print((corr(np.abs(Y01), np.abs(Y02))[0]))
     print()
     print("First and second half of bible compared:")
-    print((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]))
+    print((corr(np.abs(Y1), np.abs(Y2))[0]))
     print()
     print("All abstracts compared with the bible")
-    print((corr(np.abs(Y3), np.abs(Y4))[0])+(corr2(np.abs(Y3), np.abs(Y4))[0]))
+    print((corr(np.abs(Y3), np.abs(Y4))[0]))
     print()
     print("Shuffled bible compared with bible")
-    print((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y5), np.abs(Y6))[0]))
+    print((corr(np.abs(Y5), np.abs(Y6))[0]))
     print()
     print("Shuffled abstracts compared with bible")
-    print((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]))
+    print((corr(np.abs(Y9), np.abs(Y10))[0]))
     print()
     print("1990 and bible")
-    print((corr(np.abs(Y7), np.abs(Y8))[0])+(corr2(np.abs(Y7), np.abs(Y8))[0]))
+    print((corr(np.abs(Y7), np.abs(Y8))[0]))
 
 
 def shuffle_avg(corr, corr2):
@@ -574,18 +618,21 @@ def shuffle_avg(corr, corr2):
 
 
 
-def plot_all_subfigs():
+def plot_all_subfigs(): 
     count = pd.Series(open_dict(WC_all_dir)).value_counts()
     k = 1
-    fig, ax = plt.subplots(figsize=(10,10))
+    plt.rcParams["font.family"] = "georgia"
+    fig, ax = plt.subplots(figsize=(25,20))
+    
     setuplist1 = [[0,1], [1,0]]
     setuplist2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
     setuplist3 = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] 
     setuplist4 = [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    setuplistbest = [[0,1], [0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1, 0]]
     bottom = np.zeros(len(class_to_index.keys()))
     bottom2 = np.zeros(len(class_to_index.keys()))
-    plt.title('Predictions with setup', fontsize=25)
-    for setup in setuplist2:
+    for setup in setuplistbest:
+        print(setup)
         ordr = len(setup)-1
         correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
         incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
@@ -598,30 +645,35 @@ def plot_all_subfigs():
             except:
                 correct_perc[key] = 0
         bottom, bottom2, k = plot_all_missed_subfigs(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2, k)
-        plt.xlabel("Word class", fontsize=20)
-        plt.ylabel("Predicted word classes", fontsize=20)
-        plt.xticks(range(1,len(class_to_index.keys())), list(class_to_index.keys())[1:], rotation=45, fontsize=15)
-        plt.yticks(fontsize=20)
+        
+        
+        
+        plt.yticks(fontsize=25)
         #plt.set_xticklabels(list(class_to_index.keys())[1:], fontsize=20, rotation=45) # Probably wrong, NA should not be there.
         #ax.set_yscale('log') # This for bar log plot
-        plt.grid(linestyle='--', color='black')
-        plt.legend()
+        plt.grid(linestyle='--', color='gray')
+        plt.legend(prop={'size': 25})
+        plt.xlim(0.5, 25)
     
     
+    plt.xlabel("Word class", fontsize=40)
+    #plt.ylabel("Predicted word classes", fontsize=40)
+    plt.savefig('kexbilder/predbestsubincorr.pdf', bbox_inches='tight', format = 'pdf')
     plt.show()
 
 def plot_all():
     count = pd.Series(open_dict(WC_all_dir)).value_counts()
+    plt.rcParams["font.family"] = "georgia"
+    fig, ax = plt.subplots(figsize=(25,15))
     k = 1
-    fig, ax = plt.subplots(figsize=(10,10))
     setuplist1 = [[0,1], [1,0]]
     setuplist2 = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
     setuplist3 = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] 
     setuplist4 = [[1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
     bottom = np.zeros(len(class_to_index.keys()))
     bottom2 = np.zeros(len(class_to_index.keys()))
-    plt.title('Predictions with setup', fontsize=25)
-    for setup in setuplist2:
+    plt.title('Predictions with setup', fontsize=40)
+    for setup in setuplist4:
         ordr = len(setup)-1
         correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
         incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
@@ -634,17 +686,64 @@ def plot_all():
             except:
                 correct_perc[key] = 0
         bottom, bottom2= plot_all_missed(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2)
-    plt.xlabel("Word class", fontsize=20)
-    plt.ylabel("Predicted word classes", fontsize=20)
-    plt.xticks(range(1,len(class_to_index.keys())), list(class_to_index.keys())[1:], rotation=45, fontsize=15)
+    plt.xlabel("Word class", fontsize=40)
+    plt.ylabel("Predicted word classes", fontsize=40)
+    plt.xticks(range(1,len(class_to_index.keys())), list(class_to_index.keys())[1:], rotation=45, fontsize=20)
     plt.yticks(fontsize=20)
     #plt.set_xticklabels(list(class_to_index.keys())[1:], fontsize=20, rotation=45) # Probably wrong, NA should not be there.
     #ax.set_yscale('log') # This for bar log plot
-    plt.grid(linestyle='--', color='black')
-    plt.legend(prop={'size': 15})
+    plt.grid(linestyle='--', color='gray')
+    plt.legend(prop={'size': 25})
     
+    plt.savefig('kexbilder/pred5stack.pdf', bbox_inches='tight', format = 'pdf')
     
     plt.show()
+
+
+def all_percent_no_letter():
+    plt.rcParams["font.family"] = "georgia"
+    fig, ax = plt.subplots(figsize=(25,15))
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    bottom = np.zeros(len(class_to_index.keys()))
+    bottom2 = np.zeros(len(class_to_index.keys()))
+    plt.title('Correct Predictions', fontsize=40)
+    blue, = sns.color_palette("muted", 1)
+    perc = {}
+    for setup in setuplist:
+        ordr = len(setup)-1
+        correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
+        incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
+        correct_perc = {}
+        total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
+
+        tot_correct = sum(correct.values())
+        tot = sum(total.values())
+        perc[str(setup)] = round(tot_correct/tot * 100, 2)
+
+    keys = list(perc.keys())
+    values = list(perc.values())
+    sorted_value_index = np.argsort(values)
+    perc = {keys[i]: values[i] for i in sorted_value_index}
+    #plt.style.use('seaborn-v0_8-whitegrid') # Find best style and use for all plots.
+    
+    
+    ax.plot(perc.keys(), perc.values(), color=blue, marker='D', markersize=7, markeredgecolor='black') # Could also be semilogy here.
+    ax.fill_between(perc.keys(), 0, perc.values(), alpha=.3)
+    plt.ylabel('Percent Correct', fontsize=40)
+    plt.xlabel('Setup',  fontsize=40)
+    plt.grid('--', color='gray')
+    mat_size = max(class_to_index.values()) + 1
+    keys_to_include = list(class_to_index.keys())[0:mat_size]
+    plt.xticks(list(perc.keys()), list(perc.values()), fontsize=25)
+    #plt.yticks(range(0,210000,25000), range(0,210000,25000), fontsize=20)
+    plt.ylim(0,50)
+    plt.xlim('[1, 0]', '[0, 0, 0, 1, 0]')
+    ax.set_xticklabels(list(perc.keys()), rotation=45, fontsize=25)
+    ax.set_yticklabels(['{:,.2%}'.format(x/100) for x in range(0, 51, 10)], fontsize=25)
+    plt.savefig('kexbilder/allpercnoletter.pdf', bbox_inches='tight', format = 'pdf')
+    plt.show()
+
+        #print(str(setup) + ': ' + str(round(tot_correct/tot * 100, 2)) + '%')
 
 
 def plot_all_subfigs_weights():
@@ -684,7 +783,7 @@ def plot_all_subfigs_weights():
     plt.show()
 
 def fix_data_plot():
-    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+    setuplist = [[0, 1], [1, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
                  [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
     sz = len(class_to_index.keys())
     for setup in setuplist:
@@ -712,6 +811,8 @@ def fix_data_plot():
 def main():
     """Uses the finished model to extract results"""
     #update_WC()
+    #setup = [0, 1]
+    #update_TM(setup=setup)
     #plot()
     #metrics()
     #evaluate_grammar()
@@ -749,15 +850,21 @@ def main():
     #test_dist_corr()
     #update_WC()
     #fix_data_plot()
-    plot_all()
-    plot_all_subfigs()
+    #plot_all()
+    #plot_all_subfigs()
+    #all_percent_no_letter()
+    #print(len(WC_all))
+    #print(len(open_dict(WC_export_dir)))
+    #print(len(open_dict(WC_1990_dir)))
+    #print(len(open_dict('dictionaries/fixedbible.json')))
 
 
     # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes
     # Best: kendalltau, weightedtau (Hyperbolic weighing)
     # Bad: somersd
-    #shuffle_avg(scipy.stats.spearmanr, scipy.stats.kendalltau)
-    #test_any(scipy.stats.spearmanr, scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
+    test_any4(scipy.stats.spearmanr, scipy.stats.spearmanr, scipy.stats.pearsonr, spec_ang_map)
+    #test_any(spec_ang_map, scipy.stats.kendalltau)
+    #shuffle_avg(scipy.stats.spearmanr, scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
     # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
     #plot_freq(WC_all)
 

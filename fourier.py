@@ -6,6 +6,7 @@ import scipy
 import random
 import torch
 import copy
+from scipy.interpolate import CubicSpline
 #from torchmetrics.image import SpectralAngleMapper
 
 def fourier_test(A, WClist):
@@ -22,6 +23,7 @@ def fourier_test(A, WClist):
             # sample spacing
             T = 1.0 / 800.0
             xf = fftfreq(N, T)[:N//2]
+            yf = np.interp(range(0, N//2, 100) , xf, yf)
             if n == 0:
                 yftot = np.array(yf) # Take abs here or just in the end?
                 n+=1
@@ -45,29 +47,28 @@ def fourier_test_for_bible(A, WClist, stop_at_val=False):
     k = 0
     for i in range(len(WClist)):
         WC_long.append(WClist[i])
-        k += 1
-        if WClist[i] == '.':
-            k = 0
-            WC_long = []
-        if k == nwords:
-            #print(WC_long)
+        if WClist[i] == '.' and len(WClist) >= 4:
             clist = cross_entropy_sequence(A, WC_long)
             #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
             yf = fft(clist) 
             N = len(yf)
             # sample spacing
             T = 1.0 / 800.0
-            xf = fftfreq(N, T)[:N//2]
-            if n == 0:
-                yftot = np.array(yf) # Take abs here or just in the end?
-                n+=1
-            elif not np.isinf(yf[0].all()):
-                yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
-                n+=1
-            if stop_at_val and n == 4008:
-                yftot = yftot * (1 / n)
-                print(n)
-                return xf, yftot, n
+            xf = fftfreq(N, T)
+            if N >=4:
+                yf = CubicSpline(xf[:N//2], np.abs(yf)[:N//2])(fftfreq(100, T)[:50])
+    
+                if n == 0:
+                    yftot = np.array(yf) # Take abs here or just in the end?
+                    n+=1
+                elif not np.isinf(yf[0].all()):
+                    yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
+                    n+=1
+                if stop_at_val and n == 4008:
+                    yftot = yftot * (1 / n)
+                    print(n)
+                    return xf, yftot, n
+                WC_long = []
     
     yftot = yftot * (1 / n)
     return xf, yftot, n
@@ -87,29 +88,26 @@ def fourier_test_shuffle_bible(A, WClist, stop_at_val=False):
     random.shuffle(ll)
     for i in range(len(ll)):
         WC_long.append(ll[i])
-        k += 1
-        if ll[i] == '.':
-            k = 0
-            WC_long = []
-        if k == nwords:
-            #print(WC_long)
-            
+        if ll[i] == '.' and len(WC_long) > 1:
             clist = cross_entropy_sequence(A, WC_long)
             #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
             yf = fft(clist) 
             N = len(yf)
             # sample spacing
             T = 1.0 / 800.0
-            xf = fftfreq(N, T)[:N//2]
-            if n == 0:
-                yftot = np.array(yf) # Take abs here or just in the end?
-                n+=1
-            elif not np.isinf(yf[0].all()):
-                yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
-                n+=1
-            if stop_at_val and n == 4008:
-                yftot = yftot * (1 / n)
-                return xf, yftot, n
+            xf = fftfreq(N, T)
+            if N >=4:
+                yf = CubicSpline(xf[:N//2], np.abs(yf)[:N//2])(fftfreq(100, T)[:50])
+                if n == 0:
+                    yftot = np.array(yf) # Take abs here or just in the end?
+                    n+=1
+                elif not np.isinf(yf[0].all()):
+                    yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
+                    n+=1
+                if stop_at_val and n == 4008:
+                    yftot = yftot * (1 / n)
+                    return xf, yftot, n
+                WC_long = []
     yftot = yftot * (1 / n)
     
     return xf, yftot, n
@@ -124,21 +122,21 @@ def fourier_test_for_1990(A, WClist):
     yftot = []
     nwords = 20
     for WC in WClist:
-        if len(WC) >= nwords:
-            clist = cross_entropy_sequence(A, WC[0:nwords])
-            #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
-            yf = fft(clist) 
-            N = len(yf)
-            # sample spacing
-            T = 1.0 / 800.0
-            xf = fftfreq(N, T)[:N//2]
+        clist = cross_entropy_sequence(A, WC[0:nwords])
+        #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
+        yf = fft(clist) 
+        N = len(yf)
+        # sample spacing
+        T = 1.0 / 800.0
+        xf = fftfreq(N, T)
+        if N >=4:
+            yf = CubicSpline(xf[:N//2], np.abs(yf)[:N//2])(fftfreq(100, T)[:50])
             if n == 0:
                 yftot = np.array(yf) # Take abs here or just in the end?
                 n+=1
             elif not np.isinf(yf[0].all()):
                 yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
                 n+=1
-    print(n)
     yftot = yftot * (1 / n)
     return xf, yftot, n
 
@@ -157,6 +155,7 @@ def fouriertest_shuffla(A, WClist):
             # sample spacing
             T = 1.0 / 800.0
             xf = fftfreq(N, T)[:N//2]
+            yf = np.interp(range(0, N//2, 100) , xf, yf)
             if n == 0:
                 yftot = np.array(yf) # Take abs here or just in the end?
                 n+=1
@@ -167,27 +166,6 @@ def fouriertest_shuffla(A, WClist):
     print(n)
     return xf, yftot, n
 
-
-def fourier_test_no_smooth(A, WClist):
-    n = 0
-    yftot = []
-    for i in range(100, int(len(WClist)/1000)):
-        clist = cross_entropy_sequence(A, WClist[i-100:i])
-        #https://numpy.org/doc/stable/reference/generated/numpy.fft.fftfreq.html
-        yf = fft(clist) 
-        N = len(yf)
-        # sample spacing
-        T = 1.0 / 800.0
-        xf = fftfreq(N, T)[:N//2]
-        if n == 0:
-            yftot = np.array(yf) # Take abs here or just in the end?
-            n+=1
-        elif not np.isinf(np.abs(yf[0])):
-            yftot = np.add(yftot, np.array(yf)) # Take abs here or just in the end?
-            n+=1
-    print(n)
-    yftot = yftot * (1 / n)
-    return xf, yftot, n
 
 
 def cross_entropy_sequence(A, WClist):
@@ -236,10 +214,7 @@ def spearman_corr_coeff(X, Y):
     return scipy.stats.spearmanr(X, Y)
 
 def spec_ang_map(X, Y):
-    pass
-    # Not working
-    #sam = SpectralAngleMapper()
-    #return sam(X, Y)
+    return [np.arccos(np.dot(X, Y)/(np.linalg.norm(X)*np.linalg.norm(Y)))]
 
 def dist_corr(X, Y):
     return scipy.stats.somersd(X, Y)

@@ -29,12 +29,13 @@ mat_size = max(class_to_index.values()) + 1
 def transition_matrix_vis(matrix):
     """Generates heat map of transition matrix """
     df = pd.DataFrame(matrix)
+    plt.rcParams["font.family"] = "georgia"
 
     x = range(df.shape[1])
     y = range(df.shape[0])
 
     X, Y = np.meshgrid(x, y)
-    fig, ax = plt.subplots(figsize=(10,10))
+    fig, ax = plt.subplots(figsize=(15,15))
     # Plot the bubbles
     plt.grid(linestyle='--', color='black')
     ax.scatter(X, Y, s=df.values*1000, color='black')  # Multiply by 1000 to make bubbles more visible
@@ -44,9 +45,10 @@ def transition_matrix_vis(matrix):
     keys_to_include = list(class_to_index.keys())[0:mat_size]
     ax.set_xticklabels(keys_to_include, rotation=45, fontsize=20)
     ax.set_yticklabels(keys_to_include, fontsize=20)
-    plt.xlabel('Next Word Class', fontsize=25)
-    plt.ylabel('Current Word Class', fontsize=25)    
-    plt.title('Pre-trained Transition Matrix', fontsize=25)
+    plt.xlabel('Next Word Class', fontsize=30)
+    plt.ylabel('Current Word Class', fontsize=30)    
+    plt.title('Transition Matrix', fontsize=30)
+    plt.savefig('kexbilder/TMvis.pdf', bbox_inches='tight', format = 'pdf')
     plt.show()
     
 
@@ -295,6 +297,7 @@ def plot_all_missed(correct, incorrect, total, ordr, setup, ax, count, bottom, b
     x = []
     xi = []
     xv = []
+    print(correct)
     for x_values in correct.keys():
         x.append((int(x_values)-0.2))
     for x_values in incorrect.keys():
@@ -309,18 +312,19 @@ def plot_all_missed(correct, incorrect, total, ordr, setup, ax, count, bottom, b
         color_dict[str(setuplist[i])] = colors[i]
     #plt.plot(xi, list(incorrect.values()), label='Incorrect prediction for ' + str(setup))
     ax.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)], bottom=bottom, edgecolor='black') #Maybe do percent instead, or do total at least, 
-    ax.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=color_dict[str(setup)], bottom=bottom2, hatch='///', edgecolor='black')
+    ax.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=color_dict[str(setup)], bottom=bottom2, hatch='//', edgecolor='black')
     bottom += np.array(list(correct.values()))
     bottom2 += np.array(list(total.values()))
     return bottom, bottom2
     #plt.plot(xv, list(total.values()), label='Total in data for ' + str(setup))
 
+
 def plot_all_missed_subfigs(correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2, k):
     x = []
     xi = []
     xv = []
-    print(len(setup),1,k)
-    plt.subplot(len(setup),1,k)
+    print(4,1,k)
+    plt.subplot(4,1,k)
     for x_values in correct.keys():
         x.append((int(x_values)-0.2))
     for x_values in incorrect.keys():
@@ -333,14 +337,24 @@ def plot_all_missed_subfigs(correct, incorrect, total, ordr, setup, ax, count, b
     color_dict = {}
     for i in range(len(setuplist)):
         color_dict[str(setuplist[i])] = colors[i]
-    #plt.plot(xi, list(incorrect.values()), label='Incorrect prediction for ' + str(setup))
-    plt.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=color_dict[str(setup)], edgecolor='black') #Maybe do percent instead, or do total at least, 
-    plt.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=color_dict[str(setup)], hatch='//', edgecolor='black')
+
+    colorbest = {'[0, 1]': 'darksalmon', '[0, 1, 0]': 'darkkhaki', '[0, 0, 1, 0]': 'orange', '[0, 0, 0, 1, 0]': 'moccasin'}
+    plt.bar(xi, list(incorrect.values()), 0.2, label='Inorrect prediction for ' + str(setup), color=colorbest[str(setup)], edgecolor='black')
+    #plt.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=colorbest[str(setup)], edgecolor='black') #Maybe do percent instead, or do total at least, 
+    #plt.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=colorbest[str(setup)], hatch='//', edgecolor='black')
     bottom += np.array(list(correct.values()))
     bottom2 += np.array(list(total.values()))
+    if k == 1:
+        plt.title('Incorrect Predictions', fontsize=40)
+        
+    if k == 4:
+        plt.xticks(range(1,len(class_to_index.keys())), list(class_to_index.keys())[1:], fontsize=25, rotation=45)
+    else:
+        plt.xticks(range(1,len(class_to_index.keys())), list(class_to_index.keys())[1:], fontsize=0)
     k += 1
     return bottom, bottom2, k
     #plt.plot(xv, list(total.values()), label='Total in data for ' + str(setup))
+
 
 def plot_all_missed_bubble(corr_perc, correct, incorrect, total, ordr, setup, ax, count, bottom, bottom2):
     x = []
@@ -480,25 +494,27 @@ def plot_F1(F1_list, letter_list):
 def plot_freq(WClist):
     # DO this for bible as well.
     count = pd.Series(WClist).value_counts()
-    fig, ax = plt.subplots(figsize=(10,10))
+    plt.rcParams["font.family"] = "georgia"
+    fig, ax = plt.subplots(figsize=(25, 15))
     plt.style.use('seaborn-v0_8-whitegrid') # Find best style and use for all plots.
     
     sns.set_style("whitegrid")
     blue, = sns.color_palette("muted", 1)
     ax.plot(count, color=blue) # Could also be semilogy here.
     ax.fill_between(count.index, 0, count.values, alpha=.3)
-    plt.ylabel('Number of Occurences', fontsize=25)
-    plt.xlabel('Word Class',  fontsize=25)
-    plt.title('Number of Occurences of Word Classes in Training Data',  fontsize=25)
-    plt.grid()
+    plt.ylabel('Number of Occurences', fontsize=40)
+    plt.xlabel('Word Class',  fontsize=40)
+    plt.title('Number of Occurences of Word Classes in Training Data',  fontsize=40)
+    plt.grid(linestyle='--', color='gray')
     mat_size = max(class_to_index.values()) + 1
     keys_to_include = list(class_to_index.keys())[0:mat_size]
-    plt.xticks(count.index, count.index, fontsize=20)
-    plt.yticks(range(0,210000,25000), range(0,210000,25000), fontsize=20)
+    plt.xticks(count.index, count.index, fontsize=25)
+    plt.yticks(range(0,210000,25000), range(0,210000,25000), fontsize=25)
     plt.ylim(0,200000)
     plt.xlim('NN', 'MID')
-    ax.set_xticklabels(count.index, rotation=45, fontsize=20)
+    ax.set_xticklabels(count.index, rotation=45, fontsize=25)
     #ax.set_yticklabels(fontsize=20)
+    plt.savefig('kexbilder/freq.pdf', bbox_inches='tight', format = 'pdf')
     plt.show()
 
 
