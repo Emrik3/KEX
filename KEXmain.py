@@ -536,22 +536,22 @@ def test_any4(corr, corr2, corr3, corr4):
     xf, Y8, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
     
     print("First and second half of abstracts compared:")
-    print(corr(np.abs(Y01), np.abs(Y02))[0] + corr2(np.abs(Y01), np.abs(Y02))[0] + corr3(np.abs(Y01), np.abs(Y02))[0] + corr4(np.abs(Y01), np.abs(Y02))[0])
+    print((corr(np.abs(Y01), np.abs(Y02))[0] + corr2(np.abs(Y01), np.abs(Y02))[0] + corr3(np.abs(Y01), np.abs(Y02))[0]) / corr4(np.abs(Y01), np.abs(Y02))[0])
     print()
     print("First and second half of bible compared:")
-    print((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0] + corr4(np.abs(Y1), np.abs(Y2))[0])
+    print(((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0]) / corr4(np.abs(Y1), np.abs(Y2))[0])
     print()
     print("All abstracts compared with the bible")
-    print(corr(np.abs(Y3), np.abs(Y4))[0]+corr2(np.abs(Y3), np.abs(Y4))[0] + corr3(np.abs(Y3), np.abs(Y4))[0] + corr4(np.abs(Y3), np.abs(Y4))[0])
+    print((corr(np.abs(Y3), np.abs(Y4))[0]+corr2(np.abs(Y3), np.abs(Y4))[0] + corr3(np.abs(Y3), np.abs(Y4))[0]) / corr4(np.abs(Y3), np.abs(Y4))[0])
     print()
     print("Shuffled bible compared with bible")
-    print((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y5), np.abs(Y6))[0]) + corr3(np.abs(Y5), np.abs(Y6))[0] + corr4(np.abs(Y5), np.abs(Y6))[0])
+    print(((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y5), np.abs(Y6))[0]) + corr3(np.abs(Y5), np.abs(Y6))[0]) / corr4(np.abs(Y5), np.abs(Y6))[0])
     print()
     print("Shuffled abstracts compared with bible")
-    print((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]) + corr3(np.abs(Y9), np.abs(Y10))[0] + corr4(np.abs(Y9), np.abs(Y10))[0])
+    print(((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]) + corr3(np.abs(Y9), np.abs(Y10))[0]) / corr4(np.abs(Y9), np.abs(Y10))[0])
     print()
     print("1990 and bible")
-    print((corr(np.abs(Y7), np.abs(Y8))[0])+(corr2(np.abs(Y7), np.abs(Y8))[0]) + corr3(np.abs(Y7), np.abs(Y8))[0] +corr4(np.abs(Y7), np.abs(Y8))[0])
+    print(((corr(np.abs(Y7), np.abs(Y8))[0])+(corr2(np.abs(Y7), np.abs(Y8))[0]) + corr3(np.abs(Y7), np.abs(Y8))[0]) / corr4(np.abs(Y7), np.abs(Y8))[0])
 
 
 def test_any(corr, corr2):
@@ -863,7 +863,7 @@ def main():
     # Best: kendalltau, weightedtau (Hyperbolic weighing)
     # Bad: somersd
     test_any4(scipy.stats.spearmanr, scipy.stats.spearmanr, scipy.stats.pearsonr, spec_ang_map)
-    #test_any(spec_ang_map, scipy.stats.kendalltau)
+    #test_any(spec_ang_map, 1)
     #shuffle_avg(scipy.stats.spearmanr, scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
     # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
     #plot_freq(WC_all)
