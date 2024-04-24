@@ -8,6 +8,7 @@ from choose_word_classes import number_to_class
 import pandas as pd
 import seaborn as sns
 from dataProcessing import save_dict
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 """
@@ -26,6 +27,39 @@ mat_size = max(class_to_index.values()) + 1
     ax.tick_params(axis='both', which='major', labelsize=10) # Set fontsize on labels, this is hard to get right cause dont fit.
     ax.tick_params(axis='both', which='minor', labelsize=8)"""
 
+def conf_mat_vis(matrix, total, k):
+    """Generates heat map of transition matrix """
+    newmat = np.zeros((len(matrix), len(matrix)))
+    print(total)
+    for i in list(total.keys()):
+        for j in list(total.keys()):
+            newmat[i][j] = matrix[i][j] / total[i]
+    plt.rcParams["font.family"] = "georgia"
+    
+    fig, ax = plt.subplots(figsize=(20,20))
+    k=0
+    
+    mat_size = max(class_to_index.values()) + 1
+    ax.set_xticks(range(1, mat_size))
+    ax.set_yticks(range(mat_size-2, -1, -1))
+    keys_to_include = list(class_to_index.keys())[1:mat_size]
+    ax.set_xticklabels(keys_to_include, rotation=45, fontsize=20)
+    ax.set_yticklabels(keys_to_include, fontsize=20)
+    ax.tick_params(axis='both', which='major') # Set fontsize on labels, this is hard to get right cause dont fit.
+    ax.tick_params(axis='both', which='minor')
+    im = ax.imshow(np.flipud(newmat), cmap='viridis', interpolation='nearest')
+    if k == 1:
+        divider = make_axes_locatable(ax)
+        cax = divider.new_vertical(size='5%', pad=0.6, pack_start = True)
+        fig.add_axes(cax)
+        
+        cbar = fig.colorbar(im, orientation = 'horizontal', cax=cax)
+        cbar.set_ticklabels(['{:,.0%}'.format(x/100) for x in range(0, 101, 20)], fontsize=20)
+    plt.savefig('kexbilder/confmatrixord1letter3w03.pdf', bbox_inches='tight', format = 'pdf')
+    k += 1
+    plt.show()
+
+
 def transition_matrix_vis(matrix):
     """Generates heat map of transition matrix """
     df = pd.DataFrame(matrix)
@@ -37,7 +71,7 @@ def transition_matrix_vis(matrix):
     X, Y = np.meshgrid(x, y)
     fig, ax = plt.subplots(figsize=(15,15))
     # Plot the bubbles
-    plt.grid(linestyle='--', color='black')
+    plt.grid(linestyle='--', color='gray')
     ax.scatter(X, Y, s=df.values*1000, color='black')  # Multiply by 1000 to make bubbles more visible
     plt.xticks(range(df.shape[1]), range(df.shape[1]))
     plt.yticks(range(df.shape[0]), range(df.shape[0]))
@@ -47,7 +81,7 @@ def transition_matrix_vis(matrix):
     ax.set_yticklabels(keys_to_include, fontsize=20)
     plt.xlabel('Next Word Class', fontsize=30)
     plt.ylabel('Current Word Class', fontsize=30)    
-    plt.title('Transition Matrix', fontsize=30)
+    plt.title('Confusion Matrix', fontsize=30)
     plt.savefig('kexbilder/TMvis.pdf', bbox_inches='tight', format = 'pdf')
     plt.show()
     
@@ -81,7 +115,7 @@ def plot_line_graph(data, columns, rows, offset):
     plt.show()
     
 
-def organize_and_plot(res, order, setup, plot):
+def organize_and_plot(res, order, setup, plot, nletters, k):
     wrong_predicted_class = [] # When the model predicted wrong it predicted these wc
     wrong_actual_class = [] # When the model predicted wrong it should have predicted these wc
     corr_actual_class = [] # When the model predicted right it predicted these wc
@@ -127,13 +161,13 @@ def organize_and_plot(res, order, setup, plot):
     if plot:
         print("Right predictions to incorrect ratio, total: " + (str(tot_correct/tot_incorrect)))
         print("Right predictions out of all made predictions: " + str((tot_correct)/(tot_tot-non_guess)))
-        confusion_metrics(confusionmatrix,setup)
-        transition_matrix_vis(confusionmatrix)
+        #confusion_metrics(confusionmatrix,setup)
+        conf_mat_vis(confusionmatrix, total_occurrences, k)
 
 
-    save_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json', correct_counts)
-    save_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json', wrong_counts)
-    save_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json', total_occurrences)
+    save_dict('results/plotdatapredict_correct_countsl' + str(nletters) + str(setup) + '.json', correct_counts)
+    save_dict('results/plotdatapredict_wrong_countsl' + str(nletters) + str(setup) + '.json', wrong_counts)
+    save_dict('results/plotdatapredict_total_occurrencesl' + str(nletters) + str(setup) + '.json', total_occurrences)
     #np.save('results/plotdatapredict_confusion_matrix' + str(setup) + '.npy', confusionmatrix)
     #plot_missed(correct_counts, wrong_counts, total_occurrences, order, setup, 100*tot_correct/tot_tot)
     return tot_correct/tot_tot
@@ -337,13 +371,13 @@ def plot_all_missed_subfigs(correct, incorrect, total, ordr, setup, ax, count, b
     color_dict = {}
     for i in range(len(setuplist)):
         color_dict[str(setuplist[i])] = colors[i]
-
+    print(incorrect)
     colorbest = {'[0, 1]': 'darksalmon', '[0, 1, 0]': 'darkkhaki', '[0, 0, 1, 0]': 'orange', '[0, 0, 0, 1, 0]': 'moccasin'}
     plt.bar(xi, list(incorrect.values()), 0.2, label='Inorrect prediction for ' + str(setup), color=colorbest[str(setup)], edgecolor='black')
     #plt.bar(x, list(correct.values()), 0.2, label='Correct prediction for ' + str(setup), color=colorbest[str(setup)], edgecolor='black') #Maybe do percent instead, or do total at least, 
     #plt.bar(xv, list(total.values()), 0.2, label='Total number of tries to predict for ' + str(setup), color=colorbest[str(setup)], hatch='//', edgecolor='black')
-    bottom += np.array(list(correct.values()))
-    bottom2 += np.array(list(total.values()))
+    #bottom += np.array(list(correct.values()))
+    #bottom2 += np.array(list(total.values()))
     if k == 1:
         plt.title('Incorrect Predictions', fontsize=40)
         

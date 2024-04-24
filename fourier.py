@@ -216,8 +216,11 @@ def spearman_corr_coeff(X, Y):
 def spec_ang_map(X, Y):
     return [np.arccos(np.dot(X, Y)/(np.linalg.norm(X)*np.linalg.norm(Y)))]
 
-def dist_corr(X, Y):
-    return scipy.stats.somersd(X, Y)
+def spec_overlap(X, Y):
+    # The intersect does not work... need to make continous or something...
+    if len(list(set(X).intersection(set(Y)))) == 0 or len(list(set(X).intersection(set(Y)))) == 1:
+        return [0]
+    return [np.trapz(np.array(set(X).intersection(set(Y)))) / np.trapz(np.array(set(X).union(set(Y))))]
 
 # What works: scipy.stats.kendalltau(X, Y), scipy.stats.somersd(X, Y), see: https://docs.scipy.org/doc/scipy/reference/stats.html
 

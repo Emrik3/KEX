@@ -44,12 +44,13 @@ def update_WC():
     """Translates txt file to word classes"""
     #translations_to_word_classes(real_sample_dir, WC_non_transl_dir, no_NA= False)
     #translations_to_word_classes(translated_sample_dir, WC_transl_dir, no_NA = False)
-    translations_to_word_classes('dictionaries/fixedbible.json', 'dictionaries/fixedbible.json', no_NA=False)
+    #translations_to_word_classes('dictionaries/fixedbible.json', 'dictionaries/fixedbible.json', no_NA=False)
 
     """WC, with different lists for each abstract"""
     #abstracts_to_word_classes(export_dir, WC_export_segment_dir, no_NA=False, segment=True)
     #abstracts_to_word_classes(export_dir, WC_export_segment_fulltransl_dir, no_NA=False, segment=True, transl='Full')
     #abstracts_to_word_classes(export_dir, wc_export_segment_swtransl_dir, no_NA=False, segment=True, transl='Single')
+    abstracts_to_word_classes(export_dir, 'wordclasslists/tobegpt17', no_NA=False, segment=True, transl=False)
 
 
 def plot():
@@ -311,30 +312,34 @@ def predict_NA():
 def predict_big(setup, nletters, weights, plot, convex, F1_test):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
     order = len(setup)-1
+    k = 0
     percentage_list = []
-    for weight in (weights):
+    for weight in weights:
         print("weight" + str(weight))
         results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters, weight=weight, convex=convex)]
         if not F1_test:
-            percentage = organize_and_plot(results, order=order, setup=setup, plot=plot)
+            percentage = organize_and_plot(results, order=order, setup=setup, plot=plot, nletters=nletters, k=k)
             percentage_list.append(percentage)
     if F1_test:
         return getF1(results)
     else:
-        plot_weights(weights, percentage_list, setup, nletters, convex)
+        pass
+        #plot_weights(weights, percentage_list, setup, nletters, convex)
 
 def predict_big_data(setup, nletters, weights, plot, convex, F1_test):
     """Plots the results of predicting words in export_dir for some order of Markov chain"""
     
     setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
-                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1]]
+                [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 1]]
+    #setuplistbest = [[0,1], [0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1, 0]]
     for setup in setuplist:
+        print(setup)
         update_TM(setup=setup)
         order = len(setup)-1
-        for weight in (weights):
+        for weight in weights:
             print("setup: " + str(setup))
             results = [grammar_predictor_main(WC_all, "export_dir", setup, order=order, nletters=nletters, weight=weight, convex=convex)]
-            percentage = organize_and_plot(results, order=order, setup=setup, plot=plot)
+            percentage = organize_and_plot(results, order=order, setup=setup, plot=plot, nletters=nletters)
 
 
 def update_end_prob():
@@ -430,128 +435,138 @@ def predict_many_F1():
 
     plot_F1(F1_list, letter_list)
 
-def test_pearson():
-    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
-    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
-    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    print("PEARSON")
-    print()
-    print("First and second half of all abstracts compared:")
-    print((pearson_corr_coeff(np.abs(Y1), np.abs(Y2))))
-    print()
-    print("All abstracts compared with full 1990 file")
-    print((pearson_corr_coeff(np.abs(Y3), np.abs(Y4))))
-    print()
-    print("Shuffled")
-    print((pearson_corr_coeff(np.abs(Y5), np.abs(Y6))))
-
-
-def test_spearman():
-    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
-    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
-    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
-    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    print("SPEARMAN")
-    print()
-    print("First and second half of all abstracts compared:")
-    print((spearman_corr_coeff(np.abs(Y1), np.abs(Y2))))
-    print()
-    print("All abstracts compared with full 1990 file")
-    print((spearman_corr_coeff(np.abs(Y3), np.abs(Y4))))
-    print()
-    print("Shuffled")
-    print((spearman_corr_coeff(np.abs(Y5), np.abs(Y6))))
-
-
-def test_sam():
-    # No work
-    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
-    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
-    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
-    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    print("SPEARMAN")
-    print()
-    print("First and second half of all abstracts compared:")
-    print((spec_ang_map(np.abs(Y1), np.abs(Y2))))
-    print()
-    print("All abstracts compared with full 1990 file")
-    print((spec_ang_map(np.abs(Y3), np.abs(Y4))))
-    print()
-    print("Shuffled")
-    print((spec_ang_map(np.abs(Y5), np.abs(Y6))))
-
-
-def test_dist_corr():
-    # Very bad
-    # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
-    xf, Y1, n = fourier_test(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y2, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    xf, Y3, n = fourier_test_for_1990(np.load(TM_all_dir), open_dict(WC_1990_dir))
-    xf, Y4, n = fourier_test(np.load(TM_all_dir), WC_all_segment)
-    xf, Y5, n = fouriertest_shuffla(np.load(TM_all_dir), WC_all_segment[0:len(WC_all_segment)//2])
-    xf, Y6, n = fourier_test(np.load(TM_all_dir), WC_all_segment[len(WC_all_segment)//2:])
-    print("Distance Corr")
-    print()
-    print("First and second half of all abstracts compared:")
-    print((dist_corr(np.abs(Y1), np.abs(Y2))))
-    print()
-    print("All abstracts compared with full 1990 file")
-    print((dist_corr(np.abs(Y3), np.abs(Y4))))
-    print()
-    print("Shuffled")
-    print((dist_corr(np.abs(Y5), np.abs(Y6))))
-
 
 def test_any4(corr, corr2, corr3, corr4):
     # Anything
     # Need more text the p-value is too large! 
     """More text maybe, p-value very large for shuffled kendall tau..."""
     # THe number of words used in the fourier test functions differ a lot, this should be fixed by cheking what happends.
+    
     xf, Y01, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)[0:len(WC_all)//2])
     xf, Y02, n = fourier_test_for_bible(np.load(TM_all_dir), WC_all[len(WC_all)//2:])
 
-
+    
     xf, Y1, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))[0:len(open_dict(bible_WC_dir))//2])
     xf, Y2, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))[len(open_dict(bible_WC_dir))//2:])
+    
+    flat_list_trans = [
+    x
+    for xs in copy.deepcopy(open_dict(WC_export_segment_fulltransl_dir))
+    for x in xs
+    ]
 
+    flat_list_org = [
+    x
+    for xs in copy.deepcopy(open_dict(WC_export_segment_dir))
+    for x in xs
+    ]
+    print(len(flat_list_org))
+    print(len(flat_list_trans))
+    xf, Y15, n = fourier_test_for_bible(np.load(TM_all_dir), flat_list_trans)
+    xf, Y16, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:7313]))
+
+    xf, Y17, n = fourier_test_for_bible(np.load(TM_all_dir), flat_list_org[:7313])
+    xf, Y18, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:7313]))
+    """
     xf, Y3, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # Many NA in the bible, stop at val is to have as many avrages as abstracts, has to do with p-value, idk why...
     xf, Y4, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all))
-
+    
     xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # This gives very different values, sometimes they are very large... Prob not working as it should
     xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+    """
+    xf, Y90, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)[0:3623])) 
+    xf, Y100, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)[3623:2*3623]))
 
-    xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)) # This gives very different values, sometimes they are very large... Prob not working as it should
-    xf, Y10, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+    xf, Y91, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:3623])) 
+    xf, Y101, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[3623:2*3623]))
 
+    xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:3623])) 
+    xf, Y10, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:3623]))
+    """
     xf, Y7, n = fourier_test_for_1990(np.load(TM_all_dir), copy.deepcopy(open_dict(WC_1990_dir)))
     xf, Y8, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
+    """
+    xf, Y11, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict('wordclasslists/WC_GPT.json')))
+    xf, Y12, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:3623]))
+
+    xf, Y13, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(open_dict('wordclasslists/WC_GPT.json')))
+    xf, Y14, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:3623]))
     
     print("First and second half of abstracts compared:")
-    print((corr(np.abs(Y01), np.abs(Y02))[0] + corr2(np.abs(Y01), np.abs(Y02))[0] + corr3(np.abs(Y01), np.abs(Y02))[0]) / corr4(np.abs(Y01), np.abs(Y02))[0])
+    print((corr(np.abs(Y01), np.abs(Y02))[0] + corr2(np.abs(Y01), np.abs(Y02))[0] + corr3(np.abs(Y01), np.abs(Y02))[0]) / (corr4(np.abs(Y01), np.abs(Y02))[0] * (len(WC_all)//2)**0.5))
     print()
     print("First and second half of bible compared:")
-    print(((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0]) / corr4(np.abs(Y1), np.abs(Y2))[0])
+    print(((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0]) / (corr4(np.abs(Y1), np.abs(Y2))[0] * (len(open_dict(bible_WC_dir))//2)**0.5))
     print()
+    """
     print("All abstracts compared with the bible")
     print((corr(np.abs(Y3), np.abs(Y4))[0]+corr2(np.abs(Y3), np.abs(Y4))[0] + corr3(np.abs(Y3), np.abs(Y4))[0]) / corr4(np.abs(Y3), np.abs(Y4))[0])
     print()
+    
     print("Shuffled bible compared with bible")
     print(((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y5), np.abs(Y6))[0]) + corr3(np.abs(Y5), np.abs(Y6))[0]) / corr4(np.abs(Y5), np.abs(Y6))[0])
     print()
-    print("Shuffled abstracts compared with bible")
-    print(((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]) + corr3(np.abs(Y9), np.abs(Y10))[0]) / corr4(np.abs(Y9), np.abs(Y10))[0])
+    """
+    print("Shuffled abstracts compared with abstracts")
+    print(((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]) + corr3(np.abs(Y9), np.abs(Y10))[0]) / (corr4(np.abs(Y9), np.abs(Y10))[0] * (3623)**0.5))
     print()
+    print("3623 words of abstracts with 3623 other words abstracts (Same as GPT len)")
+    print(((corr(np.abs(Y91), np.abs(Y101))[0])+(corr2(np.abs(Y91), np.abs(Y101))[0]) + corr3(np.abs(Y91), np.abs(Y101))[0]) / (corr4(np.abs(Y91), np.abs(Y101))[0] * (3623)**0.5))
+    print()
+    print("3623 words of bible with 3623 other words bible (Same as GPT len)")
+    print(((corr(np.abs(Y90), np.abs(Y100))[0])+(corr2(np.abs(Y90), np.abs(Y100))[0]) + corr3(np.abs(Y90), np.abs(Y100))[0]) / (corr4(np.abs(Y90), np.abs(Y100))[0] * (3623)**0.5))
+    print()
+    """
     print("1990 and bible")
     print(((corr(np.abs(Y7), np.abs(Y8))[0])+(corr2(np.abs(Y7), np.abs(Y8))[0]) + corr3(np.abs(Y7), np.abs(Y8))[0]) / corr4(np.abs(Y7), np.abs(Y8))[0])
+    print()
+    """
+    print("GPT and abstracts")
+    print(((corr(np.abs(Y11), np.abs(Y12))[0])+(corr2(np.abs(Y11), np.abs(Y12))[0]) + corr3(np.abs(Y11), np.abs(Y12))[0]) / (corr4(np.abs(Y11), np.abs(Y12))[0] * (3623)**0.5))
+    print()
+    print("Shuffled GPT and abstracts")
+    print(((corr(np.abs(Y13), np.abs(Y14))[0])+(corr2(np.abs(Y13), np.abs(Y14))[0]) + corr3(np.abs(Y13), np.abs(Y14))[0]) / (corr4(np.abs(Y13), np.abs(Y14))[0] * (3623)**0.5))
+    print()
+    print("Full translation and abstract")
+    print(((corr(np.abs(Y15), np.abs(Y16))[0])+(corr2(np.abs(Y15), np.abs(Y16))[0]) + corr3(np.abs(Y15), np.abs(Y16))[0]) / (corr4(np.abs(Y15), np.abs(Y16))[0] * (7313)**0.5))
+    print()
+    print("No translation and abstract")
+    print(((corr(np.abs(Y17), np.abs(Y18))[0])+(corr2(np.abs(Y17), np.abs(Y18))[0]) + corr3(np.abs(Y17), np.abs(Y18))[0]) / (corr4(np.abs(Y17), np.abs(Y18))[0] * (7313)**0.5))
+
+def test_scentence(corr, corr2, corr3, corr4, file, file2):
+    """scentences = []
+    sen= []
+    for word in open_dict(file):
+        sen.append(word)
+        if word == '.':
+            #sen.append(word)
+            scentences.append(sen)
+            sen = []
+            """
+    abslist = WC_all_segment
+    scentences2 = open_dict(file2)
+    scentences = open_dict(file)
+    count = 0
+    totcount = 0
+    for i in range(len(scentences)):
+        xf, Y1, n = fourier_test_for_bible(np.load(TM_all_dir), abslist[i])
+        xf, Y2, n = fourier_test_for_bible(np.load(TM_all_dir), scentences[i])
+        print()
+        print("i")
+        print("GPT or translated")
+        print(((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0]) / (corr4(np.abs(Y1), np.abs(Y2))[0] * ((len(abslist[i]) + len(scentences[i]))/2)**0.5))
+        print()
+        DGPT = ((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0]) / (corr4(np.abs(Y1), np.abs(Y2))[0] * ((len(abslist[i]) + len(scentences[i]))/2)**0.5)
+        xf, Y1, n = fourier_test_for_bible(np.load(TM_all_dir), abslist[i])
+        xf, Y2, n = fourier_test_for_bible(np.load(TM_all_dir), scentences2[i])
+        print("Mot sig själv")
+        print(((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0]) / (corr4(np.abs(Y1), np.abs(Y2))[0] * ((len(abslist[i]) + len(scentences2[i]))/2)**0.5))
+        print()
+        Dorg = ((corr(np.abs(Y1), np.abs(Y2))[0])+(corr2(np.abs(Y1), np.abs(Y2))[0]) + corr3(np.abs(Y1), np.abs(Y2))[0]) / (corr4(np.abs(Y1), np.abs(Y2))[0] * ((len(abslist[i]) + len(scentences2[i]))/2)**0.5)
+        if DGPT == Dorg:
+            count += 1
+        totcount += 1
+    print(str(count/totcount * 100) + '%')
 
 
 def test_any(corr, corr2):
@@ -571,7 +586,7 @@ def test_any(corr, corr2):
     xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # This gives very different values, sometimes they are very large... Prob not working as it should
     xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
 
-    xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)) # This gives very different values, sometimes they are very large... Prob not working as it should
+    xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)) 
     xf, Y10, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
 
     xf, Y7, n = fourier_test_for_1990(np.load(TM_all_dir), copy.deepcopy(open_dict(WC_1990_dir)))
@@ -590,31 +605,37 @@ def test_any(corr, corr2):
     print("Shuffled bible compared with bible")
     print((corr(np.abs(Y5), np.abs(Y6))[0]))
     print()
-    print("Shuffled abstracts compared with bible")
+    print("Shuffled abstracts compared with abstracts")
     print((corr(np.abs(Y9), np.abs(Y10))[0]))
     print()
     print("1990 and bible")
     print((corr(np.abs(Y7), np.abs(Y8))[0]))
 
 
-def shuffle_avg(corr, corr2):
+def shuffle_avg(corr, corr2, corr3, corr4):
     avg_bib = []
     avg_abs = []
+    avg_gpt = []
     for i in range(100):
         print(str(i) + "%")
-        xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all)) # This gives very different values, sometimes they are very large... Prob not working as it should
-        xf, Y10, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
-        avg_abs.append((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]))
-
+        xf, Y9, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:3623])) # This gives very different values, sometimes they are very large... Prob not working as it should
+        xf, Y10, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[3623:2*3623]))
+        avg_abs.append(((corr(np.abs(Y9), np.abs(Y10))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]) + corr3(np.abs(Y9), np.abs(Y10))[0]) / corr4(np.abs(Y9), np.abs(Y10))[0])
+        """
         xf, Y5, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir))) # This gives very different values, sometimes they are very large... Prob not working as it should
         xf, Y6, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(open_dict(bible_WC_dir)))
-        avg_bib.append((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y9), np.abs(Y10))[0]))
+        avg_bib.append(((corr(np.abs(Y5), np.abs(Y6))[0])+(corr2(np.abs(Y5), np.abs(Y6))[0]) + corr3(np.abs(Y5), np.abs(Y6))[0]) / corr4(np.abs(Y5), np.abs(Y6))[0])
+        """
+
+        xf, Y13, n = fourier_test_shuffle_bible(np.load(TM_all_dir), copy.deepcopy(open_dict('wordclasslists/WC_GPT.json')))
+        xf, Y14, n = fourier_test_for_bible(np.load(TM_all_dir), copy.deepcopy(WC_all[0:3623]))
+        avg_gpt.append(((corr(np.abs(Y13), np.abs(Y14))[0])+(corr2(np.abs(Y13), np.abs(Y14))[0]) + corr3(np.abs(Y13), np.abs(Y14))[0]) / corr4(np.abs(Y13), np.abs(Y14))[0])
 
     print("Avrage for abstracts")
-    print(sum(avg_abs)/100)
+    print(np.mean(avg_abs), np.std(avg_abs))
     print()
     print("Avrage for bible")
-    print(sum(avg_bib)/100)
+    print(np.mean(avg_gpt), np.std(avg_gpt))
 
 
 
@@ -658,7 +679,7 @@ def plot_all_subfigs():
     
     plt.xlabel("Word class", fontsize=40)
     #plt.ylabel("Predicted word classes", fontsize=40)
-    plt.savefig('kexbilder/predbestsubincorr.pdf', bbox_inches='tight', format = 'pdf')
+    plt.savefig('kexbilder/bestincorr.pdf', bbox_inches='tight', format = 'pdf')
     plt.show()
 
 def plot_all():
@@ -703,50 +724,65 @@ def plot_all():
 def all_percent_no_letter():
     plt.rcParams["font.family"] = "georgia"
     fig, ax = plt.subplots(figsize=(25,15))
-    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    setuplist = [[0,1], [1,0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
+                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    
+    marklist = {0: 'D', 1: 'd', 2: 'o', 3: 'X'}
     bottom = np.zeros(len(class_to_index.keys()))
     bottom2 = np.zeros(len(class_to_index.keys()))
     plt.title('Correct Predictions', fontsize=40)
     blue, = sns.color_palette("muted", 1)
+    colorlist = {0: blue, 1: 'yellowgreen', 2: 'darkkhaki', 3: 'orange'}
     perc = {}
-    for setup in setuplist:
-        ordr = len(setup)-1
-        correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
-        incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
-        correct_perc = {}
-        total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
+    for letter in [0, 1, 2, 3]:
+        for setup in setuplist:
+            ordr = len(setup)-1
+            if letter == 0:
+                correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
+                incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
+                correct_perc = {}
+                total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
+            else:
+                correct = open_dict('results/plotdatapredict_correct_countsl' + str(letter) + str(setup) + '.json')
+                incorrect = open_dict('results/plotdatapredict_wrong_countsl' + str(letter) + str(setup) + '.json')
+                correct_perc = {}
+                total = open_dict('results/plotdatapredict_total_occurrencesl' + str(letter) + str(setup) + '.json')
 
-        tot_correct = sum(correct.values())
-        tot = sum(total.values())
-        perc[str(setup)] = round(tot_correct/tot * 100, 2)
+            tot_correct = sum(correct.values())
+            tot = sum(total.values())
+            perc[str(setup)] = round(tot_correct/tot * 100, 2)
+        """keys = list(perc.keys())
+        values = list(perc.values())
+        sorted_value_index = np.argsort(values)
+        perc = {keys[i]: values[i] for i in sorted_value_index}"""
+        ax.plot(perc.keys(), perc.values(), marker=marklist[letter], markersize=10, markeredgecolor='black', label=str(letter)+'-gram', color=colorlist[letter], linewidth=5) # Could also be semilogy here.
 
-    keys = list(perc.keys())
-    values = list(perc.values())
-    sorted_value_index = np.argsort(values)
-    perc = {keys[i]: values[i] for i in sorted_value_index}
+    
     #plt.style.use('seaborn-v0_8-whitegrid') # Find best style and use for all plots.
     
-    
-    ax.plot(perc.keys(), perc.values(), color=blue, marker='D', markersize=7, markeredgecolor='black') # Could also be semilogy here.
-    ax.fill_between(perc.keys(), 0, perc.values(), alpha=.3)
+    print(perc)
+    #ax.plot(perc.keys(), perc.values(), color=blue, marker='D', markersize=7, markeredgecolor='black') # Could also be semilogy here.
+    #ax.fill_between(perc.keys(), 0, perc.values(), alpha=.3)
     plt.ylabel('Percent Correct', fontsize=40)
-    plt.xlabel('Setup',  fontsize=40)
+    plt.xlabel('Sequence Vector',  fontsize=40)
     plt.grid('--', color='gray')
     mat_size = max(class_to_index.values()) + 1
     keys_to_include = list(class_to_index.keys())[0:mat_size]
     plt.xticks(list(perc.keys()), list(perc.values()), fontsize=25)
     #plt.yticks(range(0,210000,25000), range(0,210000,25000), fontsize=20)
-    plt.ylim(0,50)
-    plt.xlim('[1, 0]', '[0, 0, 0, 1, 0]')
+    plt.ylim(0, 100)
+    #plt.xlim('[1, 0]', '[0, 0, 0, 1, 0]')
     ax.set_xticklabels(list(perc.keys()), rotation=45, fontsize=25)
-    ax.set_yticklabels(['{:,.2%}'.format(x/100) for x in range(0, 51, 10)], fontsize=25)
-    plt.savefig('kexbilder/allpercnoletter.pdf', bbox_inches='tight', format = 'pdf')
+    ax.set_yticklabels(['{:,.2%}'.format(x/100) for x in range(0, 101, 20)], fontsize=25)
+    plt.legend()
+    plt.legend(prop={'size': 25})
+    plt.savefig('kexbilder/allpercallletter.pdf', bbox_inches='tight', format = 'pdf')
     plt.show()
 
         #print(str(setup) + ': ' + str(round(tot_correct/tot * 100, 2)) + '%')
 
 
-def plot_all_subfigs_weights():
+def plot_all_subfigs_letters():
     count = pd.Series(open_dict(WC_all_dir)).value_counts()
     k = 1
     fig, ax = plt.subplots(figsize=(10,10))
@@ -759,10 +795,10 @@ def plot_all_subfigs_weights():
     plt.title('Predictions with setup', fontsize=25)
     for setup in setuplist4:
         ordr = len(setup)-1
-        correct = open_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json')
-        incorrect = open_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json')
+        correct = open_dict('results/plotdatapredict_correct_countsl1' + str(setup) + '.json')
+        incorrect = open_dict('results/plotdatapredict_wrong_countsl1' + str(setup) + '.json')
         correct_perc = {}
-        total = open_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json')
+        total = open_dict('results/plotdatapredict_total_occurrencesl1' + str(setup) + '.json')
         
         for key in total.keys():
             try:
@@ -783,8 +819,7 @@ def plot_all_subfigs_weights():
     plt.show()
 
 def fix_data_plot():
-    setuplist = [[0, 1], [1, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 0, 0, 0], 
-                 [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]]
+    setuplist = [[0, 1], [0, 1, 0], [0, 0, 1, 0], [0, 0, 0, 1, 0]]
     sz = len(class_to_index.keys())
     for setup in setuplist:
         ordr = len(setup)-1
@@ -804,6 +839,12 @@ def fix_data_plot():
                 a = total[str(cl)]
             except:
                 total[str(cl)] = 0
+        myKeys = list(incorrect.keys())
+        myKeysint = []
+        for i in myKeys:
+            myKeysint.append(int(i))
+        myKeysint.sort()
+        incorrect = {str(i): incorrect[str(i)] for i in myKeysint}
         save_dict('results/plotdatapredict_correct_counts' + str(setup) + '.json', correct)
         save_dict('results/plotdatapredict_wrong_counts' + str(setup) + '.json', incorrect)
         save_dict('results/plotdatapredict_total_occurrences' + str(setup) + '.json', total)
@@ -824,7 +865,7 @@ def main():
     # BElow just to look at the matrix and what is non zero, only ones and zeros, dont know why, look at this...
     #predict_ending()
     #m = np.load('wordclasslists/WCending.npy')
-    setup = [0,1,0]
+    setup = [0,1]
     #update_TM(setup=setup)
     """1. Predict Word Classes"""
     #predict_big(setup=setup, nletters=3, weights = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 1], plot=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
@@ -832,9 +873,9 @@ def main():
     #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True) # Samma som utan weight
     #predict_big(setup=setup, nletters=1, weights = [0, 0.01, 0.3, 0.4,0.5,0.6, 0.99, 1], plot=False, convex=False, F1_test=False) # Look at when is does not identify wht is it equal to then, i mean when it skips due to words like i and so on.
     #predict_many_F1()
-    #predict_big(setup=setup, nletters=1, weights = [1], plot=True, convex=False, F1_test=False) # Samma som nletters=0
+    #predict_big(setup=setup, nletters=3, weights = [0.3], plot=True, convex=False, F1_test=False) # Samma som nletters=0
     #predict_big(setup=setup, nletters=2, weights = [0.5], plot=True, convex=True, F1_test=False) # Samma som utan weight
-    #predict_big_data(setup=None, nletters=1, weights = [1], plot=False, convex=False, F1_test=False)
+    #predict_big_data(setup=None, nletters=1, weights = [0.5], plot=False, convex=False, F1_test=False)
 
     """2. Testing the grammar of translation software"""
     #metrics_test_translation(setup=setup, type=WC_export_segment_fulltransl_dir, n=100) # Remember to update_TM() if using a new setup
@@ -856,21 +897,20 @@ def main():
     #print(len(WC_all))
     #print(len(open_dict(WC_export_dir)))
     #print(len(open_dict(WC_1990_dir)))
-    #print(len(open_dict('dictionaries/fixedbible.json')))
+    #print(len(open_dict('wordclasslists/WC_GPT.json')))
 
 
     # List of functions: use scipy.stats. before: pearsonr, spearmanr (Depends a lot on n), pointbiserialr, kendalltau, weightedtau, somersd, siegelslopes, theilslopes
     # Best: kendalltau, weightedtau (Hyperbolic weighing)
     # Bad: somersd
-    test_any4(scipy.stats.pearsonr, scipy.stats.spearmanr, scipy.stats.kendalltau, spec_ang_map)
-    #test_any(spec_ang_map, 1)
-    #shuffle_avg(scipy.stats.spearmanr, scipy.stats.kendalltau) # Very large number of stuff from the bible, idk why.
+    test_any4(scipy.stats.pearsonr, scipy.stats.spearmanr, scipy.stats.kendalltau, spec_ang_map) # mult and regular gives same results.
+    #test_scentence(scipy.stats.pearsonr, scipy.stats.spearmanr, scipy.stats.kendalltau, spec_ang_map, wc_export_segment_swtransl_dir, WC_export_segment_dir)
+    #test_any(spec_overlap, 1)
+    #shuffle_avg(scipy.stats.pearsonr, scipy.stats.spearmanr, scipy.stats.kendalltau, spec_ang_map) # Very large number of stuff from the bible, idk why.
     # So left to do: Kendal tau and weighted need to run the shuffle multiple times and avrage it, also do convergence prots for that and make tabel of the values...
     #plot_freq(WC_all)
 
-    # TODO: Är allt rätt innan vi gör plottarna!!!!!
-    # TODO: Find a plt.style.use('seaborn-v0_8-whitegrid') and use it for all plots.
-    # TODO: make grph like 6.2.3 in joars text.
+   
 
 
 if __name__ == '__main__':

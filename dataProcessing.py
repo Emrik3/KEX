@@ -241,6 +241,7 @@ def abstracts_to_word_classes(file, WC_dir, no_NA, segment, transl):
     text_all = read_traning_csv(file)
     counter =0
     tot_len = 0
+    textlist=[]
     for text in text_all:
         counter+=1
         tot_len += len(text)
@@ -254,6 +255,10 @@ def abstracts_to_word_classes(file, WC_dir, no_NA, segment, transl):
             print(len(text_all))
             text = translator(transl, text)
             text = text_cleaner(text, no_dot=False)
+        else:
+            textlist.append(text)
+            if len(textlist) == 17:
+                break
         classified = classify_data(text, dictionary_talbanken, no_NA)
         for i in classified:
             if i == 'NA':
@@ -270,7 +275,7 @@ def abstracts_to_word_classes(file, WC_dir, no_NA, segment, transl):
         return word_class_list
     else:
         with open(WC_dir, "w") as outfile:
-            json.dump(classified_list, outfile)
+            json.dump(textlist, outfile)
 
 
 def abstracts_data_fixing(file, WC_dir, no_NA, segment, transl):
@@ -324,7 +329,7 @@ def translations_to_word_classes(file, filename, no_NA):
             k += 1
     print("Number of words that could not be classified: " + str(k) + " out of " + str(len(classified)))
     print("in percent " + str(100 * k / len(classified)))
-    outfile = 'dictionaries/classbible.json'
+    outfile = 'dictionaries/GPTclass.json'
     with open(filename, "w") as outfile:
         json.dump(classified, outfile)
     return classified
@@ -362,8 +367,8 @@ if __name__ == "__main__":
 
     """Translates txt file to word classes"""
     #translations_to_word_classes('Trainingdata/real_sample.txt', 'wordclasslists/WC_non_transl.json')
-    #translations_to_word_classes('Trainingdata/translated_sample.txt', "wordclasslists/WC_transl.json", False)
-    abstracts_data_fixing('Trainingdata/many_abstracts.csv', 'Trainingdata/abstracts_textlist', False, False, False)
+    translations_to_word_classes('GPT.txt', "wordclasslists/WC_GPT.json", False)
+    #abstracts_data_fixing('Trainingdata/many_abstracts.csv', 'Trainingdata/abstracts_textlist', False, False, False)
     """
     TM_all = open_dict('transition_matrices/TM_all')
     maxlike(TM_all, sample)"""
